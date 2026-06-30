@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { AgentPromptWindow } from "@/components/agent-prompt-window";
 import {
   ArrowRight,
   Sparkles,
@@ -12,8 +11,6 @@ import {
   Database,
   Zap,
   Globe,
-  Terminal,
-  Server
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -68,39 +65,36 @@ function Landing() {
         </div>
       </header>
 
-      <section className="relative overflow-hidden border-b border-border/60">
+      <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-0 -z-10 opacity-60 [background:radial-gradient(60%_50%_at_50%_0%,hsl(var(--primary)/.18),transparent_70%)]" />
-        <div className="mx-auto max-w-6xl px-4 pb-16 pt-12 md:pt-20">
-          <div className="text-center mb-10">
-            <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Multi-Agent · RAG · Research Ninja Integrated · Enterprise SaaS
-            </div>
-            <h1 className="mx-auto max-w-4xl text-4xl font-bold tracking-tight md:text-6xl text-foreground">
-              The Enterprise AI Marketing Suite with <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Integrated Research Ninja</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
-              Customers interact through a clean Claude/ChatGPT-like prompt window. Behind the scenes, Research Ninja & Content Specialists execute deep multi-agent tasks.
-            </p>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/app">
-                <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 h-11 font-semibold shadow-lg cursor-pointer">
-                  ⚡ Enter Live App Dashboard (Demo Mode)
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/auth" search={{ mode: "signup" }}>
-                <Button size="lg" variant="outline" className="rounded-full px-6 h-11 cursor-pointer">
-                  Sign in / Register
-                </Button>
-              </Link>
-            </div>
+        <div className="mx-auto max-w-6xl px-4 pb-20 pt-20 text-center md:pt-28">
+          <div className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-xs text-muted-foreground">
+            <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Multi-agent · RAG · Streaming · Enterprise-ready
           </div>
-
-          {/* EMBEDDED UNIVERSAL AGENT PROMPT WINDOW DIRECTLY ON LANDING PAGE */}
-          <div className="mx-auto max-w-5xl pt-4">
-            <AgentPromptWindow showOpsBar={true} />
+          <h1 className="mx-auto max-w-3xl text-4xl font-semibold tracking-tight md:text-6xl">
+            The AI marketing team that works while you sleep.
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground md:text-lg">
+            Marketing Agent unifies on-brand content generation, deep research, and campaign
+            planning into a single secure workspace — powered by a coordinated team of AI agents.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link to="/auth" search={{ mode: "signup" }}>
+              <Button size="lg" className="px-6">
+                Start free
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <a href="#features">
+              <Button size="lg" variant="outline" className="px-6">
+                See features
+              </Button>
+            </a>
           </div>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Free tier · No credit card · Upgrade when you scale.
+          </p>
         </div>
       </section>
 
