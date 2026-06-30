@@ -15,32 +15,26 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/app")({
-  beforeLoad: async () => {
-    if (typeof window === "undefined") return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      throw redirect({ to: "/auth" });
-    }
-  },
   component: AppLayout,
 });
 
 function AppLayout() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>("Demo Enterprise Admin");
   const ws = useQuery({
     queryKey: ["current-workspace"],
     queryFn: () => getCurrentWorkspace(),
   });
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user?.email) setEmail(data.user.email);
+    });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) navigate({ to: "/auth" });
-      setEmail(session?.user?.email ?? null);
+      if (session?.user?.email) setEmail(session.user.email);
     });
     return () => sub.subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut();
