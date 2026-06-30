@@ -5,6 +5,7 @@ import { listBrands } from "@/lib/brands.functions";
 import { listRuns } from "@/lib/content.functions";
 import { listProjects } from "@/lib/research.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AgentPromptWindow } from "@/components/agent-prompt-window";
 import {
   Sparkles,
   Microscope,
@@ -48,14 +49,18 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back 👋</h1>
-        <p className="text-sm text-muted-foreground">
-          Your AI marketing team is ready. Pick a workflow below to get started.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Enterprise Agent Workspace 👋</h1>
+          <p className="text-sm text-muted-foreground">
+            Prompt your AI marketing team below. Research Ninja executes integrated deep web scans.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <AgentPromptWindow showOpsBar={false} />
+
+      <div className="grid gap-4 md:grid-cols-3 pt-2">
         <ActionCard
           icon={<Sparkles className="h-5 w-5" />}
           title="Generate content"
