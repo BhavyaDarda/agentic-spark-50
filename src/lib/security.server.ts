@@ -129,7 +129,7 @@ export async function auditLog(entry: AuditEntry): Promise<void> {
       event: entry.event,
       target_table: entry.targetTable ?? null,
       target_id: entry.targetId ?? null,
-      metadata: entry.metadata ?? {},
+      metadata: (entry.metadata ?? {}) as never,
       ip_address: entry.ipAddress ?? null,
       user_agent: entry.userAgent ?? null,
     });
