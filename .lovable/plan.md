@@ -1,123 +1,186 @@
-## Overhaul into a SaaS: Marketing Agent + Research Ninja
+## What this becomes
 
-The uploaded zips are Python/Streamlit prototypes (FastAPI/Redis/Docker-style stack). Lovable can't host that runtime. Instead I'll rebuild every feature on Lovable's managed equivalent — same architecture intent, modern stack:
+A single conversational surface — one prompt box, like Claude / ChatGPT — where a Marketing Agent handles brand strategy, campaigns, content, SEO, and competitive research. Research Ninja is not a separate app; it's the underlying multi-agent research capability the Marketing Agent invokes via tools. Users never see "the developer settings", API keys, or a workspace CRUD grid unless they ask for it. Everything else is chat + generated artifacts.
 
-```text
-TanStack Start (React)  ──  UI / SSR / API routes
-        │
-Lovable Cloud Auth      ──  email + Google, multi-tenant
-        │
-Postgres + pgvector     ──  Vector DB / RAG store (replaces standalone Vector DB)
-        │
-AI SDK + Lovable AI     ──  multi-agent orchestration (replaces FastAPI agents)
-        │
-Server fns + streaming  ──  SSE/stream responses (replaces Redis pub/sub)
-        │
-Eval logs + analytics   ──  per-run scoring, traces
-        │
-Stripe (built-in)       ──  subscriptions + plan-based usage limits
-        │
-Lovable deploy + GitHub ──  one-click publish, GitHub sync, monitoring
-```
+## Market validation (what I already know — deep scan running)
 
-### Feature scope (v1, all from the zips)
+**Competitors and where they leak value**
+- Jasper / Copy.ai / Writesonic — template-first, not agentic; brand voice is superficial; no real research grounding → outputs feel generic.
+- HubSpot Breeze / Anyword — locked to their suite; expensive; weak on multi-step reasoning.
+- Surfer / Frase / Clearscope / MarketMuse — strong SEO scoring, weak generation; no agent loop.
+- Perplexity / Genspark / Gemini Deep Research / GPT Deep Research — great research UX, no marketing execution layer, no brand memory, no artifact management.
+- Lindy / Relevance AI / Gumloop — powerful but require users to build workflows; wrong audience for marketers.
+- ChatGPT/Claude with browsing — no brand grounding, no citations UX, no reusable artifacts.
 
-**Marketing Agent workspace**
-- Brand/Project setup: product, audience, tone, goals, channels
-- Strategy planner (positioning, ICP, channel mix, KPIs)
-- Campaign generator (multi-channel brief + calendar)
-- Content generation: blog posts, ad copy, social posts (IG/X/LinkedIn), hashtags, email, video scripts
-- Image generation via Lovable AI image models (replaces Gemini/SerpAPI image scrape)
-- SEO + competitor analysis (Semrush connector)
-- Campaign monitor dashboard (mock metrics + manual KPI entry)
+**Top gaps we exploit**
+1. Nobody combines **grounded multi-agent research** + **brand-aware content generation** + **artifact library** in a single chat surface.
+2. Citations in outputs are usually decorative; we make **every claim traceable to a source card**.
+3. Brand voice is usually a text field; we treat it as a **structured, RAG-embedded brand kernel** (positioning, ICP, tone samples, do/don't) that every generation retrieves.
+4. Research is throwaway; we make research projects **first-class, re-runnable, and diffable** over time (great for "monitor competitor X weekly").
+5. No enterprise-grade evaluation of outputs — we ship **automatic judge-model scoring + groundedness + citation coverage** per run.
+6. No serious cost/usage transparency for marketing teams — we ship **per-run tokens, cost, latency, and eval scores** in the artifact history.
+7. Team collaboration is a bolt-on — we ship **workspace + roles + invites + shared artifact library** from day one.
+8. No product ships **safe defaults**: leaked-password check, no anon signup, RLS on every table, HMAC-verified webhooks, service-role key never client-reachable.
 
-**Research Ninja (multi-agent overhaul)**
-- Orchestrator → Planner → Searcher → Reader → Synthesizer → Critic → Writer agents (AI SDK `tool` + `stopWhen(stepCountIs(50))`)
-- Web search + page fetch tools, source de-dup, citations
-- RAG: chunk & embed docs into `pgvector`, retrieve at synthesis
-- Live streamed thinking/steps in UI, final report with citations + export (MD/PDF)
-- Saved research projects, re-runnable
+**Table stakes for 2026 (or it looks like AI slop)**
+Streaming responses with visible reasoning steps; markdown + code blocks + tool cards inline; source cards with favicon + title + snippet; artifact side panel (Claude-style); stop/regenerate/branch; keyboard-first; dark mode that isn't just inverted; empty states that teach; per-message copy/export; typing indicator that isn't three dots.
 
-**Cross-cutting**
-- Workspaces with roles (owner/admin/member), invites
-- Asset library (generated images, docs)
-- Run history, token/credit usage per run, basic eval (thumbs + rubric scoring by a judge model)
-- Stripe subscriptions: Free / Pro / Team with monthly run + token caps enforced server-side
+**Anti-patterns to refuse**
+Purple→indigo gradients on white. Default Inter everywhere. Generic hero + 3-column features + testimonial slider landing. Sparkles icon as brand mark. Robot avatars. "AI-powered" in the H1. Fake dashboard with mocked line charts. Modal wizards for onboarding. Toast for every action.
 
-### Data model (Postgres + RLS, all scoped via `workspace_members` + `has_role`)
+## Product surface (chat-first)
 
 ```text
-workspaces, workspace_members, profiles, user_roles (app_role enum)
-brands (per workspace)
-campaigns, campaign_assets
-content_runs (type, input, output, model, tokens, cost, eval_score)
-research_projects, research_runs, research_steps, research_sources
-documents (id, workspace_id, content, embedding vector(3072), metadata)
-subscriptions, usage_counters (per workspace, per month)
+┌─ Sidebar (collapsible) ─┐  ┌─ Conversation (hero) ──────────────┐  ┌─ Artifact panel ─┐
+│ + New chat              │  │ user: launch a Q2 campaign for...  │  │ (opens when the  │
+│ Recent conversations    │  │                                     │  │  agent produces  │
+│ ─                       │  │ agent (streaming):                  │  │  a document,     │
+│ Brands (chip nav)       │  │   [Research tool] 12 sources cited  │  │  campaign brief, │
+│ Artifacts               │  │   [Draft] Blog post v1              │  │  image, or       │
+│ Settings                │  │   [SEO check] Score 78              │  │  report)         │
+│ ─                       │  │                                     │  │                  │
+│ Usage: 142 / 500 runs   │  │ [prompt input, /commands, @brand]   │  │                  │
+└─────────────────────────┘  └─────────────────────────────────────┘  └──────────────────┘
 ```
 
-`user_roles` is a separate table with `has_role()` SECURITY DEFINER. Every public table gets explicit GRANTs + RLS scoped to workspace membership.
+- One prompt box drives everything. `/commands` for power users (`/research`, `/campaign`, `/blog`, `/seo`, `/image`), `@brand` to scope to a brand, drag-and-drop files to ground the conversation.
+- Sidebar is **thin and collapsible** — conversation is the hero. Brands/Artifacts/Settings are lists of things chat has produced, not separate apps.
+- Artifact panel opens Claude-style on the right when the agent produces something substantial (report, campaign plan, image, blog post). Users can edit inline; agent can iterate on the artifact.
+- Live agent trace: collapsed by default, expandable to see planner → search → read → synthesize → critique steps with per-step tokens/latency.
+- No exposed API keys, model pickers, or "developer settings" in the default UI. A small `Advanced` toggle in Settings for power users to override model/temperature per conversation — off by default.
 
-### Backend boundaries
+## Agent architecture
 
-- `createServerFn` (RPC) for: brand CRUD, content gen one-shots, research project mutations, usage reads
-- Server route `src/routes/api/chat.ts` for streaming Marketing assistant
-- Server route `src/routes/api/research.ts` for streaming Research Ninja agent loop
-- Server route `src/routes/api/public/webhooks/stripe.ts` for Stripe webhooks (HMAC verified)
-- Embeddings via Lovable AI `/v1/embeddings` (`google/gemini-embedding-001`) from server only
-- All LLM calls via AI SDK + Lovable AI Gateway helper; default model `google/gemini-3-flash-preview`, with a "deep" tier for synthesis/research
+```text
+User prompt
+    │
+    ▼
+Orchestrator (Marketing Agent)
+    │  ── decides: pure content? needs research? needs brand kernel? campaign plan?
+    │
+    ├─► Brand kernel retrieval (RAG over brand docs, tone samples, past artifacts)
+    ├─► Research Ninja tool  ──► Planner → Searcher (Brave/Tavily+SerpAPI fallback)
+    │                              → Reader (fetch + clean + chunk)
+    │                              → Synthesizer (cited markdown)
+    │                              → Critic (groundedness, coverage, bias check)
+    ├─► Content generators (blog, ad, social, email, script)
+    ├─► SEO tool (Semrush connector — already available)
+    ├─► Image generator (Lovable AI image models)
+    └─► Judge model (scores every artifact: helpfulness, groundedness, brand fit)
+                │
+                ▼
+        Streamed back with tool cards, artifacts, and eval score
+```
 
-### UI / pages
+- Loop control via AI SDK `stopWhen(stepCountIs(50))` + budget guardrails (max fetches, max tokens per run) enforced server-side and tied to plan tier.
+- All prompts, tools, and model choices stay server-side. Client only sees streamed UI messages.
 
-Public: `/` landing, `/pricing`, `/auth`, `/research/share/$id` (public read-only report)
-App (under `_authenticated/`):
-- `/app` dashboard (recent runs, usage, quick actions)
-- `/app/brands` and `/app/brands/$id`
-- `/app/campaigns`, `/app/campaigns/$id` (strategy, calendar, assets)
-- `/app/content` (blog / ad / social / email / video / images generators)
-- `/app/research` list, `/app/research/$id` (live agent stream + final report)
-- `/app/seo` (Semrush-backed competitor + keyword analysis)
-- `/app/assets` library
-- `/app/settings` (workspace, members/invites, billing, API/connectors)
+## Tech stack (validated)
 
-Design: dark-first, modern enterprise SaaS — not generic indigo/purple. I'll pick a distinctive palette + type system in `styles.css` (semantic tokens only, no hardcoded colors).
+Kept: TanStack Start (SSR + type-safe routes + server functions), Lovable Cloud (managed Postgres + auth + storage + secrets), pgvector for RAG, AI SDK + Lovable AI Gateway (Gemini + GPT models, no exposed keys), Tailwind v4 + shadcn (New York) with a custom design system.
 
-### Security & enterprise basics
-- RLS on every table, `has_role` for admin checks
-- Bearer-attached server fns; `requireSupabaseAuth` on all user-scoped ops
-- Server-side usage limit enforcement on every generation endpoint
-- Zod validation on all inputs
-- Leaked-password (HIBP) check enabled
-- Stripe webhook signature verification; never trust client billing state
+Added / hardened:
+- **AI Elements** (from ai-sdk.dev) for the chat surface — Conversation, Message, Tool, PromptInput, Shimmer — instead of hand-rolling. Non-negotiable per Lovable's chat UI contract.
+- **Stripe (built-in Lovable payments)** for Free / Pro / Team tiers with webhook-verified subscription state.
+- **Tavily** or **Brave Search API** for research (via `add_secret`), with a graceful DuckDuckGo scrape fallback. Current build uses only the scrape — that's fragile.
+- **Judge model + eval scoring** on every generation (helpfulness 1-5, groundedness 0-1, citation coverage %) stored on `content_runs`.
+- **Rate limiting per workspace** at the server-function layer using Postgres (no Redis needed on Cloudflare Workers).
+- **Structured audit log** table for security events (auth, role change, billing, agent runs with cost > threshold).
 
-### Deploy & ops (Lovable equivalents of the requested stack)
-- Docker / FastAPI / Redis / GH Actions → replaced by Lovable Cloud (managed Postgres, server functions on Cloudflare Workers, one-click publish, GitHub two-way sync, built-in logs/analytics for monitoring)
-- Evaluation: per-run judge-model score stored on `content_runs`, surfaced in dashboard
+Removed:
+- Standalone `/app/brands`, `/app/campaigns`, `/app/content`, `/app/research` CRUD pages as primary nav. They become **filtered views over conversations/artifacts** reachable from the sidebar, not separate apps.
 
-### Build order
+## Design system (distinctive, non-generic)
 
-1. Enable Lovable Cloud + Stripe (after confirmation), provision `LOVABLE_API_KEY`
-2. Design system + landing/pricing/auth shell
-3. Schema migration #1: workspaces, roles, brands, content_runs (+ RLS + GRANTs)
-4. Auth pages, workspace bootstrap on first login, member invites
-5. Brand setup + Strategy + Campaign generator (server fns + UI)
-6. Content generators (blog/ad/social/email/video/images) with streaming
-7. Schema migration #2: research_*, documents (pgvector), usage_counters
-8. Research Ninja multi-agent loop + live stream UI + RAG ingestion
-9. SEO module via Semrush connector
-10. Stripe subscriptions, webhook, plan-gated usage enforcement
-11. Eval scoring + usage dashboard
-12. Polish, empty states, error boundaries, og:image per route, publish
+Direction: **"Terminal for marketers"** — dark-first, high-density, monospace accents, physical-feeling interactions. Think Linear × Raycast × Vercel, not Jasper.
 
-### What I will NOT do (and why)
-- No FastAPI / Docker / Redis / GitHub Actions YAML — Lovable Cloud is the runtime; those layers don't apply.
-- No copying the Python source into the repo — features are reimplemented in TS server functions.
-- No real ad-platform publishing (Meta/Google Ads API) in v1 unless you later add those connectors; campaign monitor uses manual KPI input + mocked charts.
-- No third-party email send unless you add a domain in Lovable Email later.
+- Palette: near-black `oklch(0.14 0.02 260)` base, warm off-white text, single confident accent (electric mint `oklch(0.78 0.18 165)` for actions and streaming states), muted amber for warnings, no gradients on primary CTAs.
+- Type: **JetBrains Mono** for tool cards / metadata / trace / kbd; **Söhne**/Inter for prose (via @fontsource); tabular-nums everywhere numeric.
+- Motion: 120-180ms Motion One transitions; streaming shimmer on active tool cards; artifact panel slides in with spring physics; no bounce, no glow.
+- Iconography: Lucide for controls only; custom generated brand mark (not Sparkles) as the agent identity.
+- Empty states are one-line kbd hints, not illustrations.
 
-### Open questions before I start building
-1. **Design direction**: want me to generate 2–3 visual directions to pick from, or just go with a confident dark enterprise look (think Linear × Vercel)?
-2. **Research depth in v1**: cap research agent at ~15 web fetches + ~50 steps per run (Free/Pro)? Higher on Team?
-3. **Plan pricing** (for Stripe products): suggested Free (3 runs/mo), Pro $29 (200 runs, 1 workspace), Team $99 (1000 runs, 5 seats) — OK to seed with these, or you'll set prices later?
+I'll ask you to pick a color palette + type pair via the visual-choice question in the next build turn before locking the tokens.
 
-Approve and I'll start at step 1.
+## Security posture (non-negotiable)
+
+Applied globally, not per-feature:
+- RLS on every table, scoped via `workspace_members` + `has_role()` SECURITY DEFINER. `user_roles` is separate from `profiles`. No client-writable role columns anywhere.
+- Explicit GRANTs on every public table (Data API requires this — RLS alone is not enough).
+- `SUPABASE_SERVICE_ROLE_KEY` and `LOVABLE_API_KEY` never leave the server; loaded only inside handler bodies of `.functions.ts` / API routes; never at module scope.
+- All server functions that touch user data use `requireSupabaseAuth`. All webhook routes (`/api/public/webhooks/stripe`) verify HMAC with timing-safe compare before any DB write.
+- Input validation with Zod on every server function and every API route. Length caps everywhere.
+- Leaked-password (HIBP) check enabled via `configure_auth`.
+- Google OAuth via Lovable broker (`lovable.auth.signInWithOAuth`), configured this turn to avoid "Unsupported provider".
+- No `dangerouslySetInnerHTML`. Markdown rendered via `react-markdown` with `rehype-sanitize`.
+- Cost/usage guardrails enforced server-side per workspace per plan; client hints only.
+- Structured audit log for auth, role changes, billing events, and any run with cost above threshold.
+- Security scan run before publish; findings triaged into `security-memory`.
+
+## Billing (v1)
+
+Lovable's built-in **Stripe payments** (no user Stripe account required, full compliance handling for eligible catalogs). After you approve this plan I'll run `recommend_payment_provider` and then `enable_stripe_payments`.
+
+Suggested tiers (adjustable):
+- **Free** — 1 workspace, 1 seat, 20 agent runs / mo, 3 research projects, watermarked exports.
+- **Pro $29/mo** — 1 workspace, 3 seats, 500 runs, 50 research projects, no watermark, higher research depth.
+- **Team $99/mo** — 3 workspaces, 10 seats, 3000 runs, deep research, priority model routing, audit-log export.
+
+Enforcement: `usage_counters` table + server-side check inside every generation handler. Webhook updates `subscriptions` state; client never trusts billing state.
+
+## Data model additions
+
+On top of existing tables, add:
+- `conversations` (workspace_id, title auto-generated by judge model, active_brand_id, created_at, last_message_at)
+- `messages` (conversation_id, role, parts jsonb — matches AI SDK `UIMessage`, tokens, cost, eval_score, model)
+- `artifacts` (conversation_id, kind: report|blog|ad|social|email|image|campaign, title, content, source_run_id) — unifies today's `content_runs` output into a browseable library
+- `audit_log` (workspace_id, actor_id, event, target_table, target_id, metadata, created_at)
+- `rate_limits` (workspace_id, bucket, count, window_start) — simple sliding window in Postgres
+- `subscriptions` (workspace_id, stripe_customer_id, stripe_subscription_id, plan, status, current_period_end)
+
+RLS + GRANTs applied in the same migration.
+
+## What I'll remove or refactor from the current build
+
+- `/app/brands`, `/app/campaigns`, `/app/content`, `/app/research` become **filtered artifact views** reachable from the collapsed sidebar, not top-level nav. The pages stay but the layout and IA change.
+- `src/routes/api/research.ts` becomes an AI SDK tool called by the Marketing Agent's chat endpoint, not a directly-invoked route from a Research page.
+- The DuckDuckGo scraper in Research Ninja is replaced by Tavily/Brave with the scraper as fallback.
+- `src/lib/content.functions.ts` collapses into tool handlers on the agent, not standalone server fns called from separate pages.
+- Design tokens in `src/styles.css` are re-derived from the chosen palette + type pair (you'll pick).
+
+## Validation against the `.md` plan
+
+The existing `.lovable/plan.md` covered the right pieces (multi-tenant, RLS, pgvector, AI SDK, Stripe) but got the **product surface wrong** — it built four CRUD apps + a chat when you actually want **one chat that owns everything**. This revision keeps the backend rigor and rewrites the frontend architecture around a single conversation surface with artifacts.
+
+## Build order (post-approval)
+
+1. Ask you to pick color palette + type pair (visual-choice question) → lock design tokens.
+2. Enable Stripe payments; provision `TAVILY_API_KEY` (or Brave) via `add_secret`; configure Google OAuth on Supabase; enable HIBP.
+3. Migration: `conversations`, `messages`, `artifacts`, `audit_log`, `rate_limits`, `subscriptions` (+ RLS + GRANTs). Re-shape `content_runs` output into `artifacts`.
+4. Landing page + pricing + auth — real content, dark-first, no AI-slop.
+5. Install AI Elements (`conversation message prompt-input tool shimmer response`). Build the chat shell + artifact panel + sidebar.
+6. Build the Marketing Agent orchestrator: server route `src/routes/api/chat.ts` with tools (research, brand_retrieve, generate_content, seo_analyze, generate_image, save_artifact). AI SDK `stopWhen(stepCountIs(50))`, `sendReasoning: true`, tool cards.
+7. Research Ninja as tool: Planner → Search (Tavily) → Reader → Synthesizer → Critic, streamed as nested tool activity.
+8. RAG: chunk & embed brand kernel + uploaded docs into `documents`; retrieve inside brand_retrieve tool.
+9. Judge model eval scoring on every artifact; surface score chip in artifact list.
+10. Stripe checkout + billing portal + webhook; plan-gated usage enforcement.
+11. Audit log write-through on sensitive events; rate limiting middleware.
+12. Security scan → triage → publish. og:image per route via generated hero images.
+
+### Details for the technically curious
+
+- Chat streaming: `streamText` + `toUIMessageStreamResponse({ originalMessages, sendReasoning: true, onFinish })` — `onFinish` persists assistant message + artifact rows.
+- Tool cards render via AI Elements `<Tool>` with `defaultOpen={false}`; research sub-steps render as nested tool activity.
+- Reasoning enabled via `providerOptions.lovable.reasoning` on Gemini models; OpenAI reasoning models go through the Responses API path (not used in v1).
+- Cost tracking: capture `usage` from AI SDK result, price against the model's rate card server-side, write to `messages.cost_usd`.
+- `stopWhen(stepCountIs(50))` + explicit tool budgets inside each tool (`maxFetches`, `maxTokens`) enforced server-side.
+- Cloudflare Workers runtime: no Redis, no Node-only packages; rate limiting in Postgres; embeddings via Lovable AI Gateway `/embeddings` (`google/gemini-embedding-001`, 3072 dims — matches existing column).
+- Tests: Playwright smoke covering signup → send message → tool card renders → artifact opens → billing checkout redirect (test mode).
+
+## Open confirmations before I build
+
+- OK to enable Stripe (built-in, no account needed) and provision `TAVILY_API_KEY` for research search? Brave is the alternative if you prefer.
+- OK to keep the `/app/*` routes as filtered artifact views under the chat shell (not deleted, just re-nav'd)?
+- Preferred region for data residency in v1 — US default, or EU?
+
+Approve and I'll start at step 1 with the design-token questions.
