@@ -205,19 +205,20 @@ export const Route = createFileRoute("/api/chat")({
         if (activeBrandId) {
           const { data: brand } = await sb
             .from("brands")
-            .select("name, voice, tone, audience, keywords, guardrails")
+            .select("name, brand_voice, tone, audience, channels, goals, product")
             .eq("id", activeBrandId)
             .maybeSingle();
           if (brand) {
             brandContext = [
               `You are writing on behalf of the brand "${brand.name}".`,
-              brand.voice ? `Voice: ${brand.voice}` : "",
+              brand.brand_voice ? `Voice: ${brand.brand_voice}` : "",
               brand.tone ? `Tone: ${brand.tone}` : "",
               brand.audience ? `Audience: ${brand.audience}` : "",
-              Array.isArray(brand.keywords) && brand.keywords.length
-                ? `Preferred keywords: ${(brand.keywords as string[]).join(", ")}`
+              brand.product ? `Product: ${brand.product}` : "",
+              Array.isArray(brand.channels) && brand.channels.length
+                ? `Primary channels: ${(brand.channels as string[]).join(", ")}`
                 : "",
-              brand.guardrails ? `Non-negotiables: ${brand.guardrails}` : "",
+              brand.goals ? `Goals: ${brand.goals}` : "",
             ]
               .filter(Boolean)
               .join("\n");
@@ -429,10 +430,11 @@ export const Route = createFileRoute("/api/chat")({
 
               write({ type: "agent", name: "Orchestrator", status: "start" });
 
+              const modelMessages = await convertToModelMessages(uiMessages);
               const result = streamText({
                 model,
                 system: systemPrompt,
-                messages: convertToModelMessages(uiMessages),
+                messages: modelMessages,
                 tools,
                 stopWhen: stepCountIs(options.model === "deep" ? 10 : 6),
                 onError({ error }) {
@@ -446,7 +448,7 @@ export const Route = createFileRoute("/api/chat")({
                 write({ type: "text_delta", delta });
               }
 
-              const usage = await result.usage.catch(() => undefined);
+              const usage = await Promise.resolve(result.usage).catch(() => undefined);
               write({ type: "agent", name: "Orchestrator", status: "end" });
               write({
                 type: "done",
