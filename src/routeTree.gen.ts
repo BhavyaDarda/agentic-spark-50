@@ -18,8 +18,10 @@ import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
 import { Route as AppBrandsRouteImport } from './routes/app.brands'
 import { Route as ApiResearchRouteImport } from './routes/api/research'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
+import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -66,6 +68,11 @@ const ApiResearchRoute = ApiResearchRouteImport.update({
   path: '/api/research',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppResearchIndexRoute = AppResearchIndexRouteImport.update({
   id: '/research/',
   path: '/research/',
@@ -76,29 +83,38 @@ const AppResearchProjectIdRoute = AppResearchProjectIdRouteImport.update({
   path: '/research/$projectId',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
+  id: '/api/stripe/webhook',
+  path: '/api/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research': typeof AppResearchIndexRoute
 }
@@ -107,12 +123,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
+  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
 }
@@ -122,24 +140,28 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/api/chat'
     | '/api/research'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app/'
+    | '/api/stripe/webhook'
     | '/app/research/$projectId'
     | '/app/research/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/api/chat'
     | '/api/research'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app'
+    | '/api/stripe/webhook'
     | '/app/research/$projectId'
     | '/app/research'
   id:
@@ -147,12 +169,14 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
+    | '/api/chat'
     | '/api/research'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app/'
+    | '/api/stripe/webhook'
     | '/app/research/$projectId'
     | '/app/research/'
   fileRoutesById: FileRoutesById
@@ -161,7 +185,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiChatRoute: typeof ApiChatRoute
   ApiResearchRoute: typeof ApiResearchRoute
+  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -229,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/research/': {
       id: '/app/research/'
       path: '/research'
@@ -242,6 +275,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/research/$projectId'
       preLoaderRoute: typeof AppResearchProjectIdRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/api/stripe/webhook': {
+      id: '/api/stripe/webhook'
+      path: '/api/stripe/webhook'
+      fullPath: '/api/stripe/webhook'
+      preLoaderRoute: typeof ApiStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -272,18 +312,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiChatRoute: ApiChatRoute,
   ApiResearchRoute: ApiResearchRoute,
+  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
