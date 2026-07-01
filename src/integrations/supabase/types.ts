@@ -14,6 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
+      artifacts: {
+        Row: {
+          brand_id: string | null
+          content: string | null
+          content_json: Json | null
+          conversation_id: string | null
+          created_at: string
+          created_by: string
+          eval_score: number | null
+          id: string
+          kind: string
+          metadata: Json
+          source_message_id: string | null
+          starred: boolean
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          content?: string | null
+          content_json?: Json | null
+          conversation_id?: string | null
+          created_at?: string
+          created_by: string
+          eval_score?: number | null
+          id?: string
+          kind: string
+          metadata?: Json
+          source_message_id?: string | null
+          starred?: boolean
+          title: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          content?: string | null
+          content_json?: Json | null
+          conversation_id?: string | null
+          created_at?: string
+          created_by?: string
+          eval_score?: number | null
+          id?: string
+          kind?: string
+          metadata?: Json
+          source_message_id?: string | null
+          starred?: boolean
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artifacts_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artifacts_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artifacts_source_message_id_fkey"
+            columns: ["source_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artifacts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_log: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event: string
+          id: string
+          ip_address: unknown
+          metadata: Json
+          target_id: string | null
+          target_table: string | null
+          user_agent: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          target_id?: string | null
+          target_table?: string | null
+          user_agent?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          target_id?: string | null
+          target_table?: string | null
+          user_agent?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brands: {
         Row: {
           audience: string | null
@@ -233,6 +363,60 @@ export type Database = {
           },
         ]
       }
+      conversations: {
+        Row: {
+          active_brand_id: string | null
+          archived: boolean
+          created_at: string
+          created_by: string
+          id: string
+          last_message_at: string
+          pinned: boolean
+          title: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          active_brand_id?: string | null
+          archived?: boolean
+          created_at?: string
+          created_by: string
+          id?: string
+          last_message_at?: string
+          pinned?: boolean
+          title?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          active_brand_id?: string | null
+          archived?: boolean
+          created_at?: string
+          created_by?: string
+          id?: string
+          last_message_at?: string
+          pinned?: boolean
+          title?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_active_brand_id_fkey"
+            columns: ["active_brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           content: string
@@ -277,6 +461,75 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          ai_sdk_message_id: string | null
+          conversation_id: string
+          cost_usd: number | null
+          created_at: string
+          eval_notes: Json | null
+          eval_score: number | null
+          id: string
+          input_tokens: number | null
+          latency_ms: number | null
+          model: string | null
+          output_tokens: number | null
+          parts: Json
+          reasoning_tokens: number | null
+          role: string
+          workspace_id: string
+        }
+        Insert: {
+          ai_sdk_message_id?: string | null
+          conversation_id: string
+          cost_usd?: number | null
+          created_at?: string
+          eval_notes?: Json | null
+          eval_score?: number | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          parts?: Json
+          reasoning_tokens?: number | null
+          role: string
+          workspace_id: string
+        }
+        Update: {
+          ai_sdk_message_id?: string | null
+          conversation_id?: string
+          cost_usd?: number | null
+          created_at?: string
+          eval_notes?: Json | null
+          eval_score?: number | null
+          id?: string
+          input_tokens?: number | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          parts?: Json
+          reasoning_tokens?: number | null
+          role?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -303,6 +556,35 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          bucket: string
+          count: number
+          window_start: string
+          workspace_id: string
+        }
+        Insert: {
+          bucket: string
+          count?: number
+          window_start: string
+          workspace_id: string
+        }
+        Update: {
+          bucket?: string
+          count?: number
+          window_start?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_limits_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       research_projects: {
         Row: {
@@ -524,6 +806,56 @@ export type Database = {
             foreignKeyName: "research_steps_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          metadata: Json
+          plan: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_price_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          metadata?: Json
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          metadata?: Json
+          plan?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_price_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: true
             referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
