@@ -17,10 +17,12 @@ import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
 import { Route as AppBrandsRouteImport } from './routes/app.brands'
+import { Route as AppArtifactsRouteImport } from './routes/app.artifacts'
 import { Route as ApiResearchRouteImport } from './routes/api/research'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
+import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 
 const AuthRoute = AuthRouteImport.update({
@@ -63,6 +65,11 @@ const AppBrandsRoute = AppBrandsRouteImport.update({
   path: '/brands',
   getParentRoute: () => AppRoute,
 } as any)
+const AppArtifactsRoute = AppArtifactsRouteImport.update({
+  id: '/artifacts',
+  path: '/artifacts',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiResearchRoute = ApiResearchRouteImport.update({
   id: '/api/research',
   path: '/api/research',
@@ -83,6 +90,11 @@ const AppResearchProjectIdRoute = AppResearchProjectIdRouteImport.update({
   path: '/research/$projectId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
+  id: '/c/$conversationId',
+  path: '/c/$conversationId',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   id: '/api/stripe/webhook',
   path: '/api/stripe/webhook',
@@ -95,12 +107,14 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
+  '/app/artifacts': typeof AppArtifactsRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
 }
@@ -109,12 +123,14 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
+  '/app/artifacts': typeof AppArtifactsRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research': typeof AppResearchIndexRoute
 }
@@ -125,12 +141,14 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
+  '/app/artifacts': typeof AppArtifactsRoute
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
+  '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
 }
@@ -142,12 +160,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/api/chat'
     | '/api/research'
+    | '/app/artifacts'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app/'
     | '/api/stripe/webhook'
+    | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
   fileRoutesByTo: FileRoutesByTo
@@ -156,12 +176,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/api/chat'
     | '/api/research'
+    | '/app/artifacts'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app'
     | '/api/stripe/webhook'
+    | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research'
   id:
@@ -171,12 +193,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/api/chat'
     | '/api/research'
+    | '/app/artifacts'
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
     | '/app/'
     | '/api/stripe/webhook'
+    | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
   fileRoutesById: FileRoutesById
@@ -248,6 +272,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrandsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/artifacts': {
+      id: '/app/artifacts'
+      path: '/artifacts'
+      fullPath: '/app/artifacts'
+      preLoaderRoute: typeof AppArtifactsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/research': {
       id: '/api/research'
       path: '/api/research'
@@ -276,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppResearchProjectIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/c/$conversationId': {
+      id: '/app/c/$conversationId'
+      path: '/c/$conversationId'
+      fullPath: '/app/c/$conversationId'
+      preLoaderRoute: typeof AppCConversationIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/stripe/webhook': {
       id: '/api/stripe/webhook'
       path: '/api/stripe/webhook'
@@ -287,21 +325,25 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppArtifactsRoute: typeof AppArtifactsRoute
   AppBrandsRoute: typeof AppBrandsRoute
   AppCampaignsRoute: typeof AppCampaignsRoute
   AppContentRoute: typeof AppContentRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppCConversationIdRoute: typeof AppCConversationIdRoute
   AppResearchProjectIdRoute: typeof AppResearchProjectIdRoute
   AppResearchIndexRoute: typeof AppResearchIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppArtifactsRoute: AppArtifactsRoute,
   AppBrandsRoute: AppBrandsRoute,
   AppCampaignsRoute: AppCampaignsRoute,
   AppContentRoute: AppContentRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppIndexRoute: AppIndexRoute,
+  AppCConversationIdRoute: AppCConversationIdRoute,
   AppResearchProjectIdRoute: AppResearchProjectIdRoute,
   AppResearchIndexRoute: AppResearchIndexRoute,
 }
@@ -319,13 +361,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

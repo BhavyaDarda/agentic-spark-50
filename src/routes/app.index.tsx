@@ -1,28 +1,67 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { listBrands } from "@/lib/brands.functions";
-import { listRuns } from "@/lib/content.functions";
-import { listProjects } from "@/lib/research.functions";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { createConversation } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  ArrowUp,
   Sparkles,
   Microscope,
-  Building2,
-  ArrowRight,
-  Activity,
-  CheckCircle2,
-  XCircle,
+  PenTool,
+  BarChart3,
   Loader2,
+  Building2,
 } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/app/")({
-  head: () => ({ meta: [{ title: "Dashboard · Marketing Agent" }] }),
-  component: Dashboard,
+  head: () => ({ meta: [{ title: "New chat · Marketing Agent" }] }),
+  component: NewChatWelcome,
 });
 
-function Dashboard() {
+const STARTERS: { icon: React.ComponentType<{ className?: string }>; title: string; prompt: string }[] = [
+  {
+    icon: Microscope,
+    title: "Research a competitor",
+    prompt:
+      "Do deep research on our top competitor. Map their positioning, pricing, top-performing content themes, SEO keywords they rank for, and 3 openings we could exploit. Cite every claim.",
+  },
+  {
+    icon: PenTool,
+    title: "Draft a launch blog post",
+    prompt:
+      "Draft a 1,200-word launch blog post for our new feature. On brand, skimmable, with a clear H1, sub-heads, one pull quote, and a CTA. Save it as an artifact when done.",
+  },
+  {
+    icon: BarChart3,
+    title: "Build a 30-day campaign",
+    prompt:
+      "Build a 30-day multi-channel campaign brief (email, LinkedIn, X, blog) around our next launch. Include weekly themes, per-channel hooks, and success metrics. Save as an artifact.",
+  },
+  {
+    icon: Sparkles,
+    title: "5 ad variations",
+    prompt:
+      "Give me 5 short ad variations for Meta and Google, each with a distinct angle (pain, aspiration, social proof, urgency, curiosity). One headline + one body under 90 chars.",
+  },
+];
+
+function NewChatWelcome() {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [prompt, setPrompt] = useState("");
+  const [brandId, setBrandId] = useState<string | undefined>();
+
   const ws = useQuery({ queryKey: ["current-workspace"], queryFn: () => getCurrentWorkspace() });
   const workspaceId = ws.data?.workspace?.id;
 
@@ -31,152 +70,124 @@ function Dashboard() {
     queryFn: () => listBrands({ data: { workspaceId: workspaceId! } }),
     enabled: !!workspaceId,
   });
-  const runs = useQuery({
-    queryKey: ["runs", workspaceId],
-    queryFn: () => listRuns({ data: { workspaceId: workspaceId!, limit: 10 } }),
-    enabled: !!workspaceId,
-  });
-  const projects = useQuery({
-    queryKey: ["research", workspaceId],
-    queryFn: () => listProjects({ data: { workspaceId: workspaceId! } }),
-    enabled: !!workspaceId,
+
+  const start = useMutation({
+    mutationFn: async (text: string) => {
+      if (!workspaceId) throw new Error("no workspace");
+      const conv = await createConversation({
+        data: { workspaceId, activeBrandId: brandId ?? null },
+      });
+      // Stash the initial prompt so the chat page auto-sends it on mount.
+      if (text.trim()) {
+        sessionStorage.setItem(`chat:autosend:${conv.id}`, text.trim());
+      }
+      return conv;
+    },
+    onSuccess: (conv) => {
+      qc.invalidateQueries({ queryKey: ["conversations", workspaceId] });
+      navigate({ to: "/app/c/$conversationId", params: { conversationId: conv.id } });
+    },
   });
 
+  const send = () => {
+    if (!prompt.trim() || start.isPending) return;
+    start.mutate(prompt);
+  };
+
+  const email = supabase.auth ? undefined : undefined; // reserved
+
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back 👋</h1>
+    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-3xl flex-col justify-center gap-8 px-4 py-10">
+      <div className="space-y-2 text-center">
+        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+          <Sparkles className="h-5 w-5" />
+        </div>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          What are we shipping today?
+        </h1>
         <p className="text-sm text-muted-foreground">
-          Your AI marketing team is ready. Pick a workflow below to get started.
+          Ask, brief, or paste — the agent will research, write, and save
+          artifacts to your library.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <ActionCard
-          icon={<Sparkles className="h-5 w-5" />}
-          title="Generate content"
-          desc="Blogs, ads, social, email."
-          to="/app/content"
+      <div className="rounded-2xl border border-border/60 bg-card/60 p-3 shadow-xl shadow-black/30 backdrop-blur">
+        <Textarea
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+              e.preventDefault();
+              send();
+            }
+          }}
+          rows={3}
+          placeholder="Research the AI marketing landscape, draft a launch email, build me a campaign…"
+          className="resize-none border-0 bg-transparent p-2 text-base leading-relaxed shadow-none focus-visible:ring-0"
         />
-        <ActionCard
-          icon={<Microscope className="h-5 w-5" />}
-          title="Run deep research"
-          desc="Multi-agent web research."
-          to="/app/research"
-        />
-        <ActionCard
-          icon={<Building2 className="h-5 w-5" />}
-          title="Set up a brand"
-          desc="Lock in voice & audience."
-          to="/app/brands"
-        />
+        <div className="flex items-center justify-between gap-2 border-t border-border/50 pt-2">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Building2 className="h-3.5 w-3.5" />
+            <Select
+              value={brandId ?? "none"}
+              onValueChange={(v) => setBrandId(v === "none" ? undefined : v)}
+            >
+              <SelectTrigger className="h-7 w-[180px] border-border/60 bg-transparent text-xs">
+                <SelectValue placeholder="No brand" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No brand</SelectItem>
+                {(brands.data ?? []).map((b) => (
+                  <SelectItem key={b.id} value={b.id}>
+                    {b.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="hidden md:inline">
+              · ⌘⏎ to send
+            </span>
+          </div>
+          <Button
+            size="sm"
+            className="gap-1.5"
+            onClick={send}
+            disabled={!prompt.trim() || !workspaceId || start.isPending}
+          >
+            {start.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <ArrowUp className="h-3.5 w-3.5" />
+            )}
+            Send
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Stat label="Brands" value={brands.data?.length ?? 0} />
-        <Stat label="Content runs" value={runs.data?.length ?? 0} />
-        <Stat label="Research projects" value={projects.data?.length ?? 0} />
+      <div className="grid gap-2 md:grid-cols-2">
+        {STARTERS.map((s) => {
+          const Icon = s.icon;
+          return (
+            <button
+              key={s.title}
+              onClick={() => {
+                setPrompt(s.prompt);
+              }}
+              className="group flex items-start gap-3 rounded-lg border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
+            >
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <Icon className="h-3.5 w-3.5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-sm font-medium">{s.title}</div>
+                <div className="line-clamp-2 text-xs text-muted-foreground">
+                  {s.prompt}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-base">Recent activity</CardTitle>
-          <Activity className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          {runs.isLoading ? (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading…
-            </div>
-          ) : (runs.data?.length ?? 0) === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No runs yet. Try{" "}
-              <Link to="/app/content" className="text-primary hover:underline">
-                generating your first piece of content
-              </Link>
-              .
-            </p>
-          ) : (
-            <ul className="divide-y divide-border/60">
-              {runs.data!.map((r) => (
-                <li key={r.id} className="flex items-center justify-between py-3">
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium">
-                      {r.title || r.kind.replace("_", " ")}
-                    </div>
-                    <div className="font-mono text-xs text-muted-foreground">
-                      {new Date(r.created_at).toLocaleString()} · {r.kind}
-                    </div>
-                  </div>
-                  <StatusBadge status={r.status} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
     </div>
-  );
-}
-
-function ActionCard({
-  icon,
-  title,
-  desc,
-  to,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-  to: string;
-}) {
-  return (
-    <Link to={to}>
-      <Card className="group h-full border-border/60 transition-colors hover:border-primary/50">
-        <CardContent className="p-5">
-          <div className="mb-3 inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
-            {icon}
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-semibold">{title}</div>
-              <div className="text-xs text-muted-foreground">{desc}</div>
-            </div>
-            <ArrowRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-    <Card className="border-border/60">
-      <CardContent className="p-5">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
-        <div className="mt-1 text-3xl font-semibold tracking-tight">{value}</div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function StatusBadge({ status }: { status: string }) {
-  if (status === "succeeded")
-    return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs text-emerald-400">
-        <CheckCircle2 className="h-3 w-3" /> done
-      </span>
-    );
-  if (status === "failed")
-    return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-destructive/10 px-2 py-0.5 text-xs text-destructive">
-        <XCircle className="h-3 w-3" /> failed
-      </span>
-    );
-  return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-xs text-amber-400">
-      <Loader2 className="h-3 w-3 animate-spin" /> {status}
-    </span>
   );
 }
