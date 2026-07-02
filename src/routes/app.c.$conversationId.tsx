@@ -518,21 +518,22 @@ function ToolCard({ t }: { t: ToolEvent }) {
         <Icon className="h-3 w-3 shrink-0 opacity-70" />
       )}
       <span className="font-mono lowercase text-muted-foreground">{label}</span>
-      {t.input && typeof t.input === "object" && "query" in (t.input as Record<string, unknown>) && (
+      {typeof t.input === "object" && t.input !== null && "query" in (t.input as Record<string, unknown>) && (
         <span className="truncate text-foreground">
           "{String((t.input as { query: string }).query).slice(0, 80)}"
         </span>
       )}
-      {t.input && typeof t.input === "object" && "url" in (t.input as Record<string, unknown>) && (
+      {typeof t.input === "object" && t.input !== null && "url" in (t.input as Record<string, unknown>) && (
         <span className="truncate text-foreground">
           {String((t.input as { url: string }).url).slice(0, 60)}
         </span>
       )}
-      {t.input && typeof t.input === "object" && "title" in (t.input as Record<string, unknown>) && (
+      {typeof t.input === "object" && t.input !== null && "title" in (t.input as Record<string, unknown>) && (
         <span className="truncate text-foreground">
           {String((t.input as { title: string }).title).slice(0, 60)}
         </span>
       )}
+
       {t.summary && !isRunning && (
         <span className="ml-auto font-mono text-[10px] text-muted-foreground">{t.summary}</span>
       )}
