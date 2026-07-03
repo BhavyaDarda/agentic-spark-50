@@ -15,10 +15,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/app")({
+  ssr: false,
   beforeLoad: async () => {
-    if (typeof window === "undefined") return;
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
       throw redirect({ to: "/auth" });
     }
   },
