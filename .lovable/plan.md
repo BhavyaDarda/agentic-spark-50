@@ -1,59 +1,63 @@
+# Enterprise UI Craft Pass
 
-## Scope: build-order steps 1–6
+Goal: move Marketing Agent from "working dark SaaS" to a distinctive, enterprise-grade product surface — no generic AI-slop gradients, no purple-on-black clichés. Take direction from Dribbble/Uiverse/21st.dev/shadcn/Referro references, but commit to one coherent visual language across every surface, these reference resources and sites have the resources we need, so pick what is the best from there.
 
-Steps 1–3 are already partially in place (Noir & Ember tokens, Tavily/Google/HIBP provisioned, migration for `conversations`/`messages`/`artifacts`/`audit_log`/`rate_limits`/`subscriptions` applied, `src/routes/api/chat.ts` scaffolded). This plan finishes them cleanly and delivers 4–6 end-to-end.
+## 1. Pin the taste (one question round)
 
-### 1. Lock design tokens (finalize)
-- Confirm Noir & Ember palette + Outfit/Figtree already written to `src/styles.css`; add JetBrains Mono via `@fontsource` for tool cards, `tabular-nums` utility, motion timings (120–180ms), and semantic tokens for `--tool`, `--reasoning`, `--artifact`, `--source-card`.
-- Extend shadcn variants (`button`, `badge`, `card`) with `ember` and `terminal` styles. No hardcoded colors anywhere.
+Ask three visual-preference questions in a single call so every downstream surface locks to the same tokens:
 
-### 2. Billing + secrets + auth hardening
-- Run `payments--enable_stripe_payments` (built-in Stripe, no BYOK).
-- Verify `TAVILY_API_KEY`, `LOVABLE_API_KEY`, Google OAuth, HIBP — all already present; no re-prompt.
-- Add `STRIPE_WEBHOOK_SECRET` via `add_secret` for `/api/public/webhooks/stripe`.
+1. **Palette** — 4 curated options tuned for enterprise/agentic products:
+  - Noir & Ember (current — dark charcoal + ember orange accent)
+  - Obsidian & Signal (near-black + electric cyan signal)
+  - Graphite & Sulfur (warm graphite + acid yellow)
+  - Ivory & Ink (light-mode: bone white + rich ink, Swiss)
+2. **Typography** — 4 pairings rendered in their real fonts:
+  - Instrument Serif + Inter (editorial + neutral UI)
+  - Space Grotesk + JetBrains Mono (product + technical accents)
+  - Sora + Manrope (crisp modern SaaS)
+  - Fraunces + Geist (expressive display + engineered body)
+3. **Density & motion register** — Compact / Comfortable / Spacious wireframe options, each hinting at motion intensity (subtle vs generous).
 
-### 3. Data model finalization
-- Migration audit: confirm RLS + GRANTs on all six new tables, add `match_documents` scoped to `workspace_id` (already present), add `artifacts.eval_score jsonb`, `messages.cost_usd numeric`, `conversations.title_generated bool`. Add `plan_limits` view.
-- Retire standalone `content_runs` writes from agent path; keep table for backfill/read.
+No fourth "vibe" question — the three picks encode it.
 
-### 4. Landing + auth + pricing (real content, dark-first)
-- Rewrite `src/routes/index.tsx`: hero with live agent-trace mock, "how it works" tri-panel (Research → Brand Kernel → Artifact), pricing (Free/Pro/Team), security strip, FAQ. Real copy — no "AI-powered" clichés, no purple gradients, no sparkles.
-- Per-route `head()` with unique title/description + og:image (generated hero) on the landing route only.
-- `src/routes/auth.tsx`: polish — Google (via `lovable.auth.signInWithOAuth`) + email/password, HIBP-aware error UX, redirect back to `/app` after session hydrates.
-- `src/routes/pricing.tsx` (new) linked to Stripe checkout server fn.
+## 2. Capture + run design directions on the two hero surfaces
 
-### 5. Chat-first app shell + artifact panel
-- Replace `/app` IA:
-  - `src/routes/app.tsx` becomes a 3-pane layout: collapsible sidebar (New chat, Recent, Brands chip nav, Artifacts, Settings, Usage meter), Conversation hero, Artifact side panel (Claude-style, resizable, slides in on artifact creation).
-  - `src/routes/app.index.tsx` → new-chat landing with `/commands` hint, `@brand` chip picker, drag-drop file grounding.
-  - `src/routes/app.c.$conversationId.tsx` → live conversation (AI Elements: `Conversation`, `Message`, `PromptInput`, `Tool`, `Shimmer`, `Response`). URL-driven thread routing, chat `id` = conversationId.
-  - Old `/app/brands|campaigns|content|research|research/$id` → convert to **filtered artifact views** (`app.artifacts.tsx`, `app.artifacts.$kind.tsx`) reachable from sidebar; keep brands as a lightweight settings pane, not top-level nav.
-- Streaming shimmer on active tool cards; source cards with favicon+title+snippet; per-message copy/regen/branch; keyboard shortcuts (⌘K palette, ⌘⏎ send, ⌘/ toggle sidebar).
-- Usage meter reads from `usage_counters` via server fn; no client trust.
+Before generating variants, use Playwright to capture the current `/` hero and `/app` (signed-in chat shell empty state). Attach those screenshots to two `design--create_directions` calls, locked to the picked palette/type/density:
 
-### 6. Marketing Agent orchestrator + tools
-- `src/routes/api/chat.ts` finalized as the sole chat endpoint. Server-only prompts, models, tool wiring. `streamText` + `toUIMessageStreamResponse({ originalMessages, sendReasoning: true, onFinish })`. `stopWhen(stepCountIs(50))` + per-tool budgets. `onFinish` persists assistant message, artifacts, cost, and eval score in one transaction.
-- Tools (all server-side, Zod-validated, rate-limited, workspace-scoped):
-  1. `brand_retrieve` — RAG over `documents` filtered by brand + workspace via `match_documents`.
-  2. `research` — Research Ninja pipeline as a single tool: Planner → Tavily search → Reader (fetch+clean+chunk+embed) → Synthesizer (cited md) → Critic (groundedness). Emits nested tool activity for the UI trace. DuckDuckGo scrape only as fallback if Tavily fails.
-  3. `generate_content` — blog/ad/social/email/script using brand kernel context.
-  4. `seo_analyze` — Semrush connector (already available) for keyword + SERP checks.
-  5. `generate_image` — Lovable AI image model, stored as artifact.
-  6. `save_artifact` — persist to `artifacts`, open panel client-side via stream part.
-- Judge model pass on every artifact (helpfulness 1–5, groundedness 0–1, citation coverage %) → `artifacts.eval_score`.
-- Server-side plan enforcement before each tool call; 429 with human message when exceeded.
-- Audit log write-through on: auth events (already), role change, billing webhook, and any run with cost > $0.25.
+- **Direction round A — Landing hero** (headline block + primary CTAs + trust strip). Three variants that differ in composition/hierarchy, not tokens.
+- **Direction round B — Chat shell** (sidebar + conversation + composer + artifact panel empty state). Three variants exploring composer placement, tool-card language, and artifact affordance.
 
-### Files touched (high level)
-- Edit: `src/styles.css`, `src/routes/__root.tsx`, `src/routes/index.tsx`, `src/routes/auth.tsx`, `src/routes/app.tsx`, `src/routes/app.index.tsx`, `src/routes/api/chat.ts`, `src/routes/api/stripe.webhook.ts`, `src/components/app-sidebar.tsx`, `src/start.ts`.
-- New: `src/routes/pricing.tsx`, `src/routes/app.c.$conversationId.tsx`, `src/routes/app.artifacts.tsx`, `src/routes/app.artifacts.$kind.tsx`, `src/components/agent/*` (artifact-panel, tool-card, source-card, usage-meter, command-palette), `src/lib/agent/tools/*.ts` (brand-retrieve, research, generate-content, seo, generate-image, save-artifact), `src/lib/agent/judge.server.ts`, `src/lib/billing.functions.ts`, `src/routes/api/public/webhooks/stripe.ts` (move from current path).
-- Migration for schema deltas + `plan_limits` view + audit triggers where safe.
-- Retire (route-only, keep files as redirects for one release): `app.brands.tsx`, `app.campaigns.tsx`, `app.content.tsx`, `app.research.index.tsx`, `app.research.$projectId.tsx`.
+Each round ends with an `ask_questions` type=prototype pick. Do not implement until the user chooses.
 
-### Out of scope (steps 7–12)
-RAG upload UI polish, deep Judge dashboards, Stripe billing portal deep-link, full audit-log viewer, security scan triage, and Playwright suite land in the next batch.
+## 3. Ship the chosen directions with real craft
 
-### Verification
-Typecheck + build must be green. Manual smoke: sign in → new chat → send prompt → research tool card streams → artifact panel opens → artifact appears in library → pricing → Stripe test checkout → webhook flips `subscriptions.status`.
+Once picks land, rebuild in this order — each step verified with Playwright screenshots before moving on:
 
-Approve and I'll execute in this order.
+1. **Design tokens** — Copy the winning palette values verbatim into `src/styles.css` `@theme inline` (oklch), add semantic aliases (`--surface-1/2/3`, `--stroke-subtle/strong`, `--accent-ember`, `--signal`, gradient + shadow tokens). Register fonts via `@fontsource-variable/*` package imports at the top of `styles.css` (never a remote URL `@import`).
+2. **Primitive refinement** — Extend shadcn variants used app-wide:
+  - Button: add `premium` (gradient + inset highlight), `ghost-strong`, `icon-sm` sizes.
+  - Card: add `elevated` and `bordered-inset` variants with layered shadow tokens.
+  - Input / PromptInput: refine focus ring (v4 `ring-3` + accent), floating label option.
+  - Badge: add `agent-status` variants (planner/searcher/reader/synth/critic) with distinct hues drawn from the palette.
+3. **Landing page** — Rebuild `src/routes/index.tsx` from direction A: real hero, agent-lineup section as a horizontal rail with animated status ticks, "How the loop works" diagram, security strip, pricing anchor, footer. Motion via `motion/react` — restrained, deliberate; no purple particle fields.
+4. **Chat shell** — Rebuild `src/routes/app.tsx` + `app.index.tsx` + `app.c.$conversationId.tsx` from direction B. Use AI Elements primitives (`Conversation`, `Message`, `MessageResponse`, `PromptInput`, `Shimmer`, `Tool`) as the foundation; customize around them (agent identity mark, tool-card language, citation chips, artifact slide-over). Replace the generic Sparkles identity mark with a generated Marketing Agent logo.
+5. **Auth + settings polish** — Match new tokens; add HIBP-enabled password field state, Google button that uses the Lovable broker, and clean two-column workspace/billing layout.
+6. **Empty states + loading** — Custom illustrations (SVG, on-brand) for empty chat / no artifacts / no brands / no research projects. Shimmer + skeleton use the new tokens.
+
+## 4. Verify
+
+- `bun run build:dev` clean.
+- Playwright pass: `/`, `/auth`, `/app` (signed in via injected Supabase session), `/app/c/<new>`, `/app/artifacts`, `/app/brands`, `/app/settings` — screenshots reviewed for contrast, spacing, and no console errors.
+- Fix the lingering SPA invariant (stale `/api/chat` route in browser after prior test) by ensuring in-app links only use typed `<Link>` to real routes; the API route should never be navigated to as a page.
+
+## Technical notes
+
+- Tailwind v4: tokens in `@theme` / `@theme inline`; custom utilities via `@utility`; no `tailwind.config.js`.
+- Fonts: `<link>` in `__root.tsx` head OR `@fontsource-variable/*` package import — never remote `@import` in `styles.css`.
+- No hardcoded color classes (`bg-black`, `text-white`) in components — every color routes through a semantic token.
+- Chat surfaces must keep the AI SDK message/tool/prompt-input contract intact while customizing visuals.
+- Auth-gated routes stay under the managed pattern; the `/app` layout already runs `ssr: false` with a real `getUser()` gate.
+
+## Deliverable
+
+A single coherent visual system applied across landing, auth, and the entire signed-in product, driven by user-picked palette/type/density and two rendered direction rounds — not by agent guesswork.
