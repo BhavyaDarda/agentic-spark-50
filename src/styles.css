@@ -21,12 +21,12 @@
 
 @theme inline {
   --font-sans:
-    "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", sans-serif;
+    "DM Sans Variable", "Figtree Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display:
-    "Outfit Variable", "Figtree Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    "Space Grotesk Variable", "Outfit Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:
     "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
