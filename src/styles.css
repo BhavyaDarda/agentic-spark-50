@@ -21,12 +21,12 @@
 
 @theme inline {
   --font-sans:
-    "Figtree Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", sans-serif;
+    "DM Sans Variable", "Figtree Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display:
-    "Outfit Variable", "Figtree Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    "Space Grotesk Variable", "Outfit Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:
     "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -118,46 +118,47 @@
 }
 
 .dark {
-  /* Noir & Ember — dark charcoal with warm off-white ink and a single ember accent. */
-  --background: oklch(0.155 0.008 55);           /* deep noir */
-  --foreground: oklch(0.955 0.012 75);           /* warm off-white */
-  --card: oklch(0.19 0.008 55);
-  --card-foreground: oklch(0.955 0.012 75);
-  --popover: oklch(0.185 0.01 55);
-  --popover-foreground: oklch(0.955 0.012 75);
-  --primary: oklch(0.72 0.185 45);               /* ember */
-  --primary-foreground: oklch(0.16 0.02 45);
-  --secondary: oklch(0.235 0.01 55);
-  --secondary-foreground: oklch(0.955 0.012 75);
-  --muted: oklch(0.22 0.008 55);
-  --muted-foreground: oklch(0.68 0.012 65);
-  --accent: oklch(0.28 0.04 45);                 /* dimmed ember for chips */
-  --accent-foreground: oklch(0.96 0.015 60);
+  /* Obsidian & Signal — near-black obsidian with an electric cyan signal accent. */
+  --background: oklch(0.13 0.005 260);
+  --foreground: oklch(0.96 0.003 250);
+  --card: oklch(0.17 0.005 260);
+  --card-foreground: oklch(0.96 0.003 250);
+  --popover: oklch(0.16 0.005 260);
+  --popover-foreground: oklch(0.96 0.003 250);
+  --primary: oklch(0.82 0.11 180);               /* signal cyan */
+  --primary-foreground: oklch(0.14 0.01 260);
+  --secondary: oklch(0.22 0.006 260);
+  --secondary-foreground: oklch(0.96 0.003 250);
+  --muted: oklch(0.2 0.005 260);
+  --muted-foreground: oklch(0.68 0.008 255);
+  --accent: oklch(0.28 0.04 190);
+  --accent-foreground: oklch(0.96 0.003 250);
   --destructive: oklch(0.66 0.22 22);
   --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.74 0.15 155);
-  --success-foreground: oklch(0.12 0.03 155);
+  --success: oklch(0.78 0.14 165);
+  --success-foreground: oklch(0.12 0.02 165);
   --warning: oklch(0.82 0.16 80);
   --warning-foreground: oklch(0.15 0.04 80);
-  --border: oklch(1 0 0 / 0.07);
+  --border: oklch(1 0 0 / 0.08);
   --input: oklch(1 0 0 / 0.09);
-  --ring: oklch(0.72 0.185 45 / 0.6);
+  --ring: oklch(0.82 0.11 180 / 0.6);
 
-  --chart-1: oklch(0.72 0.185 45);
-  --chart-2: oklch(0.7 0.14 195);
+  --chart-1: oklch(0.82 0.11 180);
+  --chart-2: oklch(0.7 0.14 235);
   --chart-3: oklch(0.75 0.15 155);
   --chart-4: oklch(0.82 0.16 80);
   --chart-5: oklch(0.66 0.22 15);
 
-  --sidebar: oklch(0.14 0.008 55);
-  --sidebar-foreground: oklch(0.9 0.012 70);
-  --sidebar-primary: oklch(0.72 0.185 45);
-  --sidebar-primary-foreground: oklch(0.16 0.02 45);
-  --sidebar-accent: oklch(0.21 0.01 55);
-  --sidebar-accent-foreground: oklch(0.955 0.012 75);
-  --sidebar-border: oklch(1 0 0 / 0.06);
-  --sidebar-ring: oklch(0.72 0.185 45 / 0.6);
+  --sidebar: oklch(0.11 0.005 260);
+  --sidebar-foreground: oklch(0.9 0.006 255);
+  --sidebar-primary: oklch(0.82 0.11 180);
+  --sidebar-primary-foreground: oklch(0.14 0.01 260);
+  --sidebar-accent: oklch(0.19 0.006 260);
+  --sidebar-accent-foreground: oklch(0.96 0.003 250);
+  --sidebar-border: oklch(1 0 0 / 0.07);
+  --sidebar-ring: oklch(0.82 0.11 180 / 0.6);
 }
+
 
 @layer base {
   * {
@@ -180,7 +181,7 @@
     letter-spacing: -0.02em;
   }
   ::selection {
-    background: oklch(0.72 0.185 45 / 0.35);
+    background: oklch(0.82 0.11 180 / 0.35);
     color: var(--color-foreground);
   }
 }
@@ -193,8 +194,8 @@
 
 @utility bg-ember-glow {
   background-image:
-    radial-gradient(60% 40% at 50% 0%, oklch(0.72 0.185 45 / 0.18), transparent 70%),
-    radial-gradient(50% 60% at 100% 100%, oklch(0.72 0.185 45 / 0.08), transparent 65%);
+    radial-gradient(60% 40% at 50% 0%, oklch(0.82 0.11 180 / 0.18), transparent 70%),
+    radial-gradient(50% 60% at 100% 100%, oklch(0.82 0.11 180 / 0.08), transparent 65%);
 }
 
 @utility bg-grid {
@@ -221,7 +222,7 @@
 }
 
 @utility ring-ember {
-  box-shadow: 0 0 0 1px var(--color-primary), 0 0 24px -4px oklch(0.72 0.185 45 / 0.5);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 0 24px -4px oklch(0.82 0.11 180 / 0.5);
 }
 
 @utility scrollbar-thin {
@@ -236,4 +237,62 @@
     border-radius: 4px;
   }
 }
+
+/* Liquid-glass surface — layered translucency with inner highlight + soft depth shadow. */
+@utility glass-surface {
+  background: linear-gradient(135deg, oklch(1 0 0 / 0.05) 0%, oklch(1 0 0 / 0.01) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  box-shadow:
+    inset 0 1px 1px oklch(1 0 0 / 0.10),
+    0 20px 50px oklch(0 0 0 / 0.30);
+}
+
+@utility scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    oklch(0.82 0.11 180 / 0.03) 3px
+  );
+  background-size: 100% 4px;
+}
+
+@utility signal-drift-a {
+  background: oklch(0.82 0.11 180 / 0.10);
+  filter: blur(120px);
+  border-radius: 9999px;
+  animation: drift 15s infinite ease-in-out;
+}
+
+@utility signal-drift-b {
+  background: oklch(0.18 0.005 260 / 0.6);
+  filter: blur(120px);
+  border-radius: 9999px;
+  animation: drift 20s infinite ease-in-out reverse;
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(4%, 6%) scale(1.1); }
+  66%  { transform: translate(-3%, 4%) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes signal-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+@keyframes signal-stream {
+  0%   { transform: translateX(0); opacity: 0.4; }
+  50%  { opacity: 1; }
+  100% { transform: translateX(6px); opacity: 0.4; }
+}
+
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
 
