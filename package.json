@@ -14,9 +14,11 @@
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.1",
     "@ai-sdk/react": "^4.0.5",
+    "@fontsource-variable/dm-sans": "^5.2.8",
     "@fontsource-variable/figtree": "^5.2.10",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
     "@fontsource-variable/outfit": "^5.2.8",
+    "@fontsource-variable/space-grotesk": "^5.2.10",
     "@hookform/resolvers": "^5.2.2",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@radix-ui/react-accordion": "^1.2.12",
