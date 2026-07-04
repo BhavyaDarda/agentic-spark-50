@@ -181,7 +181,7 @@
     letter-spacing: -0.02em;
   }
   ::selection {
-    background: oklch(0.72 0.185 45 / 0.35);
+    background: oklch(0.82 0.11 180 / 0.35);
     color: var(--color-foreground);
   }
 }
@@ -194,8 +194,8 @@
 
 @utility bg-ember-glow {
   background-image:
-    radial-gradient(60% 40% at 50% 0%, oklch(0.72 0.185 45 / 0.18), transparent 70%),
-    radial-gradient(50% 60% at 100% 100%, oklch(0.72 0.185 45 / 0.08), transparent 65%);
+    radial-gradient(60% 40% at 50% 0%, oklch(0.82 0.11 180 / 0.18), transparent 70%),
+    radial-gradient(50% 60% at 100% 100%, oklch(0.82 0.11 180 / 0.08), transparent 65%);
 }
 
 @utility bg-grid {
@@ -222,7 +222,7 @@
 }
 
 @utility ring-ember {
-  box-shadow: 0 0 0 1px var(--color-primary), 0 0 24px -4px oklch(0.72 0.185 45 / 0.5);
+  box-shadow: 0 0 0 1px var(--color-primary), 0 0 24px -4px oklch(0.82 0.11 180 / 0.5);
 }
 
 @utility scrollbar-thin {
@@ -237,4 +237,62 @@
     border-radius: 4px;
   }
 }
+
+/* Liquid-glass surface — layered translucency with inner highlight + soft depth shadow. */
+@utility glass-surface {
+  background: linear-gradient(135deg, oklch(1 0 0 / 0.05) 0%, oklch(1 0 0 / 0.01) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  box-shadow:
+    inset 0 1px 1px oklch(1 0 0 / 0.10),
+    0 20px 50px oklch(0 0 0 / 0.30);
+}
+
+@utility scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    oklch(0.82 0.11 180 / 0.03) 3px
+  );
+  background-size: 100% 4px;
+}
+
+@utility signal-drift-a {
+  background: oklch(0.82 0.11 180 / 0.10);
+  filter: blur(120px);
+  border-radius: 9999px;
+  animation: drift 15s infinite ease-in-out;
+}
+
+@utility signal-drift-b {
+  background: oklch(0.18 0.005 260 / 0.6);
+  filter: blur(120px);
+  border-radius: 9999px;
+  animation: drift 20s infinite ease-in-out reverse;
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(4%, 6%) scale(1.1); }
+  66%  { transform: translate(-3%, 4%) scale(0.95); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes signal-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+@keyframes signal-stream {
+  0%   { transform: translateX(0); opacity: 0.4; }
+  50%  { opacity: 1; }
+  100% { transform: translateX(6px); opacity: 0.4; }
+}
+
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
 
