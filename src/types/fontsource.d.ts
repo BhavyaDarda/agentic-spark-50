@@ -3,3 +3,4 @@
 declare module "@fontsource-variable/outfit";
 declare module "@fontsource-variable/figtree";
 declare module "@fontsource-variable/jetbrains-mono";
+declare module "@fontsource/instrument-serif";
