@@ -1,4 +1,5 @@
-import { useEffect, useRef, type ReactNode } from "react";
+import { createElement, useEffect, useRef, type ReactNode } from "react";
+
 
 /**
  * Masked line-by-line reveal. Splits into words to keep it dependency-free
@@ -49,32 +50,29 @@ export function RevealText({
   const text = typeof children === "string" ? children : "";
   const parts = text ? text.split(" ") : [];
 
-  return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    <Tag
-      ref={ref as never}
-      className={className}
-      style={{ display: "inline-block" }}
-    >
-      {parts.length
-        ? parts.map((w, i) => (
-            <span
-              key={i}
-              style={{
-                display: "inline-block",
-                overflow: "hidden",
-                verticalAlign: "bottom",
-                paddingBottom: "0.12em",
-                marginBottom: "-0.12em",
-              }}
-            >
-              <span data-w style={{ display: "inline-block", willChange: "transform" }}>
-                {w}
-                {i < parts.length - 1 ? "\u00A0" : ""}
-              </span>
-            </span>
-          ))
-        : children}
-    </Tag>
+  const content = parts.length
+    ? parts.map((w, i) => (
+        <span
+          key={i}
+          style={{
+            display: "inline-block",
+            overflow: "hidden",
+            verticalAlign: "bottom",
+            paddingBottom: "0.12em",
+            marginBottom: "-0.12em",
+          }}
+        >
+          <span data-w style={{ display: "inline-block", willChange: "transform" }}>
+            {w}
+            {i < parts.length - 1 ? "\u00A0" : ""}
+          </span>
+        </span>
+      ))
+    : children;
+
+  return createElement(
+    Tag,
+    { ref, className, style: { display: "inline-block" } },
+    content,
   );
 }
