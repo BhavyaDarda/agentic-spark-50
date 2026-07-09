@@ -24,6 +24,8 @@
     "DM Sans Variable", "Figtree Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-display:
     "Space Grotesk Variable", "Outfit Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif:
+    "Instrument Serif", ui-serif, Georgia, serif;
   --font-mono:
     "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 

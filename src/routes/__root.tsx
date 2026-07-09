@@ -15,6 +15,7 @@ import "@fontsource-variable/dm-sans/index.css";
 import "@fontsource-variable/outfit";
 import "@fontsource-variable/figtree";
 import "@fontsource-variable/jetbrains-mono";
+import "@fontsource/instrument-serif";
 
 
 
