@@ -117,7 +117,16 @@ export const updateCampaign = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      name?: string;
+      objective?: string | null;
+      channels?: string[];
+      start_date?: string | null;
+      end_date?: string | null;
+      budget?: number | null;
+      status?: string;
+      brand_id?: string | null;
+    } = {};
     if (data.name !== undefined) patch.name = data.name;
     if (data.objective !== undefined) patch.objective = data.objective;
     if (data.channels !== undefined) patch.channels = data.channels;
@@ -128,6 +137,7 @@ export const updateCampaign = createServerFn({ method: "POST" })
     if (data.brandId !== undefined) patch.brand_id = data.brandId;
 
     const { error } = await context.supabase.from("campaigns").update(patch).eq("id", data.id);
+
     if (error) throw new Error(error.message);
     return { ok: true };
   });
