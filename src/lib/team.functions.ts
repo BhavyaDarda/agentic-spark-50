@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
 
 const WorkspaceId = z.object({ workspaceId: z.string().uuid() });
 const Role = z.enum(["owner", "admin", "member"]);
 
 /** Throws unless the caller is owner/admin of the workspace. */
 async function requireAdmin(
-  supabase: Parameters<typeof z.any>[0] extends never ? never : any,
+  supabase: SupabaseClient<Database>,
   workspaceId: string,
   userId: string,
 ) {
@@ -22,6 +24,7 @@ async function requireAdmin(
   }
   return role;
 }
+
 
 export const listTeam = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
