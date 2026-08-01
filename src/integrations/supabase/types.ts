@@ -461,6 +461,62 @@ export type Database = {
           },
         ]
       }
+      mcp_connections: {
+        Row: {
+          auth_url: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          name: string
+          oauth_ciphertext: string | null
+          state: string
+          tool_count: number
+          transport: string
+          updated_at: string
+          url: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          auth_url?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          name: string
+          oauth_ciphertext?: string | null
+          state?: string
+          tool_count?: number
+          transport?: string
+          updated_at?: string
+          url: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          auth_url?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          name?: string
+          oauth_ciphertext?: string | null
+          state?: string
+          tool_count?: number
+          transport?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_connections_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           ai_sdk_message_id: string | null
@@ -1040,6 +1096,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_workspace_invite: { Args: { _token: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1063,6 +1120,17 @@ export type Database = {
           similarity: number
           source_url: string
           title: string
+        }[]
+      }
+      peek_workspace_invite: {
+        Args: { _token: string }
+        Returns: {
+          accepted: boolean
+          email: string
+          expired: boolean
+          role: Database["public"]["Enums"]["workspace_role"]
+          workspace_id: string
+          workspace_name: string
         }[]
       }
       workspace_role_of: {

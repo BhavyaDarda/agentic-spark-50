@@ -68,3 +68,21 @@ export const renameWorkspace = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** Plan, quotas and current-period usage for the workspace. */
+export const getUsage = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ workspaceId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: isMember, error } = await context.supabase.rpc("is_workspace_member", {
+      _workspace_id: data.workspaceId,
+      _user_id: context.userId,
+    });
+    if (error) throw new Error(error.message);
+    if (!isMember) throw new Error("Not a member of this workspace.");
+
+    const { usageSnapshot, periodResetsAt } = await import("./limits.server");
+    const snap = await usageSnapshot(data.workspaceId);
+    return { ...snap, resetsAt: periodResetsAt() };
+  });
+

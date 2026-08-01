@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.peek_workspace_invite(text) FROM anon;
