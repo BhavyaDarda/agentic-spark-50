@@ -82,6 +82,7 @@ function SettingsPage() {
           <TabsTrigger value="team">Team</TabsTrigger>
           <TabsTrigger value="usage">Usage</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
         </TabsList>
 
         <TabsContent value="workspace">
@@ -95,6 +96,9 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="billing">
           <BillingTab />
+        </TabsContent>
+        <TabsContent value="integrations">
+          <McpTab workspaceId={workspaceId} />
         </TabsContent>
       </Tabs>
     </div>
