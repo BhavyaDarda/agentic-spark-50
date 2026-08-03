@@ -8,6 +8,10 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { assertCapacity } from "./limits.server";
 import { createMCPClient } from "@ai-sdk/mcp";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+export type SupabaseClient = ReturnType<typeof createClient<Database>>;
 
 const ConnectionInput = z.object({
   workspaceId: z.string().uuid(),
@@ -107,10 +111,7 @@ export const deleteMcpConnection = createServerFn({ method: "POST" })
 /** Load ready MCP tools for a workspace. Returns an object keyed by a
  *  namespaced tool name to avoid collisions between multiple servers or the
  *  app's own tools. */
-export async function loadMcpToolsForWorkspace(
-  workspaceId: string,
-  sb: ReturnType<typeof import("@supabase/supabase-js").createClient>,
-) {
+export async function loadMcpToolsForWorkspace(workspaceId: string, sb: SupabaseClient) {
   const { data: rows, error } = await sb
     .from("mcp_connections")
     .select("id, name, url, transport, oauth_ciphertext, tool_count")
