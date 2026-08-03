@@ -264,6 +264,7 @@ export const Route = createFileRoute("/api/chat")({
               }
             };
 
+            let mcpCleanup = async () => {};
             try {
               const assistantMsgId = crypto.randomUUID();
               write({ type: "message_start", id: assistantMsgId });
