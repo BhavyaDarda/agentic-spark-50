@@ -37,6 +37,7 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { createLovableAiGatewayProvider, getLovableApiKey, embed } from "@/lib/ai-gateway.server";
 import { consumeRateLimit, auditLog, clientIp } from "@/lib/security.server";
+import { loadMcpToolsForWorkspace } from "@/lib/mcp.functions";
 
 // -------------------------------- Types --------------------------------
 
