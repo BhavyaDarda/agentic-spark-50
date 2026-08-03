@@ -108,18 +108,19 @@ export const deleteMcpConnection = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** Load ready MCP tools for a workspace. Returns an object keyed by a
- *  namespaced tool name to avoid collisions between multiple servers or the
- *  app's own tools. */
+/** Load ready MCP tools for a workspace. Returns the merged tools and a cleanup
+ *  function that must be called after the model turn finishes to close the
+ *  underlying MCP clients. */
 export async function loadMcpToolsForWorkspace(workspaceId: string, sb: SupabaseClient) {
   const { data: rows, error } = await sb
     .from("mcp_connections")
     .select("id, name, url, transport, oauth_ciphertext, tool_count")
     .eq("workspace_id", workspaceId)
     .eq("state", "ready");
-  if (error || !rows || rows.length === 0) return {};
+  if (error || !rows || rows.length === 0) return { tools: {}, cleanup: async () => {} };
 
   const allTools: Record<string, unknown> = {};
+  const clients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
 
   for (const row of rows) {
     const headers: Record<string, string> = {};
@@ -133,18 +134,19 @@ export async function loadMcpToolsForWorkspace(workspaceId: string, sb: Supabase
         redirect: "error",
       },
     });
+    clients.push(client);
 
-    try {
-      const tools = await client.tools();
-      const safeName = (row.name || "server").toLowerCase().replace(/[^a-z0-9]+/g, "_");
-      for (const [toolName, toolDef] of Object.entries(tools)) {
-        const namespaced = `${safeName}_${toolName}`;
-        allTools[namespaced] = toolDef;
-      }
-    } finally {
-      await client.close().catch(() => {});
+    const tools = await client.tools();
+    const safeName = (row.name || "server").toLowerCase().replace(/[^a-z0-9]+/g, "_");
+    for (const [toolName, toolDef] of Object.entries(tools)) {
+      const namespaced = `${safeName}_${toolName}`;
+      allTools[namespaced] = toolDef;
     }
   }
 
-  return allTools;
+  const cleanup = async () => {
+    await Promise.all(clients.map((c) => c.close().catch(() => {})));
+  };
+
+  return { tools: allTools, cleanup };
 }
