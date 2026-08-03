@@ -37,6 +37,7 @@ import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { createLovableAiGatewayProvider, getLovableApiKey, embed } from "@/lib/ai-gateway.server";
 import { consumeRateLimit, auditLog, clientIp } from "@/lib/security.server";
+import { loadMcpToolsForWorkspace } from "@/lib/mcp.functions";
 
 // -------------------------------- Types --------------------------------
 
@@ -263,6 +264,7 @@ export const Route = createFileRoute("/api/chat")({
               }
             };
 
+            let mcpCleanup = async () => {};
             try {
               const assistantMsgId = crypto.randomUUID();
               write({ type: "message_start", id: assistantMsgId });
@@ -428,6 +430,11 @@ export const Route = createFileRoute("/api/chat")({
                 delete (tools as Record<string, unknown>).fetch_page;
               }
 
+              // Load any connected MCP tool servers for this workspace.
+              const { tools: mcpTools, cleanup } = await loadMcpToolsForWorkspace(workspaceId, sb);
+              mcpCleanup = cleanup;
+              Object.assign(tools, mcpTools);
+
               write({ type: "agent", name: "Orchestrator", status: "start" });
 
               const modelMessages = await convertToModelMessages(uiMessages);
@@ -447,6 +454,8 @@ export const Route = createFileRoute("/api/chat")({
                 emitted.text += delta;
                 write({ type: "text_delta", delta });
               }
+
+              await mcpCleanup();
 
               const usage = await Promise.resolve(result.usage).catch(() => undefined);
               write({ type: "agent", name: "Orchestrator", status: "end" });
@@ -496,6 +505,7 @@ export const Route = createFileRoute("/api/chat")({
 
               controller.close();
             } catch (e) {
+              await mcpCleanup().catch(() => {});
               const message = e instanceof Error ? e.message : String(e);
               try {
                 controller.enqueue(

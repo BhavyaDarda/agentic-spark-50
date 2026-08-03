@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useEffect } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { SignalShader } from "@/components/fx/SignalShader";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
+  next: z.string().optional(),
 });
 
 export const Route = createFileRoute("/auth")({
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/auth")({
     ],
   }),
   validateSearch: searchSchema,
+  ssr: false,
   component: AuthPage,
 });
 
@@ -42,12 +44,29 @@ function Glyph() {
 }
 
 function AuthPage() {
-  const { mode = "signin" } = useSearch({ from: "/auth" });
+  const { mode = "signin", next } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
   const [tab, setTab] = useState<"signin" | "signup">(mode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // If the user is already signed in, send them onward immediately.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        navigate({ to: next || "/app", replace: true });
+      }
+    });
+  }, [next, navigate]);
+
+  const afterAuth = () => {
+    if (next) {
+      window.location.href = next;
+    } else {
+      navigate({ to: "/app" });
+    }
+  };
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -57,7 +76,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back");
-        navigate({ to: "/app" });
+        afterAuth();
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -66,7 +85,7 @@ function AuthPage() {
         });
         if (error) throw error;
         toast.success("Account created — signing you in…");
-        navigate({ to: "/app" });
+        afterAuth();
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Authentication failed";
@@ -79,9 +98,12 @@ function AuthPage() {
   const oauth = async () => {
     setBusy(true);
     try {
+      const redirectTo = next
+        ? `${window.location.origin}/auth?next=${encodeURIComponent(next)}`
+        : `${window.location.origin}/app`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: `${window.location.origin}/app` },
+        options: { redirectTo },
       });
       if (error) throw error;
     } catch (err) {

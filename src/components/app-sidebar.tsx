@@ -9,6 +9,10 @@ import {
   MessageSquare,
   Loader2,
   Search,
+  Megaphone,
+  Microscope,
+  PenTool,
+  BrainCircuit,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
@@ -123,10 +127,23 @@ export function AppSidebar() {
       </div>
 
       <nav className="border-t border-border/60 p-2">
+        <SidebarLink to="/app/campaigns" icon={Megaphone} label="Campaigns" />
+        <SidebarLink to="/app/content" icon={PenTool} label="Content Studio" />
+        <SidebarLink to="/app/research" icon={Microscope} label="Research Ninja" />
         <SidebarLink to="/app/artifacts" icon={Library} label="Artifact Library" />
         <SidebarLink to="/app/brands" icon={Building2} label="Brands" />
         <SidebarLink to="/app/settings" icon={SettingsIcon} label="Settings" />
       </nav>
+
+      <div className="border-t border-border/60 p-3">
+        <Link
+          to="/app"
+          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <BrainCircuit className="h-3.5 w-3.5" />
+          New agent chat
+        </Link>
+      </div>
 
       <div className="border-t border-border/60 p-3 text-[10px] text-muted-foreground">
         <div className="font-mono uppercase tracking-widest">
