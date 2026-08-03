@@ -9,6 +9,7 @@ import {
   changeMemberRole,
   removeMember,
 } from "@/lib/team.functions";
+import { listMcpConnections, createMcpConnection, deleteMcpConnection } from "@/lib/mcp.functions";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
