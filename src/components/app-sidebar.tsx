@@ -9,6 +9,10 @@ import {
   MessageSquare,
   Loader2,
   Search,
+  Megaphone,
+  Microscope,
+  PenTool,
+  BrainCircuit,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
