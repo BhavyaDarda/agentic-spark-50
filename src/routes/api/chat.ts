@@ -456,6 +456,8 @@ export const Route = createFileRoute("/api/chat")({
                 write({ type: "text_delta", delta });
               }
 
+              await mcpCleanup();
+
               const usage = await Promise.resolve(result.usage).catch(() => undefined);
               write({ type: "agent", name: "Orchestrator", status: "end" });
               write({
