@@ -505,6 +505,7 @@ export const Route = createFileRoute("/api/chat")({
 
               controller.close();
             } catch (e) {
+              await mcpCleanup().catch(() => {});
               const message = e instanceof Error ? e.message : String(e);
               try {
                 controller.enqueue(
