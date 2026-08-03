@@ -51,6 +51,10 @@ import {
   Crown,
   Copy,
   Mail,
+  Plug,
+  Server,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
