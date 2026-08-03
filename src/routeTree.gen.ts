@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
@@ -44,6 +45,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/app/': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/app': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
@@ -146,6 +154,7 @@ export interface FileRoutesById {
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
   '/app/settings': typeof AppSettingsRoute
+  '/invite/$token': typeof InviteTokenRoute
   '/app/': typeof AppIndexRoute
   '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
+    | '/invite/$token'
     | '/app/'
     | '/api/stripe/webhook'
     | '/app/c/$conversationId'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
+    | '/invite/$token'
     | '/app'
     | '/api/stripe/webhook'
     | '/app/c/$conversationId'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/app/campaigns'
     | '/app/content'
     | '/app/settings'
+    | '/invite/$token'
     | '/app/'
     | '/api/stripe/webhook'
     | '/app/c/$conversationId'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiResearchRoute: typeof ApiResearchRoute
+  InviteTokenRoute: typeof InviteTokenRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
@@ -243,6 +256,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/settings': {
       id: '/app/settings'
@@ -356,6 +376,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiChatRoute: ApiChatRoute,
   ApiResearchRoute: ApiResearchRoute,
+  InviteTokenRoute: InviteTokenRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
