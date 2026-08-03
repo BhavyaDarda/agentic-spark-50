@@ -136,12 +136,14 @@ export async function loadMcpToolsForWorkspace(workspaceId: string, sb: Supabase
     });
     clients.push(client);
 
-    const tools = await client.tools();
-    const safeName = (row.name || "server").toLowerCase().replace(/[^a-z0-9]+/g, "_");
-    for (const [toolName, toolDef] of Object.entries(tools)) {
-      const namespaced = `${safeName}_${toolName}`;
-      allTools[namespaced] = toolDef;
-    }
+      const tools = await client.tools();
+      const safeName = (row.name || "server").toLowerCase().replace(/[^a-z0-9]+/g, "_");
+      for (const [toolName, toolDef] of Object.entries(tools)) {
+        // Prefix with `mcp_` and namespace by connection name to avoid collisions
+        // with the app's own tools or other MCP servers.
+        const namespaced = `mcp_${safeName}_${toolName}`;
+        allTools[namespaced] = toolDef;
+      }
   }
 
   const cleanup = async () => {
