@@ -429,6 +429,13 @@ export const Route = createFileRoute("/api/chat")({
                 delete (tools as Record<string, unknown>).fetch_page;
               }
 
+              // Load any connected MCP tool servers for this workspace.
+              const { tools: mcpTools, cleanup: mcpCleanup } = await loadMcpToolsForWorkspace(
+                workspaceId,
+                sb,
+              );
+              Object.assign(tools, mcpTools);
+
               write({ type: "agent", name: "Orchestrator", status: "start" });
 
               const modelMessages = await convertToModelMessages(uiMessages);
