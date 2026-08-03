@@ -557,3 +557,188 @@ function BillingTab() {
     </Card>
   );
 }
+
+function McpTab({ workspaceId }: { workspaceId?: string }) {
+  const qc = useQueryClient();
+  const connections = useQuery({
+    queryKey: ["mcp-connections", workspaceId],
+    queryFn: () => listMcpConnections({ data: { workspaceId: workspaceId! } }),
+    enabled: !!workspaceId,
+  });
+
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const [transport, setTransport] = useState<"http" | "sse">("http");
+  const [apiKey, setApiKey] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const add = useMutation({
+    mutationFn: () =>
+      createMcpConnection({
+        data: {
+          workspaceId: workspaceId!,
+          name,
+          url,
+          transport,
+          apiKey: apiKey || undefined,
+        },
+      }),
+    onSuccess: () => {
+      toast.success("MCP server connected");
+      setName("");
+      setUrl("");
+      setApiKey("");
+      setOpen(false);
+      qc.invalidateQueries({ queryKey: ["mcp-connections", workspaceId] });
+      qc.invalidateQueries({ queryKey: ["usage", workspaceId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: (id: string) => deleteMcpConnection({ data: { workspaceId: workspaceId!, id } }),
+    onSuccess: () => {
+      toast.success("Connection removed");
+      qc.invalidateQueries({ queryKey: ["mcp-connections", workspaceId] });
+      qc.invalidateQueries({ queryKey: ["usage", workspaceId] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">
+          <Plug className="h-4 w-4" />
+          MCP integrations
+        </CardTitle>
+        <CardDescription>
+          Connect external tool servers via the Model Context Protocol. Their tools become available
+          to your agent in chat.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline">Connect MCP server</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Connect MCP server</DialogTitle>
+              <DialogDescription>
+                Enter the public URL of an HTTP or SSE MCP server. The server will be probed and its
+                tools registered.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="space-y-1.5">
+                <Label>Name</Label>
+                <Input
+                  placeholder="e.g. Company CRM"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>URL</Label>
+                <Input
+                  placeholder="https://api.example.com/mcp"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Transport</Label>
+                <Select value={transport} onValueChange={(v) => setTransport(v as "http" | "sse")}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="http">HTTP (streamable)</SelectItem>
+                    <SelectItem value="sse">SSE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>API key (optional)</Label>
+                <Input
+                  type="password"
+                  placeholder="Bearer token if required by the server"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={() => add.mutate()}
+                disabled={
+                  !name.trim() || !url.trim() || add.isPending || !workspaceId
+                }
+              >
+                {add.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Connect
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {connections.isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="h-16 animate-pulse rounded bg-muted" />
+            ))}
+          </div>
+        ) : connections.data?.items.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+            No MCP servers connected yet.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {connections.data?.items.map((conn) => (
+              <div
+                key={conn.id}
+                className="flex items-center justify-between rounded-lg border border-border/60 bg-card/40 p-4"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Server className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <div className="font-medium">{conn.name}</div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-mono uppercase">{conn.transport}</span>
+                      <span>·</span>
+                      <span>{conn.tool_count} tool{conn.tool_count !== 1 ? "s" : ""}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {conn.state === "ready" ? (
+                    <Badge variant="default" className="gap-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Ready
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="gap-1">
+                      <XCircle className="h-3 w-3" />
+                      Failed
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => remove.mutate(conn.id)}
+                    disabled={remove.isPending}
+                  >
+                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
