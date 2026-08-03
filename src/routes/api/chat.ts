@@ -431,10 +431,8 @@ export const Route = createFileRoute("/api/chat")({
               }
 
               // Load any connected MCP tool servers for this workspace.
-              const { tools: mcpTools, cleanup: mcpCleanup } = await loadMcpToolsForWorkspace(
-                workspaceId,
-                sb,
-              );
+              const { tools: mcpTools, cleanup } = await loadMcpToolsForWorkspace(workspaceId, sb);
+              mcpCleanup = cleanup;
               Object.assign(tools, mcpTools);
 
               write({ type: "agent", name: "Orchestrator", status: "start" });
