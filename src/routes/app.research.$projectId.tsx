@@ -189,10 +189,11 @@ function ResearchDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={share}>
+          <Button variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 className="mr-1 h-4 w-4" />
-            {p.is_public ? "Disable share" : "Share"}
+            Share
           </Button>
+
           <Button onClick={start} disabled={streaming}>
             {streaming ? (
               <Loader2 className="mr-1 h-4 w-4 animate-spin" />
