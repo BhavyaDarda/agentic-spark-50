@@ -202,7 +202,79 @@ function ResearchDetail() {
             )}
             {streaming ? "Running…" : "Run agents"}
           </Button>
-        </div>
+      </div>
+
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share this research</DialogTitle>
+            <DialogDescription>
+              Publishing creates a public, read-only page with the latest completed report. Agent
+              traces, workspace data, and drafts are never included.
+            </DialogDescription>
+          </DialogHeader>
+
+          {p.is_public && p.share_slug ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <Globe className="h-3.5 w-3.5" /> Live at the link below
+              </div>
+              <div className="flex gap-2">
+                <Input readOnly value={shareUrl ?? ""} onFocus={(e) => e.currentTarget.select()} />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Copy link"
+                  onClick={() => {
+                    if (!shareUrl) return;
+                    navigator.clipboard.writeText(shareUrl);
+                    toast.success("Link copied");
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" aria-label="Open link" asChild>
+                  <a href={shareUrl ?? "#"} target="_blank" rel="noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              This project is private. Publish it to get a shareable link.
+            </p>
+          )}
+
+          <DialogFooter>
+            {p.is_public ? (
+              <Button variant="outline" disabled={sharePending} onClick={() => setSharing(false)}>
+                {sharePending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <EyeOff className="mr-2 h-4 w-4" />
+                )}
+                Unpublish
+              </Button>
+            ) : (
+              <Button
+                disabled={sharePending}
+                onClick={async () => {
+                  await setSharing(true);
+                }}
+              >
+                {sharePending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Globe className="mr-2 h-4 w-4" />
+                )}
+                Publish report
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       </div>
 
       {/* Past runs */}
