@@ -128,19 +128,22 @@ function ResearchDetail() {
     }
   };
 
-  const share = async () => {
-    if (!proj.data) return;
-    const next = !proj.data.project.is_public;
-    const r = await toggleSharing({ data: { id: projectId, is_public: next } });
-    qc.invalidateQueries({ queryKey: ["research-project", projectId] });
-    if (next && r.slug) {
-      const url = `${window.location.origin}/r/${r.slug}`;
-      navigator.clipboard.writeText(url);
-      toast.success("Public link copied");
-    } else {
-      toast.success("Sharing disabled");
+  const [shareOpen, setShareOpen] = useState(false);
+  const [sharePending, setSharePending] = useState(false);
+
+  const setSharing = async (next: boolean) => {
+    setSharePending(true);
+    try {
+      await toggleSharing({ data: { id: projectId, is_public: next } });
+      await qc.invalidateQueries({ queryKey: ["research-project", projectId] });
+      toast.success(next ? "Report published" : "Sharing disabled");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSharePending(false);
     }
   };
+
 
   if (proj.isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!proj.data) return <div className="text-sm text-muted-foreground">Not found.</div>;
