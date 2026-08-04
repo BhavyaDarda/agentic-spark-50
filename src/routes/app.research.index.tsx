@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Microscope, ArrowRight, Loader2 } from "lucide-react";
+import { Plus, Microscope, ArrowRight, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/research/")({
