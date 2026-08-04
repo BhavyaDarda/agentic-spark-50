@@ -9,9 +9,13 @@ import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params, loaderData }) => {
-    const project = loaderData && !("notFound" in loaderData) ? loaderData.project : null;
-    const summary =
-      loaderData && !("notFound" in loaderData) ? (loaderData.run?.summary ?? null) : null;
+    const data = loaderData as
+      | { notFound: true }
+      | { project: { topic: string; goal: string | null }; run: { summary: string | null } | null }
+      | undefined;
+    const project = data && !("notFound" in data) ? data.project : null;
+    const summary = data && !("notFound" in data) ? (data.run?.summary ?? null) : null;
+
     const title = project
       ? `${project.topic} · Research report`
       : "Shared research · Marketing Agent";
