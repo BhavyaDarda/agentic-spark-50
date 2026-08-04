@@ -8,8 +8,32 @@ import { ArrowLeft, ExternalLink, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/r/$slug")({
-  head: () => ({ meta: [{ title: "Shared research · Marketing Agent" }] }),
+  head: ({ params, loaderData }) => {
+    const project = loaderData && !("notFound" in loaderData) ? loaderData.project : null;
+    const summary =
+      loaderData && !("notFound" in loaderData) ? (loaderData.run?.summary ?? null) : null;
+    const title = project
+      ? `${project.topic} · Research report`
+      : "Shared research · Marketing Agent";
+    const description =
+      summary?.slice(0, 155) ??
+      project?.goal?.slice(0, 155) ??
+      "A cited, multi-agent research report shared from Marketing Agent.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: `/r/${params.slug}` },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: `/r/${params.slug}` }],
+    };
+  },
   component: SharedResearchPage,
+
   // Public share: no auth required. The loader runs server-side and uses a
   // publishable-key client so RLS policies for anon/public rows apply.
   loader: async ({ params }) => {
