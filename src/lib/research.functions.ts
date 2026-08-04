@@ -92,14 +92,26 @@ export const toggleSharing = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid(), is_public: z.boolean() }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    let slug: string | null = null;
-    if (data.is_public) {
+    // Reuse any previously issued slug so links shared earlier keep working
+    // after a private → public round trip.
+    const { data: existing, error: readErr } = await context.supabase
+      .from("research_projects")
+      .select("share_slug")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+    if (!existing) throw new Error("Project not found");
+
+    let slug: string | null = existing.share_slug;
+    if (data.is_public && !slug) {
       slug = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
     }
+
     const { error } = await context.supabase
       .from("research_projects")
-      .update({ is_public: data.is_public, share_slug: data.is_public ? slug : null })
+      .update({ is_public: data.is_public, share_slug: slug })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true, slug };
   });
+

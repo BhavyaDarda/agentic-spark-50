@@ -8,8 +8,36 @@ import { ArrowLeft, ExternalLink, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/r/$slug")({
-  head: () => ({ meta: [{ title: "Shared research · Marketing Agent" }] }),
+  head: ({ params, loaderData }) => {
+    const data = loaderData as
+      | { notFound: true }
+      | { project: { topic: string; goal: string | null }; run: { summary: string | null } | null }
+      | undefined;
+    const project = data && !("notFound" in data) ? data.project : null;
+    const summary = data && !("notFound" in data) ? (data.run?.summary ?? null) : null;
+
+    const title = project
+      ? `${project.topic} · Research report`
+      : "Shared research · Marketing Agent";
+    const description =
+      summary?.slice(0, 155) ??
+      project?.goal?.slice(0, 155) ??
+      "A cited, multi-agent research report shared from Marketing Agent.";
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: `/r/${params.slug}` },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: `/r/${params.slug}` }],
+    };
+  },
   component: SharedResearchPage,
+
   // Public share: no auth required. The loader runs server-side and uses a
   // publishable-key client so RLS policies for anon/public rows apply.
   loader: async ({ params }) => {
@@ -146,6 +174,20 @@ function SharedResearchPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Sponsor slot — public report pages only. Never rendered inside the
+            report body, never inside the signed-in app, no third-party scripts.
+            Server-selected sponsors land here in the ad-funded phase. */}
+        <aside
+          data-slot="sponsor"
+          className="mt-6 rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground"
+        >
+          <span className="mr-2 rounded bg-muted px-1.5 py-0.5 font-mono uppercase tracking-wider">
+            sponsor
+          </span>
+          This report is free because one clearly labeled sponsor sits here — never inside the
+          findings.
+        </aside>
 
         <div className="mt-8 flex justify-center">
           <Button variant="outline" asChild>

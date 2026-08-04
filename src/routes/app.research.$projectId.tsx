@@ -5,6 +5,15 @@ import { getProject, getRunDetail, toggleSharing } from "@/lib/research.function
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Markdown } from "@/components/markdown";
 import {
   Loader2,
@@ -17,8 +26,12 @@ import {
   Search,
   FileText,
   Shield,
+  Copy,
+  Globe,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/app/research/$projectId")({
   head: () => ({ meta: [{ title: "Research · Marketing Agent" }] }),
@@ -115,24 +128,32 @@ function ResearchDetail() {
     }
   };
 
-  const share = async () => {
-    if (!proj.data) return;
-    const next = !proj.data.project.is_public;
-    const r = await toggleSharing({ data: { id: projectId, is_public: next } });
-    qc.invalidateQueries({ queryKey: ["research-project", projectId] });
-    if (next && r.slug) {
-      const url = `${window.location.origin}/r/${r.slug}`;
-      navigator.clipboard.writeText(url);
-      toast.success("Public link copied");
-    } else {
-      toast.success("Sharing disabled");
+  const [shareOpen, setShareOpen] = useState(false);
+  const [sharePending, setSharePending] = useState(false);
+
+  const setSharing = async (next: boolean) => {
+    setSharePending(true);
+    try {
+      await toggleSharing({ data: { id: projectId, is_public: next } });
+      await qc.invalidateQueries({ queryKey: ["research-project", projectId] });
+      toast.success(next ? "Report published" : "Sharing disabled");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : String(e));
+    } finally {
+      setSharePending(false);
     }
   };
+
 
   if (proj.isLoading) return <div className="text-sm text-muted-foreground">Loading…</div>;
   if (!proj.data) return <div className="text-sm text-muted-foreground">Not found.</div>;
 
   const p = proj.data.project;
+  const shareUrl =
+    p.share_slug && typeof window !== "undefined"
+      ? `${window.location.origin}/r/${p.share_slug}`
+      : null;
+
   const liveSteps = liveEvents.filter((e) => e.type === "step");
   const liveSources = liveEvents.filter((e) => e.type === "source");
   const doneEv = liveEvents.find((e) => e.type === "done") as
@@ -173,10 +194,11 @@ function ResearchDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={share}>
+          <Button variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 className="mr-1 h-4 w-4" />
-            {p.is_public ? "Disable share" : "Share"}
+            Share
           </Button>
+
           <Button onClick={start} disabled={streaming}>
             {streaming ? (
               <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -185,7 +207,79 @@ function ResearchDetail() {
             )}
             {streaming ? "Running…" : "Run agents"}
           </Button>
-        </div>
+      </div>
+
+      <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share this research</DialogTitle>
+            <DialogDescription>
+              Publishing creates a public, read-only page with the latest completed report. Agent
+              traces, workspace data, and drafts are never included.
+            </DialogDescription>
+          </DialogHeader>
+
+          {p.is_public && p.share_slug ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-xs text-emerald-400">
+                <Globe className="h-3.5 w-3.5" /> Live at the link below
+              </div>
+              <div className="flex gap-2">
+                <Input readOnly value={shareUrl ?? ""} onFocus={(e) => e.currentTarget.select()} />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Copy link"
+                  onClick={() => {
+                    if (!shareUrl) return;
+                    navigator.clipboard.writeText(shareUrl);
+                    toast.success("Link copied");
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" aria-label="Open link" asChild>
+                  <a href={shareUrl ?? "#"} target="_blank" rel="noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              This project is private. Publish it to get a shareable link.
+            </p>
+          )}
+
+          <DialogFooter>
+            {p.is_public ? (
+              <Button variant="outline" disabled={sharePending} onClick={() => setSharing(false)}>
+                {sharePending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <EyeOff className="mr-2 h-4 w-4" />
+                )}
+                Unpublish
+              </Button>
+            ) : (
+              <Button
+                disabled={sharePending}
+                onClick={async () => {
+                  await setSharing(true);
+                }}
+              >
+                {sharePending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Globe className="mr-2 h-4 w-4" />
+                )}
+                Publish report
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       </div>
 
       {/* Past runs */}
