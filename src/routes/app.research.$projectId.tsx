@@ -5,6 +5,15 @@ import { getProject, getRunDetail, toggleSharing } from "@/lib/research.function
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Markdown } from "@/components/markdown";
 import {
   Loader2,
@@ -17,8 +26,12 @@ import {
   Search,
   FileText,
   Shield,
+  Copy,
+  Globe,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/app/research/$projectId")({
   head: () => ({ meta: [{ title: "Research · Marketing Agent" }] }),
