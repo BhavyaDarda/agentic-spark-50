@@ -133,23 +133,47 @@ function ResearchListPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {projects.data!.map((p) => (
-            <Link key={p.id} to="/app/research/$projectId" params={{ projectId: p.id }}>
-              <Card className="h-full border-border/60 transition-colors hover:border-primary/40">
-                <CardHeader>
-                  <CardTitle className="line-clamp-2 text-base">{p.topic}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm text-muted-foreground">
-                  {p.goal && <p className="line-clamp-2">{p.goal}</p>}
-                  <div className="flex items-center justify-between pt-2 font-mono text-xs">
-                    <span>{p.depth}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <div key={p.id} className="relative">
+              <Link to="/app/research/$projectId" params={{ projectId: p.id }}>
+                <Card className="h-full border-border/60 transition-colors hover:border-primary/40">
+                  <CardHeader>
+                    <CardTitle className="line-clamp-2 pr-16 text-base">{p.topic}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2 text-sm text-muted-foreground">
+                    {p.goal && <p className="line-clamp-2">{p.goal}</p>}
+                    <div className="flex items-center justify-between pt-2 font-mono text-xs">
+                      <span>{p.depth}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+              {p.is_public && p.share_slug && (
+                <div className="absolute right-3 top-3 flex items-center gap-1">
+                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                    public
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Copy public link"
+                    className="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/r/${p.share_slug}`,
+                      );
+                      toast.success("Link copied");
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
+
     </div>
   );
 }
