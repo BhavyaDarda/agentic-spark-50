@@ -149,6 +149,11 @@ function ResearchDetail() {
   if (!proj.data) return <div className="text-sm text-muted-foreground">Not found.</div>;
 
   const p = proj.data.project;
+  const shareUrl =
+    p.share_slug && typeof window !== "undefined"
+      ? `${window.location.origin}/r/${p.share_slug}`
+      : null;
+
   const liveSteps = liveEvents.filter((e) => e.type === "step");
   const liveSources = liveEvents.filter((e) => e.type === "source");
   const doneEv = liveEvents.find((e) => e.type === "done") as
