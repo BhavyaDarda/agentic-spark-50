@@ -1,4 +1,9 @@
-// Server-only plan limits + usage metering.
+// Server-only allowance + usage metering.
+//
+// The product is free for everyone and funded by sponsors on public reports, so
+// these numbers are ABUSE GUARDS, not a paywall: they exist to stop one
+// workspace from burning the shared compute budget, and every tier gets the
+// same generous ceiling. There is no upgrade path to sell.
 //
 // `usage_counters` has no `authenticated` write grants (read-only via RLS), so
 // every increment goes through the service-role client here. This file must
@@ -17,17 +22,20 @@ export interface PlanLimits {
   mcpServers: number;
 }
 
+/** One generous allowance, applied to every workspace regardless of stored tier. */
+export const FREE_ALLOWANCE: PlanLimits = {
+  label: "Free",
+  contentRuns: 500,
+  researchRuns: 100,
+  brands: 10,
+  seats: 10,
+  mcpServers: 10,
+};
+
 export const PLAN_LIMITS: Record<PlanTier, PlanLimits> = {
-  free: { label: "Free", contentRuns: 10, researchRuns: 5, brands: 1, seats: 1, mcpServers: 1 },
-  pro: { label: "Pro", contentRuns: 200, researchRuns: 60, brands: 5, seats: 3, mcpServers: 5 },
-  team: {
-    label: "Team",
-    contentRuns: 1000,
-    researchRuns: 300,
-    brands: 25,
-    seats: 20,
-    mcpServers: 20,
-  },
+  free: FREE_ALLOWANCE,
+  pro: FREE_ALLOWANCE,
+  team: FREE_ALLOWANCE,
 };
 
 export type Meter = "contentRuns" | "researchRuns";
@@ -37,7 +45,7 @@ const METER_COLUMN: Record<Meter, "content_runs" | "research_runs"> = {
   researchRuns: "research_runs",
 };
 
-/** Thrown when a workspace is over its monthly allowance. */
+/** Thrown when a workspace has burned through this month's fair-use allowance. */
 export class QuotaError extends Error {
   constructor(
     public meter: Meter,
@@ -46,9 +54,9 @@ export class QuotaError extends Error {
   ) {
     // Prefixed so the client can detect it after crossing the RPC boundary.
     super(
-      `QUOTA_EXCEEDED: ${plan} plan allows ${limit} ${
+      `QUOTA_EXCEEDED: Fair-use limit reached — ${limit} ${
         meter === "contentRuns" ? "generations" : "research runs"
-      } per month. Ask an owner to raise the plan or wait for the next cycle.`,
+      } per month. It resets at the start of next month. Nothing to buy; this only exists to keep the free tier alive for everyone.`,
     );
     this.name = "QuotaError";
   }
