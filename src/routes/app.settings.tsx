@@ -72,7 +72,7 @@ function SettingsPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
         <p className="text-sm text-muted-foreground">
-          Workspace, team, usage, and billing.
+          Workspace, team, usage, and what this costs you.
         </p>
       </div>
 
