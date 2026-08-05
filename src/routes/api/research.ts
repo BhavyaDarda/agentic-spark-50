@@ -51,11 +51,13 @@ async function webSearch(query: string, limit = 8) {
 
 async function fetchPage(url: string, maxChars = 12000) {
   try {
-    const res = await fetch(url, {
+    const { safeFetch } = await import("@/lib/ssrf.server");
+    const res = await safeFetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgentResearch/1.0)" },
       signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) return { ok: false as const, text: "", title: "" };
+
     const html = await res.text();
     const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
     const title = titleMatch?.[1]?.trim() ?? "";
@@ -103,7 +105,26 @@ export const Route = createFileRoute("/api/research")({
           .maybeSingle();
         if (projErr || !project) return new Response("Project not found", { status: 404 });
 
+        // Enforce plan quota + per-workspace sliding-window limit before spending
+        // any AI/gateway budget on the multi-agent pipeline.
+        const { consumeRateLimit } = await import("@/lib/security.server");
+        const { assertQuota, QuotaError } = await import("@/lib/limits.server");
+        try {
+          await assertQuota(project.workspace_id, "researchRuns");
+        } catch (e) {
+          if (e instanceof QuotaError) return new Response(e.message, { status: 402 });
+          throw e;
+        }
+        const rl = await consumeRateLimit(project.workspace_id, "chat.deep_research");
+        if (!rl.ok) {
+          return new Response("Too many research runs. Try again shortly.", {
+            status: 429,
+            headers: { "Retry-After": String(rl.retryAfterSeconds) },
+          });
+        }
+
         // Create run
+
         const { data: run, error: runErr } = await sb
           .from("research_runs")
           .insert({

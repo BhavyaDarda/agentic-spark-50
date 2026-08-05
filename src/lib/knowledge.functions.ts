@@ -101,15 +101,14 @@ export const addKnowledgeSource = createServerFn({ method: "POST" })
     let title = data.title ?? "";
 
     if (data.url) {
-      const parsed = new URL(data.url);
-      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-        throw new Error("Only http(s) URLs can be imported.");
-      }
-      const res = await fetch(parsed.toString(), {
+      const { assertSafeExternalUrl, safeFetch } = await import("./ssrf.server");
+      const parsed = assertSafeExternalUrl(data.url);
+      const res = await safeFetch(parsed.toString(), {
         headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgent/2.0)" },
         signal: AbortSignal.timeout(15_000),
       });
       if (!res.ok) throw new Error(`Could not read that page (HTTP ${res.status}).`);
+
       const html = await res.text();
       title =
         title ||

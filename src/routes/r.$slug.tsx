@@ -98,7 +98,8 @@ export const Route = createFileRoute("/r/$slug")({
 function SharedResearchPage() {
   const data = Route.useLoaderData();
 
-  if ("notFound" in data) {
+  if (!data || "notFound" in data) {
+
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-lg">
