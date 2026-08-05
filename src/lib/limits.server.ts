@@ -146,7 +146,7 @@ export async function assertQuota(workspaceId: string, meter: Meter): Promise<Us
   return snap;
 }
 
-/** Throws when adding one more row of `kind` would exceed the plan. */
+/** Throws when adding one more row of `kind` would exceed the fair-use allowance. */
 export async function assertCapacity(
   workspaceId: string,
   kind: "brands" | "seats" | "mcpServers",
@@ -156,7 +156,7 @@ export async function assertCapacity(
   if (snap.counts[kind] >= limit) {
     const noun = kind === "brands" ? "brands" : kind === "seats" ? "seats" : "tool servers";
     throw new Error(
-      `QUOTA_EXCEEDED: ${snap.plan} plan includes ${limit} ${noun}. Remove one or move to a higher plan.`,
+      `QUOTA_EXCEEDED: Fair-use limit reached — ${limit} ${noun} per workspace. Remove one to add another.`,
     );
   }
 }
