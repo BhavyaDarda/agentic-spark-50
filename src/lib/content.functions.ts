@@ -96,7 +96,7 @@ export const generateContent = createServerFn({ method: "POST" })
       .maybeSingle();
     if ((usage?.content_runs ?? 0) >= cap) {
       throw new Error(
-        `Monthly limit reached for ${plan} plan (${cap} runs). Upgrade in Settings → Billing.`,
+        `Fair-use limit reached — ${cap} generations this month. It resets at the start of next month. Nothing to buy; this only keeps the free tier alive for everyone.`,
       );
     }
 
