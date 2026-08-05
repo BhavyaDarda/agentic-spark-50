@@ -8,7 +8,7 @@ import { SponsorUnit } from "@/components/sponsor-unit";
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params, loaderData }) => {
-    const report = loaderData?.report ?? null;
+    const report = (loaderData as { report: PublicReport | null } | undefined)?.report ?? null;
     const title = report
       ? `${report.project.topic} · Research report`
       : "Shared research · Marketing Agent";
