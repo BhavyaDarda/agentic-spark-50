@@ -73,7 +73,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function SharedResearchPage() {
-  const { report } = Route.useLoaderData();
+  const { report } = Route.useLoaderData() as { report: PublicReport | null };
 
   if (!report) return <ReportUnavailable />;
 
