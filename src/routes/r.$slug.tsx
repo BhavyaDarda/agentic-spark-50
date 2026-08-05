@@ -1,27 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Lock } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { ArrowLeft, ExternalLink, Lock, ShieldCheck } from "lucide-react";
+import { getPublicReport } from "@/lib/public-report.functions";
+import { SponsorUnit } from "@/components/sponsor-unit";
 
 export const Route = createFileRoute("/r/$slug")({
   head: ({ params, loaderData }) => {
-    const data = loaderData as
-      | { notFound: true }
-      | { project: { topic: string; goal: string | null }; run: { summary: string | null } | null }
-      | undefined;
-    const project = data && !("notFound" in data) ? data.project : null;
-    const summary = data && !("notFound" in data) ? (data.run?.summary ?? null) : null;
-
-    const title = project
-      ? `${project.topic} · Research report`
+    const report = loaderData?.report ?? null;
+    const title = report
+      ? `${report.project.topic} · Research report`
       : "Shared research · Marketing Agent";
     const description =
-      summary?.slice(0, 155) ??
-      project?.goal?.slice(0, 155) ??
+      report?.run?.summary?.slice(0, 155) ??
+      report?.project.goal?.slice(0, 155) ??
       "A cited, multi-agent research report shared from Marketing Agent.";
     return {
       meta: [
@@ -38,42 +31,14 @@ export const Route = createFileRoute("/r/$slug")({
   },
   component: SharedResearchPage,
 
-  // Public share: no auth required. The loader runs server-side and uses a
-  // publishable-key client so RLS policies for anon/public rows apply.
-  loader: async ({ params }) => {
-    const slug = params.slug;
-    const url = process.env.SUPABASE_URL!;
-    const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-    const sb = createClient<Database>(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+  // Public share: no auth required. The server fn reads with a publishable-key
+  // client, so only rows the public policies allow are visible.
+  loader: ({ params }) => getPublicReport({ data: { slug: params.slug } }),
+  errorComponent: () => <ReportUnavailable />,
+});
 
-    const { data: project, error: projErr } = await sb
-      .from("research_projects")
-      .select("id, topic, goal, depth, is_public, share_slug, workspace_id")
-      .eq("share_slug", slug)
-      .maybeSingle();
-
-    if (projErr || !project || !project.is_public) {
-      return { notFound: true as const };
-    }
-
-    const { data: run, error: runErr } = await sb
-      .from("research_runs")
-      .select("report_markdown, summary, model, created_at, plan")
-      .eq("project_id", project.id)
-      .eq("status", "succeeded")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (runErr) {
-      return { notFound: true as const };
-    }
-
-    return { project, run };
-  },
-  errorComponent: () => (
+function ReportUnavailable() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-lg">
         <CardHeader>
@@ -92,37 +57,26 @@ export const Route = createFileRoute("/r/$slug")({
         </CardContent>
       </Card>
     </div>
-  ),
-});
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2">
+      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-0.5 text-sm font-medium text-foreground">{value}</p>
+    </div>
+  );
+}
 
 function SharedResearchPage() {
-  const data = Route.useLoaderData();
+  const { report } = Route.useLoaderData();
 
-  if (!data || "notFound" in data) {
+  if (!report) return <ReportUnavailable />;
 
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background px-4">
-        <Card className="w-full max-w-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lock className="h-5 w-5" />
-              Research unavailable
-            </CardTitle>
-            <CardDescription>
-              This shared research link is invalid, expired, or has been made private.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild>
-              <Link to="/">Go home</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  const { project, run } = data;
+  const { project, run, sources, trust, sponsor } = report;
 
   return (
     <div className="min-h-screen bg-background">
@@ -142,13 +96,54 @@ function SharedResearchPage() {
         <div className="mb-8 space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">{project.topic}</h1>
           {project.goal && <p className="text-muted-foreground">{project.goal}</p>}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="rounded-md bg-muted px-2 py-0.5 font-mono uppercase">{project.depth}</span>
-            {run?.created_at && (
-              <span>Report generated {new Date(run.created_at).toLocaleDateString()}</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="rounded-md bg-muted px-2 py-0.5 font-mono uppercase">
+              {project.depth}
+            </span>
+            {run?.createdAt && (
+              <span>Report generated {new Date(run.createdAt).toLocaleDateString()}</span>
             )}
           </div>
         </div>
+
+        {/* Trust surface: what the run actually did, in the open. */}
+        <section className="mb-6 rounded-xl border border-border/60 bg-card/50 p-4">
+          <div className="mb-3 flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            <h2 className="text-sm font-semibold">How this report was made</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+            <Stat label="Sources cited" value={String(trust.sourceCount)} />
+            <Stat label="Searches run" value={String(trust.queryCount)} />
+            <Stat
+              label="Critic score"
+              value={trust.criticScore === null ? "—" : `${trust.criticScore}/100`}
+            />
+            <Stat
+              label="Run time"
+              value={trust.durationSeconds === null ? "—" : `${trust.durationSeconds}s`}
+            />
+            <Stat
+              label="Tokens"
+              value={
+                trust.tokensInput === null && trust.tokensOutput === null
+                  ? "—"
+                  : `${((trust.tokensInput ?? 0) + (trust.tokensOutput ?? 0)).toLocaleString()}`
+              }
+            />
+          </div>
+          {trust.criticNotes && (
+            <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+              <span className="font-medium text-foreground">Critic review: </span>
+              {trust.criticNotes}
+            </p>
+          )}
+          {trust.model && (
+            <p className="mt-2 font-mono text-[11px] text-muted-foreground/70">
+              model: {trust.model}
+            </p>
+          )}
+        </section>
 
         {run?.summary && (
           <Card className="mb-6 border-primary/20 bg-primary/5">
@@ -166,8 +161,8 @@ function SharedResearchPage() {
             <CardTitle className="text-base">Report</CardTitle>
           </CardHeader>
           <CardContent>
-            {run?.report_markdown ? (
-              <Markdown>{run.report_markdown}</Markdown>
+            {run?.reportMarkdown ? (
+              <Markdown>{run.reportMarkdown}</Markdown>
             ) : (
               <p className="text-sm text-muted-foreground">
                 No completed report has been shared yet.
@@ -176,19 +171,41 @@ function SharedResearchPage() {
           </CardContent>
         </Card>
 
-        {/* Sponsor slot — public report pages only. Never rendered inside the
-            report body, never inside the signed-in app, no third-party scripts.
-            Server-selected sponsors land here in the ad-funded phase. */}
-        <aside
-          data-slot="sponsor"
-          className="mt-6 rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 text-xs text-muted-foreground"
-        >
-          <span className="mr-2 rounded bg-muted px-1.5 py-0.5 font-mono uppercase tracking-wider">
-            sponsor
-          </span>
-          This report is free because one clearly labeled sponsor sits here — never inside the
-          findings.
-        </aside>
+        {sources.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="text-base">Sources ({sources.length})</CardTitle>
+              <CardDescription>Every claim above traces back to this list.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {sources.map((source, i) => (
+                <a
+                  key={`${source.url}-${i}`}
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="block rounded-lg border border-border/50 p-3 transition-colors hover:border-primary/40 hover:bg-muted/30"
+                >
+                  <p className="text-sm font-medium text-foreground">
+                    {source.title ?? source.url}
+                  </p>
+                  <p className="truncate font-mono text-[11px] text-muted-foreground">
+                    {source.url}
+                  </p>
+                  {source.snippet && (
+                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                      {source.snippet}
+                    </p>
+                  )}
+                </a>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Sponsor slot — public report pages only. Never inside the report
+            body, never inside the signed-in app, no third-party scripts. */}
+        {sponsor && <SponsorUnit sponsor={sponsor} />}
 
         <div className="mt-8 flex justify-center">
           <Button variant="outline" asChild>
