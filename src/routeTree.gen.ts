@@ -25,7 +25,6 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
 import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
-import { Route as ApiStripeWebhookRouteImport } from './routes/api/stripe.webhook'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -107,11 +106,6 @@ const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
   path: '/c/$conversationId',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
-  id: '/api/stripe/webhook',
-  path: '/api/stripe/webhook',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -127,7 +121,6 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -145,7 +138,6 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research': typeof AppResearchIndexRoute
@@ -165,7 +157,6 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
-  '/api/stripe/webhook': typeof ApiStripeWebhookRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -186,7 +177,6 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app/'
-    | '/api/stripe/webhook'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -204,7 +194,6 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app'
-    | '/api/stripe/webhook'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research'
@@ -223,7 +212,6 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app/'
-    | '/api/stripe/webhook'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -237,7 +225,6 @@ export interface RootRouteChildren {
   ApiResearchRoute: typeof ApiResearchRoute
   InviteTokenRoute: typeof InviteTokenRoute
   RSlugRoute: typeof RSlugRoute
-  ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -354,13 +341,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCConversationIdRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/stripe/webhook': {
-      id: '/api/stripe/webhook'
-      path: '/api/stripe/webhook'
-      fullPath: '/api/stripe/webhook'
-      preLoaderRoute: typeof ApiStripeWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -398,8 +378,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiResearchRoute: ApiResearchRoute,
   InviteTokenRoute: InviteTokenRoute,
   RSlugRoute: RSlugRoute,
-  ApiStripeWebhookRoute: ApiStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
