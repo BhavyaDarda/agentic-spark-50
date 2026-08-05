@@ -523,35 +523,56 @@ function BillingTab() {
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <CreditCard className="h-4 w-4" />
-          Billing
+          Cost
         </CardTitle>
-        <CardDescription>Upgrade or manage your subscription.</CardDescription>
+        <CardDescription>There isn't one. Here's how that works.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { name: "Free", price: "$0", runs: 10, research: 5, seats: 1 },
-            { name: "Pro", price: "$29", runs: 200, research: 60, seats: 3 },
-            { name: "Team", price: "$99", runs: 1000, research: 300, seats: 20 },
+            {
+              name: "Your price",
+              value: "$0",
+              lines: ["No card on file", "No seats to buy", "No feature gates"],
+            },
+            {
+              name: "Who pays",
+              value: "Sponsors",
+              lines: [
+                "One labeled card per public report",
+                "Only on reports you publish",
+                "Nothing inside the app",
+              ],
+            },
+            {
+              name: "What they get",
+              value: "Attention",
+              lines: [
+                "No access to your data",
+                "No influence on findings",
+                "No visitor tracking",
+              ],
+            },
           ].map((p) => (
             <div
               key={p.name}
               className="rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
             >
-              <div className="text-lg font-semibold">{p.name}</div>
-              <div className="text-2xl font-semibold tracking-tight">
-                {p.price}<span className="text-sm font-normal text-muted-foreground">/mo</span>
+              <div className="text-xs uppercase tracking-widest text-muted-foreground">
+                {p.name}
               </div>
+              <div className="mt-1 text-2xl font-semibold tracking-tight">{p.value}</div>
               <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
-                <li>{p.runs} content runs / month</li>
-                <li>{p.research} research runs / month</li>
-                <li>{p.seats} seat{p.seats !== 1 ? "s" : ""}</li>
+                {p.lines.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
               </ul>
             </div>
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Stripe checkout is managed separately. Contact an admin to change plans.
+          Fair-use ceilings exist only to stop one workspace draining shared compute — see the Usage
+          tab for where you stand. They reset monthly and cannot be bought around.
         </p>
       </CardContent>
     </Card>
