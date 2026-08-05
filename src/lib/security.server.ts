@@ -29,7 +29,7 @@ export type RateLimitBucket =
   | "chat.message"
   | "chat.deep_research"
   | "content.generate"
-  | "billing.checkout";
+  | "sponsor.click";
 
 export interface RateLimitConfig {
   /** Number of requests allowed within `windowMinutes`. */
@@ -42,7 +42,7 @@ const DEFAULTS: Record<RateLimitBucket, RateLimitConfig> = {
   "chat.message": { limit: 60, windowMinutes: 1 },
   "chat.deep_research": { limit: 6, windowMinutes: 10 },
   "content.generate": { limit: 30, windowMinutes: 5 },
-  "billing.checkout": { limit: 6, windowMinutes: 10 },
+  "sponsor.click": { limit: 30, windowMinutes: 5 },
 };
 
 /**

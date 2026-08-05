@@ -867,6 +867,105 @@ export type Database = {
           },
         ]
       }
+      sponsor_events: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          project_id: string | null
+          sponsor_id: string
+          surface: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          project_id?: string | null
+          sponsor_id: string
+          surface: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          project_id?: string | null
+          sponsor_id?: string
+          surface?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "research_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsor_events_sponsor_id_fkey"
+            columns: ["sponsor_id"]
+            isOneToOne: false
+            referencedRelation: "sponsors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sponsors: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          credit_lines: string[]
+          cta_label: string
+          destination_url: string
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          starts_at: string | null
+          tagline: string
+          topic_keywords: string[]
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_lines?: string[]
+          cta_label?: string
+          destination_url: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          starts_at?: string | null
+          tagline: string
+          topic_keywords?: string[]
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          credit_lines?: string[]
+          cta_label?: string
+          destination_url?: string
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          starts_at?: string | null
+          tagline?: string
+          topic_keywords?: string[]
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean

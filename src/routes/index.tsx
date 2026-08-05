@@ -103,7 +103,7 @@ function Nav() {
           <a href="#capabilities" className="transition-colors hover:text-foreground">Capabilities</a>
           <a href="#agents" className="transition-colors hover:text-foreground">Agents</a>
           <a href="#security" className="transition-colors hover:text-foreground">Security</a>
-          <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>
+          <a href="#pricing" className="transition-colors hover:text-foreground">Why it's free</a>
         </nav>
         <div className="flex items-center gap-2">
           <Link to="/auth">
@@ -734,101 +734,89 @@ function Security() {
   );
 }
 
-/* ────────────────────────────── pricing ────────────────────────────── */
+/* ─────────────────────── how it's paid for ─────────────────────── */
 
 function Pricing() {
-  const tiers = [
+  const promises = [
     {
-      name: "Starter",
-      price: "$0",
-      period: "/mo",
-      desc: "For solo operators exploring the loop.",
-      features: ["1 workspace", "500 agent runs / mo", "Community support"],
-      cta: "Start free",
-      accent: false,
+      label: "Free",
+      title: "No plans, no seats, no card",
+      desc: "Every agent, every channel, every export. There is no upgrade button to find because there is no upgrade.",
     },
     {
-      name: "Team",
-      price: "$49",
-      period: "/seat / mo",
-      desc: "For marketing teams shipping weekly.",
-      features: [
-        "Unlimited workspaces",
-        "10k agent runs / mo",
-        "Brand memory + RAG",
-        "Priority routing",
-      ],
-      cta: "Start 14-day trial",
-      accent: true,
+      label: "Funded",
+      title: "One sponsor, on public reports only",
+      desc: "When you publish a report to a public link, a single labeled sponsor card sits beside it. That pays the compute bill.",
     },
     {
-      name: "Enterprise",
-      price: "Custom",
-      period: "",
-      desc: "SSO, DPA, and dedicated support.",
-      features: ["SAML SSO", "SOC 2 report", "EU residency", "Dedicated CSM"],
-      cta: "Talk to sales",
-      accent: false,
+      label: "Sealed",
+      title: "Sponsors never touch the work",
+      desc: "They cannot buy a source, a sentence, or a ranking. They never see who read the page. No third-party scripts run anywhere.",
     },
   ];
   return (
     <section id="pricing" className="relative border-t border-white/5 bg-background/60 py-28">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-14 max-w-xl">
+        <div className="mb-14 max-w-2xl">
           <div className="text-mono text-[11px] uppercase tracking-[0.22em] text-primary/80">
-            Pricing
+            How it's paid for
           </div>
           <h2 className="text-display mt-3 text-balance text-4xl font-semibold leading-[1.02] tracking-[-0.03em] md:text-5xl">
-            Simple. Honest.
+            Free, permanently.
             <br />
-            <span className="font-serif-display text-primary">Priced by outcome.</span>
+            <span className="font-serif-display text-primary">Sponsored, transparently.</span>
           </h2>
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+            We tried to imagine the version of this you'd actually recommend to a friend. It didn't
+            have a pricing table in it.
+          </p>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {tiers.map((t) => (
+          {promises.map((p, i) => (
             <div
-              key={t.name}
+              key={p.label}
               className={
                 "relative flex flex-col rounded-2xl border p-8 " +
-                (t.accent
+                (i === 1
                   ? "border-primary/40 bg-primary/[0.04] shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.25),0_20px_60px_-20px_oklch(0.82_0.11_180/0.45)]"
                   : "border-white/8 bg-white/[0.02]")
               }
             >
-              {t.accent && (
-                <div className="absolute -top-2.5 left-8 rounded-full border border-primary/40 bg-background px-2 py-0.5 text-mono text-[10px] uppercase tracking-widest text-primary">
-                  Recommended
+              <div className="text-mono text-[10px] uppercase tracking-[0.22em] text-primary/80">
+                {p.label}
+              </div>
+              <div className="text-display mt-4 text-xl font-medium leading-snug">{p.title}</div>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
+              {i === 1 && (
+                <div className="mt-6 rounded-xl border border-white/8 bg-background/60 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
+                      sponsor
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      Did not touch the findings
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs italic text-muted-foreground">
+                    "Argued over by six robots. Paid for by someone else."
+                  </p>
                 </div>
               )}
-              <div className="text-display text-lg font-medium">{t.name}</div>
-              <div className="mt-4 flex items-baseline gap-1">
-                <span className="text-display text-5xl font-semibold tracking-tight">{t.price}</span>
-                <span className="text-sm text-muted-foreground">{t.period}</span>
-              </div>
-              <div className="mt-2 text-sm text-muted-foreground">{t.desc}</div>
-              <ul className="mt-8 flex-1 space-y-2.5 text-sm">
-                {t.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-foreground/85">
-                    <Check className="h-3.5 w-3.5 text-primary" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/auth"
-                search={{ mode: "signup" }}
-                className={
-                  "mt-8 inline-flex h-10 items-center justify-center rounded-full px-4 text-sm font-medium transition-colors " +
-                  (t.accent
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "border border-white/15 bg-white/[0.03] text-foreground hover:bg-white/[0.06]")
-                }
-              >
-                {t.cta}
-              </Link>
             </div>
           ))}
         </div>
+        <ul className="mt-8 grid gap-2 text-sm text-foreground/80 md:grid-cols-3">
+          {[
+            "No ads inside the app",
+            "No ads inside a report body",
+            "No trackers, ever",
+          ].map((line) => (
+            <li key={line} className="flex items-center gap-2">
+              <Check className="h-3.5 w-3.5 text-primary" />
+              {line}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
