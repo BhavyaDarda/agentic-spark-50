@@ -103,7 +103,7 @@ function Nav() {
           <a href="#capabilities" className="transition-colors hover:text-foreground">Capabilities</a>
           <a href="#agents" className="transition-colors hover:text-foreground">Agents</a>
           <a href="#security" className="transition-colors hover:text-foreground">Security</a>
-          <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>
+          <a href="#pricing" className="transition-colors hover:text-foreground">Why it's free</a>
         </nav>
         <div className="flex items-center gap-2">
           <Link to="/auth">
