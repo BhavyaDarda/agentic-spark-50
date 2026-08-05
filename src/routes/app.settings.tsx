@@ -262,7 +262,7 @@ function TeamTab({ workspaceId }: { workspaceId?: string }) {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="member">Member — can create and edit</SelectItem>
-                        <SelectItem value="admin">Admin — can manage workspace and billing</SelectItem>
+                        <SelectItem value="admin">Admin — can manage the workspace and team</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
