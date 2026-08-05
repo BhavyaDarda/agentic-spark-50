@@ -132,11 +132,13 @@ async function tavilySearch(query: string, opts: { max?: number; depth?: "basic"
 
 async function fetchReadable(url: string, maxChars = 12_000) {
   try {
-    const res = await fetch(url, {
+    const { safeFetch } = await import("@/lib/ssrf.server");
+    const res = await safeFetch(url, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgent/2.0)" },
       signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) return { ok: false as const, text: "", title: "" };
+
     const html = await res.text();
     const title = html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]?.trim() ?? "";
     const text = html

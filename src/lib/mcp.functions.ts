@@ -7,6 +7,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 import { assertCapacity } from "./limits.server";
+import { assertSafeExternalUrl, isSafeExternalUrl } from "./ssrf.server";
+
 import { createMCPClient } from "@ai-sdk/mcp";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
@@ -45,10 +47,9 @@ export const createMcpConnection = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertCapacity(data.workspaceId, "mcpServers");
 
-    const parsedUrl = new URL(data.url);
-    if (parsedUrl.protocol !== "https:" && parsedUrl.protocol !== "http:") {
-      throw new Error("Only http(s) MCP servers are supported.");
-    }
+    const parsedUrl = assertSafeExternalUrl(data.url);
+    void parsedUrl;
+
 
     let toolCount = 0;
     let state: "ready" | "failed" = "ready";
@@ -123,8 +124,11 @@ export async function loadMcpToolsForWorkspace(workspaceId: string, sb: Supabase
   const clients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
 
   for (const row of rows) {
+    // Never forward the stored bearer token to an internal/private address.
+    if (!isSafeExternalUrl(row.url)) continue;
     const headers: Record<string, string> = {};
     if (row.oauth_ciphertext) headers.Authorization = `Bearer ${row.oauth_ciphertext}`;
+
 
     const client = await createMCPClient({
       transport: {
