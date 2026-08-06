@@ -316,3 +316,154 @@
 }
 
 
+
+/* =====================================================================
+ * NEO-BRUTALIST PASS — "Concrete & Acid"
+ *
+ * Same semantic tokens, new physics: zero radius, thick opaque borders,
+ * hard offset shadows (no blur), acid-yellow primary with a hot-magenta
+ * highlighter for labels and states. These declarations come last so they
+ * win over the earlier Noir/Obsidian values without deleting them.
+ * ===================================================================== */
+
+:root {
+  --radius: 0rem;
+
+  --background: oklch(0.965 0.012 95);
+  --foreground: oklch(0.16 0.01 60);
+  --card: oklch(0.995 0.004 95);
+  --card-foreground: oklch(0.16 0.01 60);
+  --popover: oklch(0.995 0.004 95);
+  --popover-foreground: oklch(0.16 0.01 60);
+  --primary: oklch(0.85 0.19 95);
+  --primary-foreground: oklch(0.14 0.02 90);
+  --secondary: oklch(0.93 0.01 95);
+  --secondary-foreground: oklch(0.16 0.01 60);
+  --muted: oklch(0.93 0.01 95);
+  --muted-foreground: oklch(0.42 0.01 70);
+  --accent: oklch(0.72 0.21 350);
+  --accent-foreground: oklch(0.99 0.005 350);
+  --border: oklch(0.16 0.01 60);
+  --input: oklch(0.16 0.01 60);
+  --ring: oklch(0.72 0.21 350);
+  --sidebar: oklch(0.94 0.014 95);
+  --sidebar-foreground: oklch(0.16 0.01 60);
+  --sidebar-primary: oklch(0.85 0.19 95);
+  --sidebar-primary-foreground: oklch(0.14 0.02 90);
+  --sidebar-accent: oklch(0.88 0.016 95);
+  --sidebar-accent-foreground: oklch(0.14 0.01 60);
+  --sidebar-border: oklch(0.16 0.01 60);
+  --sidebar-ring: oklch(0.72 0.21 350);
+
+  /* Brutalist ink used by hard shadows on both themes. */
+  --brut-ink: oklch(0.12 0.01 60);
+}
+
+.dark {
+  --background: oklch(0.15 0.008 265);
+  --foreground: oklch(0.97 0.003 250);
+  --card: oklch(0.19 0.008 265);
+  --card-foreground: oklch(0.97 0.003 250);
+  --popover: oklch(0.19 0.008 265);
+  --popover-foreground: oklch(0.97 0.003 250);
+  --primary: oklch(0.87 0.2 96);
+  --primary-foreground: oklch(0.15 0.02 90);
+  --secondary: oklch(0.24 0.01 265);
+  --secondary-foreground: oklch(0.97 0.003 250);
+  --muted: oklch(0.23 0.01 265);
+  --muted-foreground: oklch(0.72 0.01 255);
+  --accent: oklch(0.74 0.2 350);
+  --accent-foreground: oklch(0.12 0.02 350);
+  --border: oklch(0.99 0.002 250 / 0.9);
+  --input: oklch(0.99 0.002 250 / 0.9);
+  --ring: oklch(0.74 0.2 350);
+  --sidebar: oklch(0.12 0.008 265);
+  --sidebar-foreground: oklch(0.94 0.004 255);
+  --sidebar-primary: oklch(0.87 0.2 96);
+  --sidebar-primary-foreground: oklch(0.15 0.02 90);
+  --sidebar-accent: oklch(0.24 0.01 265);
+  --sidebar-accent-foreground: oklch(0.97 0.003 250);
+  --sidebar-border: oklch(0.99 0.002 250 / 0.9);
+  --sidebar-ring: oklch(0.74 0.2 350);
+
+  --brut-ink: oklch(0.05 0.005 265);
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.035em;
+    text-transform: none;
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-foreground);
+  }
+}
+
+/* A slab: thick border + hard offset shadow, no blur anywhere. */
+@utility brut {
+  border: 2px solid var(--color-border);
+  box-shadow: 4px 4px 0 0 var(--brut-ink);
+}
+
+@utility brut-sm {
+  border: 2px solid var(--color-border);
+  box-shadow: 2px 2px 0 0 var(--brut-ink);
+}
+
+@utility brut-lg {
+  border: 2px solid var(--color-border);
+  box-shadow: 8px 8px 0 0 var(--brut-ink);
+}
+
+/* Mechanical press: the slab physically moves onto its own shadow. */
+@utility brut-press {
+  transition:
+    transform 80ms steps(2, end),
+    box-shadow 80ms steps(2, end),
+    background-color 80ms linear;
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--brut-ink);
+  }
+  &:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 var(--brut-ink);
+  }
+}
+
+/* Uppercase mono label chip: "SPONSOR", "CRITIC 82", "6 AGENTS". */
+@utility brut-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 2px solid var(--color-border);
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: 0.05rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+@utility brut-chip-accent {
+  background: var(--color-accent);
+  color: var(--color-accent-foreground);
+}
+
+@utility brut-seam {
+  border-top: 2px solid var(--color-border);
+}
+
+@utility brut-hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-border) 0,
+    var(--color-border) 1px,
+    transparent 1px,
+    transparent 7px
+  );
+}
