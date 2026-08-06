@@ -13,9 +13,11 @@ import {
   Microscope,
   PenTool,
   BrainCircuit,
+  Megaphone as MegaphoneIcon,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
+import { getIsPlatformAdmin } from "@/lib/sponsors.functions";
 import { listConversations, createConversation } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +30,7 @@ export function AppSidebar() {
   const [filter, setFilter] = useState("");
 
   const ws = useQuery({ queryKey: ["current-workspace"], queryFn: () => getCurrentWorkspace() });
+  const admin = useQuery({ queryKey: ["is-platform-admin"], queryFn: () => getIsPlatformAdmin() });
   const workspaceId = ws.data?.workspace?.id;
 
   const conversations = useQuery({
@@ -133,6 +136,9 @@ export function AppSidebar() {
         <SidebarLink to="/app/artifacts" icon={Library} label="Artifact Library" />
         <SidebarLink to="/app/brands" icon={Building2} label="Brands" />
         <SidebarLink to="/app/settings" icon={SettingsIcon} label="Settings" />
+        {admin.data?.isAdmin && (
+          <SidebarLink to="/app/sponsors" icon={MegaphoneIcon} label="Sponsors" />
+        )}
       </nav>
 
       <div className="border-t border-border/60 p-3">

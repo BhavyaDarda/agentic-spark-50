@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Markdown } from "@/components/markdown";
+import { SponsorOffer } from "@/components/sponsor-offer";
 import {
   Loader2,
   Play,
@@ -208,6 +209,10 @@ function ResearchDetail() {
             {streaming ? "Running…" : "Run agents"}
           </Button>
       </div>
+
+      {!streaming && (
+        <SponsorOffer projectId={projectId} topic={`${p.topic} ${p.goal ?? ""}`} depth={p.depth} />
+      )}
 
       <Dialog open={shareOpen} onOpenChange={setShareOpen}>
         <DialogContent>

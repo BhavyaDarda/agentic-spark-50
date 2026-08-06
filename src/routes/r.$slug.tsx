@@ -63,7 +63,7 @@ function ReportUnavailable() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-border/50 bg-muted/20 px-3 py-2">
+    <div className="rounded-none border border-border/50 bg-muted/20 px-3 py-2">
       <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         {label}
       </p>
@@ -98,7 +98,7 @@ function SharedResearchPage() {
           <h1 className="text-3xl font-semibold tracking-tight">{project.topic}</h1>
           {project.goal && <p className="text-muted-foreground">{project.goal}</p>}
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className="rounded-md bg-muted px-2 py-0.5 font-mono uppercase">
+            <span className="rounded-none bg-muted px-2 py-0.5 font-mono uppercase">
               {project.depth}
             </span>
             {run?.createdAt && (
@@ -108,7 +108,7 @@ function SharedResearchPage() {
         </div>
 
         {/* Trust surface: what the run actually did, in the open. */}
-        <section className="mb-6 rounded-xl border border-border/60 bg-card/50 p-4">
+        <section className="mb-6 rounded-none border border-border/60 bg-card/50 p-4">
           <div className="mb-3 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-semibold">How this report was made</h2>
@@ -185,7 +185,7 @@ function SharedResearchPage() {
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="block rounded-lg border border-border/50 p-3 transition-colors hover:border-primary/40 hover:bg-muted/30"
+                  className="block rounded-none border border-border/50 p-3 transition-colors hover:border-primary/40 hover:bg-muted/30"
                 >
                   <p className="text-sm font-medium text-foreground">
                     {source.title ?? source.url}

@@ -94,3 +94,14 @@ export const acceptRunSponsorship = createServerFn({ method: "POST" })
     await recordSponsorEvent(data.sponsorId, "run_sponsorship", "run_sponsorship", data.projectId);
     return { ok: true };
   });
+
+/** Signed-in: does the caller hold the platform admin role? UI-gating only. */
+export const getIsPlatformAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    return { isAdmin: !!data };
+  });
