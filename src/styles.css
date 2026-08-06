@@ -386,7 +386,8 @@
   --sidebar-border: oklch(0.99 0.002 250 / 0.9);
   --sidebar-ring: oklch(0.74 0.2 350);
 
-  --brut-ink: oklch(0.05 0.005 265);
+  /* On dark, ink would vanish — offset with a light edge instead. */
+  --brut-ink: oklch(0.99 0.002 250 / 0.22);
 }
 
 @layer base {
