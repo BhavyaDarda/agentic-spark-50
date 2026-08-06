@@ -87,7 +87,7 @@ function Nav() {
       className={
         "sticky top-0 z-50 transition-all duration-500 " +
         (scrolled
-          ? "border-b border-white/5 bg-background/70 backdrop-blur-xl"
+          ? "border-b border-white/5 bg-background/70 "
           : "border-b border-transparent bg-transparent")
       }
     >
@@ -115,7 +115,7 @@ function Nav() {
             <Magnetic strength={0.2}>
               <Button
                 size="sm"
-                className="rounded-full bg-primary px-4 text-primary-foreground shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.4),0_0_28px_-6px_oklch(0.82_0.11_180/0.7)]"
+                className="rounded-none bg-primary px-4 text-primary-foreground"
               >
                 Get started
                 <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -131,7 +131,7 @@ function Nav() {
 function Glyph() {
   return (
     <div className="relative flex h-7 w-7 items-center justify-center">
-      <div className="absolute inset-0 rounded-md border border-primary/40 bg-primary/10" />
+      <div className="absolute inset-0 rounded-none border border-primary/40 bg-primary/10" />
       <svg viewBox="0 0 24 24" className="relative h-4 w-4 text-primary" fill="none">
         <path d="M4 12 L12 4 L20 12 L12 20 Z" stroke="currentColor" strokeWidth="1.5" />
         <circle cx="12" cy="12" r="2.2" fill="currentColor" />
@@ -151,8 +151,8 @@ function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
 
       <div className="relative mx-auto flex max-w-7xl flex-col items-center px-6 pb-24 pt-28 text-center md:pt-36">
-        <div className="glass-surface mb-8 inline-flex items-center gap-3 rounded-full px-3 py-1.5">
-          <span className="flex h-1.5 w-1.5 items-center justify-center rounded-full bg-primary shadow-[0_0_10px_var(--color-primary)]" />
+        <div className="brut bg-card mb-8 inline-flex items-center gap-3 rounded-none px-3 py-1.5">
+          <span className="flex h-1.5 w-1.5 items-center justify-center rounded-full bg-primary" />
           <span className="text-mono text-[11px] uppercase tracking-[0.14em] text-primary">
             Research Ninja v3
           </span>
@@ -187,7 +187,7 @@ function Hero() {
             <Magnetic>
               <Button
                 size="lg"
-                className="group rounded-full bg-primary px-7 text-primary-foreground shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.4),0_10px_40px_-8px_oklch(0.82_0.11_180/0.55)]"
+                className="group rounded-none bg-primary px-7 text-primary-foreground"
               >
                 Start free
                 <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -198,7 +198,7 @@ function Hero() {
             <Button
               size="lg"
               variant="outline"
-              className="rounded-full border-white/15 bg-white/[0.03] px-7 text-foreground backdrop-blur hover:bg-white/[0.06]"
+              className="rounded-none border-white/15 bg-white/[0.03] px-7 text-foreground hover:bg-white/[0.06]"
             >
               See how the loop runs
             </Button>
@@ -253,7 +253,7 @@ function LiveComposer() {
         aria-hidden
         className="pointer-events-none absolute -inset-6 rounded-[28px] bg-[radial-gradient(60%_60%_at_50%_0%,oklch(0.82_0.11_180/0.25),transparent_70%)] blur-2xl"
       />
-      <div className="glass-surface relative overflow-hidden rounded-2xl">
+      <div className="brut bg-card relative overflow-hidden rounded-none">
         <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
         <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
           <div className="flex items-center gap-3">
@@ -262,7 +262,7 @@ function LiveComposer() {
               Composer / Session 4E-27
             </span>
           </div>
-          <div className="hidden items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-mono text-[10px] uppercase tracking-widest text-muted-foreground md:inline-flex">
+          <div className="hidden items-center gap-1.5 rounded-none border border-white/10 bg-white/[0.03] px-2 py-1 text-mono text-[10px] uppercase tracking-widest text-muted-foreground md:inline-flex">
             <Command className="h-3 w-3" /> K
           </div>
         </div>
@@ -302,7 +302,7 @@ function LiveComposer() {
                   <li
                     key={a.name}
                     className={
-                      "flex items-center gap-3 rounded-lg border px-3 py-2 transition-all " +
+                      "flex items-center gap-3 rounded-none border px-3 py-2 transition-all " +
                       (running
                         ? "border-primary/35 bg-primary/[0.06]"
                         : done
@@ -315,13 +315,13 @@ function LiveComposer() {
                     </span>
                     <span className="relative flex h-1.5 w-1.5 items-center justify-center">
                       {running && (
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary opacity-70" />
                       )}
                       <span
                         className={
                           "relative inline-flex h-1.5 w-1.5 rounded-full " +
                           (done || running
-                            ? "bg-primary shadow-[0_0_8px_var(--color-primary)]"
+                            ? "bg-primary"
                             : "bg-foreground/25")
                         }
                       />
@@ -361,7 +361,7 @@ function LiveComposer() {
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-1">
+    <span className="rounded-none border border-white/10 bg-white/[0.03] px-2 py-1">
       {children}
     </span>
   );
@@ -480,9 +480,9 @@ function LoopDiagram({ active }: { active: number }) {
   ];
   return (
     <div className="relative aspect-square w-full max-w-xl">
-      <div className="absolute inset-0 rounded-full border border-white/5" />
+      <div className="absolute inset-0 rounded-none border border-white/5" />
       <div
-        className="absolute inset-8 rounded-full border border-primary/15"
+        className="absolute inset-8 rounded-none border border-primary/15"
         style={{ boxShadow: "inset 0 0 80px oklch(0.82 0.11 180 / 0.15)" }}
       />
       <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full">
@@ -515,7 +515,7 @@ function LoopDiagram({ active }: { active: number }) {
           >
             <div
               className={
-                "flex items-center gap-2 rounded-full border px-3 py-1.5 backdrop-blur-md transition-all duration-500 " +
+                "flex items-center gap-2 rounded-none border px-3 py-1.5 backdrop-blur-md transition-all duration-500 " +
                 (on
                   ? "border-primary/40 bg-primary/[0.08]"
                   : "border-white/8 bg-white/[0.02] opacity-70")
@@ -623,17 +623,17 @@ function BentoCard({
     <Magnetic strength={0.05} className={className}>
       <div
         className={
-          "group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-white/8 bg-white/[0.02] p-6 transition-colors hover:border-primary/25 " +
+          "group relative flex h-full flex-col justify-between overflow-hidden rounded-none border border-white/8 bg-white/[0.02] p-6 transition-colors hover:border-primary/25 " +
           (tall ? "min-h-[280px]" : "min-h-[220px]")
         }
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-primary/[0.08] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+          className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-none bg-primary/[0.08] opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
         />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-none border border-primary/30 bg-primary/10 text-primary">
             <Icon className="h-4 w-4" />
           </div>
           <span className="text-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
@@ -669,15 +669,15 @@ function AgentLineup() {
           {AGENTS.map((a) => (
             <div
               key={a.name}
-              className="group relative flex flex-col overflow-hidden rounded-xl border border-white/8 bg-white/[0.02] p-5 transition-colors hover:border-primary/25"
+              className="group relative flex flex-col overflow-hidden rounded-none border border-white/8 bg-white/[0.02] p-5 transition-colors hover:border-primary/25"
             >
               <div className="mb-8 flex items-center justify-between">
                 <span className="text-mono text-[10px] tracking-widest text-muted-foreground">
                   {a.code}
                 </span>
                 <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-none bg-primary opacity-60" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
                 </span>
               </div>
               <div className="text-display text-xl font-medium tracking-tight">{a.name}</div>
@@ -776,9 +776,9 @@ function Pricing() {
             <div
               key={p.label}
               className={
-                "relative flex flex-col rounded-2xl border p-8 " +
+                "relative flex flex-col rounded-none border p-8 " +
                 (i === 1
-                  ? "border-primary/40 bg-primary/[0.04] shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.25),0_20px_60px_-20px_oklch(0.82_0.11_180/0.45)]"
+                  ? "border-primary/40 bg-primary/[0.04]"
                   : "border-white/8 bg-white/[0.02]")
               }
             >
@@ -788,7 +788,7 @@ function Pricing() {
               <div className="text-display mt-4 text-xl font-medium leading-snug">{p.title}</div>
               <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.desc}</p>
               {i === 1 && (
-                <div className="mt-6 rounded-xl border border-white/8 bg-background/60 p-3">
+                <div className="mt-6 rounded-none border border-white/8 bg-background/60 p-3">
                   <div className="flex items-center justify-between">
                     <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-mono text-[9px] uppercase tracking-[0.18em] text-muted-foreground">
                       sponsor
@@ -840,7 +840,7 @@ function CtaFooter() {
               <Magnetic>
                 <Button
                   size="lg"
-                  className="rounded-full bg-primary px-8 text-primary-foreground shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.4),0_10px_40px_-8px_oklch(0.82_0.11_180/0.55)]"
+                  className="rounded-none bg-primary px-8 text-primary-foreground"
                 >
                   Start free
                   <ArrowRight className="ml-1 h-4 w-4" />

@@ -288,7 +288,7 @@ function TeamTab({ workspaceId }: { workspaceId?: string }) {
               {team.data?.members.map((m) => (
                 <li key={m.userId} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-none bg-primary/10 text-primary">
                       <User className="h-4 w-4" />
                     </div>
                     <div>
@@ -426,7 +426,7 @@ function TeamSkeleton() {
       {Array.from({ length: 3 }).map((_, i) => (
         <div key={i} className="flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />
+            <div className="h-8 w-8 animate-pulse rounded-none bg-muted" />
             <div className="space-y-1">
               <div className="h-4 w-32 animate-pulse rounded bg-muted" />
               <div className="h-3 w-48 animate-pulse rounded bg-muted" />
@@ -556,7 +556,7 @@ function BillingTab() {
           ].map((p) => (
             <div
               key={p.name}
-              className="rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
+              className="rounded-none border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
             >
               <div className="text-xs uppercase tracking-widest text-muted-foreground">
                 {p.name}
@@ -711,7 +711,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             ))}
           </div>
         ) : connections.data?.items.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-none border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
             No MCP servers connected yet.
           </div>
         ) : (
@@ -719,10 +719,10 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             {connections.data?.items.map((conn) => (
               <div
                 key={conn.id}
-                className="flex items-center justify-between rounded-lg border border-border/60 bg-card/40 p-4"
+                className="flex items-center justify-between rounded-none border border-border/60 bg-card/40 p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-none bg-primary/10 text-primary">
                     <Server className="h-4 w-4" />
                   </div>
                   <div>

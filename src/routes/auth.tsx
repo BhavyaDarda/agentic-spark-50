@@ -34,7 +34,7 @@ export const Route = createFileRoute("/auth")({
 function Glyph() {
   return (
     <div className="relative flex h-8 w-8 items-center justify-center">
-      <div className="absolute inset-0 rounded-md border border-primary/40 bg-primary/10" />
+      <div className="absolute inset-0 rounded-none border border-primary/40 bg-primary/10" />
       <svg viewBox="0 0 24 24" className="relative h-[18px] w-[18px] text-primary" fill="none">
         <path d="M4 12 L12 4 L20 12 L12 20 Z" stroke="currentColor" strokeWidth="1.5" />
         <circle cx="12" cy="12" r="2.2" fill="currentColor" />
@@ -143,7 +143,7 @@ function AuthPage() {
           </div>
 
           <div className="flex items-center gap-2 text-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
             SOC 2 · GDPR · SSO ready
           </div>
         </div>
@@ -174,7 +174,7 @@ function AuthPage() {
           <Button
             type="button"
             variant="outline"
-            className="w-full rounded-full border-white/15 bg-white/[0.02] backdrop-blur hover:bg-white/[0.05]"
+            className="w-full rounded-none border-white/15 bg-white/[0.02] hover:bg-white/[0.05]"
             onClick={oauth}
             disabled={busy}
           >
@@ -201,7 +201,7 @@ function AuthPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="h-11 rounded-lg border-white/10 bg-white/[0.02] focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                className="h-11 rounded-none border-white/10 bg-white/[0.02] focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-primary/20"
               />
             </div>
             <div className="space-y-1.5">
@@ -219,12 +219,12 @@ function AuthPage() {
                 required
                 minLength={6}
                 autoComplete={tab === "signin" ? "current-password" : "new-password"}
-                className="h-11 rounded-lg border-white/10 bg-white/[0.02] focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                className="h-11 rounded-none border-white/10 bg-white/[0.02] focus-visible:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-primary/20"
               />
             </div>
             <Button
               type="submit"
-              className="h-11 w-full rounded-full bg-primary text-primary-foreground shadow-[0_0_0_1px_oklch(0.82_0.11_180/0.4),0_10px_30px_-8px_oklch(0.82_0.11_180/0.55)] hover:bg-primary/90"
+              className="h-11 w-full rounded-none bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={busy}
             >
               {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
