@@ -12,15 +12,18 @@ import type { PublicSponsor } from "@/lib/sponsors.server";
 export function SponsorUnit({
   sponsor,
   surface = "report_source_card",
+  preview = false,
 }: {
   sponsor: PublicSponsor;
   surface?: "report_source_card" | "report_credit";
+  /** Renders the card inert — used by the sponsor admin editor. */
+  preview?: boolean;
 }) {
   const click = useServerFn(clickSponsor);
   const [busy, setBusy] = useState(false);
 
   async function handleClick() {
-    if (busy) return;
+    if (busy || preview) return;
     setBusy(true);
     try {
       const { url } = await click({ data: { sponsorId: sponsor.id, surface } });
@@ -29,6 +32,7 @@ export function SponsorUnit({
       setBusy(false);
     }
   }
+
 
   return (
     <aside
