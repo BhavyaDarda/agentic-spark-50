@@ -10,12 +10,12 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 // Fonts are bundled locally — no network calls, no CSP surprises.
-import "@fontsource-variable/space-grotesk/index.css";
-import "@fontsource-variable/dm-sans/index.css";
-import "@fontsource-variable/outfit";
-import "@fontsource-variable/figtree";
+import "@fontsource/unbounded/200.css";
+import "@fontsource/unbounded/400.css";
+import "@fontsource/unbounded/700.css";
+import "@fontsource/unbounded/900.css";
+import "@fontsource/alata/400.css";
 import "@fontsource-variable/jetbrains-mono";
-import "@fontsource/instrument-serif";
 
 
 
