@@ -1,7 +1,7 @@
 import { Link, useNavigate, useMatchRoute } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import {
-  Sparkles,
+  Zap,
   Plus,
   Library,
   Building2,
@@ -55,13 +55,16 @@ export function AppSidebar() {
   }, [conversations.data, filter]);
 
   return (
-    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r border-border/60 bg-sidebar text-sidebar-foreground md:flex">
-      <div className="flex h-14 items-center gap-2 border-b border-border/60 px-4">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-          <Sparkles className="h-4 w-4" />
+    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r-[4px] border-border bg-sidebar text-sidebar-foreground md:flex">
+      <div className="flex h-14 items-center gap-2.5 border-b-[4px] border-border px-4">
+        <div className="flex h-8 w-8 -rotate-12 items-center justify-center border-[3px] border-border bg-primary text-primary-foreground">
+          <Zap className="h-4 w-4" strokeWidth={3} />
         </div>
-        <span className="font-semibold tracking-tight">Marketing Agent</span>
+        <span className="font-display text-xs font-black uppercase tracking-tighter">
+          Marketing Agent
+        </span>
       </div>
+
 
       <div className="p-3">
         <Button

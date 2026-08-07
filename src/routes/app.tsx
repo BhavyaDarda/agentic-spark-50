@@ -51,16 +51,19 @@ function AppLayout() {
     <div className="flex min-h-screen bg-background text-foreground">
       <AppSidebar />
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur md:px-6">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">Workspace</span>
-            <span className="rounded-md border border-border/60 bg-card px-2 py-0.5 text-xs font-medium">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b-[4px] border-border bg-background px-4 md:px-6">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              Workspace
+            </span>
+            <span className="border-[3px] border-border bg-card px-2 py-0.5 font-display text-xs font-black uppercase">
               {ws.data?.workspace?.name ?? "—"}
             </span>
-            <span className="rounded-md bg-primary/10 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-primary">
+            <span className="border-[3px] border-border bg-secondary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-secondary-foreground">
               {ws.data?.workspace?.plan ?? "free"}
             </span>
           </div>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="gap-2">

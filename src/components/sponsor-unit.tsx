@@ -39,7 +39,7 @@ export function SponsorUnit({
       data-slot="sponsor"
       className="brut mt-8 overflow-hidden bg-card"
     >
-      <div className="flex items-center justify-between border-b-2 border-border bg-primary px-3 py-1.5">
+      <div className="flex items-center justify-between border-b-[3px] border-border bg-primary px-3 py-1.5">
         <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-primary-foreground">
           sponsor
         </span>
@@ -54,7 +54,7 @@ export function SponsorUnit({
             src={sponsor.logoUrl}
             alt={`${sponsor.name} logo`}
             loading="lazy"
-            className="h-10 w-10 shrink-0 border-2 border-border object-contain"
+            className="h-10 w-10 shrink-0 border-[3px] border-border object-contain"
           />
         )}
         <div className="min-w-0 flex-1">
