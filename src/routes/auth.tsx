@@ -33,15 +33,12 @@ export const Route = createFileRoute("/auth")({
 
 function Glyph() {
   return (
-    <div className="relative flex h-8 w-8 items-center justify-center">
-      <div className="absolute inset-0 rounded-none border border-primary/40 bg-primary/10" />
-      <svg viewBox="0 0 24 24" className="relative h-[18px] w-[18px] text-primary" fill="none">
-        <path d="M4 12 L12 4 L20 12 L12 20 Z" stroke="currentColor" strokeWidth="1.5" />
-        <circle cx="12" cy="12" r="2.2" fill="currentColor" />
-      </svg>
+    <div className="brut-sm flex h-10 w-10 -rotate-12 items-center justify-center bg-primary">
+      <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={3} />
     </div>
   );
 }
+
 
 function AuthPage() {
   const { mode = "signin", next } = useSearch({ from: "/auth" });
