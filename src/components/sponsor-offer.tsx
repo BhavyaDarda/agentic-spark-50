@@ -56,7 +56,7 @@ export function SponsorOffer({
 
   return (
     <section className="brut bg-card">
-      <header className="flex items-center justify-between border-b-2 border-border bg-accent px-3 py-1.5">
+      <header className="flex items-center justify-between border-b-[3px] border-border bg-accent px-3 py-1.5">
         <span className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-accent-foreground">
           <HandCoins className="h-3.5 w-3.5" />
           optional sponsorship

@@ -161,7 +161,7 @@ function SponsorsAdmin() {
         <div className="brut overflow-x-auto bg-card">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b-2 border-border bg-secondary text-left font-mono text-[10px] uppercase tracking-[0.16em]">
+              <tr className="border-b-[3px] border-border bg-secondary text-left font-mono text-[10px] uppercase tracking-[0.16em]">
                 <th className="px-3 py-2">Sponsor</th>
                 <th className="px-3 py-2">Status</th>
                 <th className="px-3 py-2 text-right">Weight</th>
@@ -175,7 +175,7 @@ function SponsorsAdmin() {
               {rows.map((row) => {
                 const ctr = row.impressions > 0 ? (row.clicks / row.impressions) * 100 : 0;
                 return (
-                  <tr key={row.id} className="border-b-2 border-border/40 last:border-b-0">
+                  <tr key={row.id} className="border-b-[3px] border-border/40 last:border-b-0">
                     <td className="px-3 py-2.5">
                       <div className="font-semibold">{row.name}</div>
                       <div className="max-w-md truncate text-xs text-muted-foreground">
