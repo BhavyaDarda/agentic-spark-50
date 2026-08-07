@@ -1,7 +1,7 @@
 import { Link, useNavigate, useMatchRoute } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import {
-  Sparkles,
+  Zap,
   Plus,
   Library,
   Building2,
