@@ -17,6 +17,7 @@ import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as AppSponsorsRouteImport } from './routes/app.sponsors'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
 import { Route as AppContentRouteImport } from './routes/app.content'
 import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
 import { Route as AppBrandsRouteImport } from './routes/app.brands'
@@ -65,6 +66,11 @@ const AppSponsorsRoute = AppSponsorsRouteImport.update({
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKnowledgeRoute = AppKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
   getParentRoute: () => AppRoute,
 } as any)
 const AppContentRoute = AppContentRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/sponsors': typeof AppSponsorsRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/sponsors': typeof AppSponsorsRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/app/brands': typeof AppBrandsRoute
   '/app/campaigns': typeof AppCampaignsRoute
   '/app/content': typeof AppContentRoute
+  '/app/knowledge': typeof AppKnowledgeRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/sponsors': typeof AppSponsorsRoute
   '/invite/$token': typeof InviteTokenRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
+    | '/app/knowledge'
     | '/app/settings'
     | '/app/sponsors'
     | '/invite/$token'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
+    | '/app/knowledge'
     | '/app/settings'
     | '/app/sponsors'
     | '/invite/$token'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/app/brands'
     | '/app/campaigns'
     | '/app/content'
+    | '/app/knowledge'
     | '/app/settings'
     | '/app/sponsors'
     | '/invite/$token'
@@ -297,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/knowledge': {
+      id: '/app/knowledge'
+      path: '/knowledge'
+      fullPath: '/app/knowledge'
+      preLoaderRoute: typeof AppKnowledgeRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/content': {
       id: '/app/content'
       path: '/content'
@@ -368,6 +387,7 @@ interface AppRouteChildren {
   AppBrandsRoute: typeof AppBrandsRoute
   AppCampaignsRoute: typeof AppCampaignsRoute
   AppContentRoute: typeof AppContentRoute
+  AppKnowledgeRoute: typeof AppKnowledgeRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppSponsorsRoute: typeof AppSponsorsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -381,6 +401,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppBrandsRoute: AppBrandsRoute,
   AppCampaignsRoute: AppCampaignsRoute,
   AppContentRoute: AppContentRoute,
+  AppKnowledgeRoute: AppKnowledgeRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppSponsorsRoute: AppSponsorsRoute,
   AppIndexRoute: AppIndexRoute,
