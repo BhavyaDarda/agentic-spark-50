@@ -642,9 +642,61 @@ export type Database = {
           },
         ]
       }
+      report_citations: {
+        Row: {
+          citing_title: string | null
+          citing_url: string
+          engine: string
+          first_seen_at: string
+          id: string
+          last_seen_at: string
+          project_id: string
+          snippet: string | null
+          workspace_id: string
+        }
+        Insert: {
+          citing_title?: string | null
+          citing_url: string
+          engine: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          project_id: string
+          snippet?: string | null
+          workspace_id: string
+        }
+        Update: {
+          citing_title?: string | null
+          citing_url?: string
+          engine?: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          project_id?: string
+          snippet?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_citations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "research_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_citations_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       research_projects: {
         Row: {
           brand_id: string | null
+          citations_checked_at: string | null
           created_at: string
           created_by: string
           depth: string
@@ -658,6 +710,7 @@ export type Database = {
         }
         Insert: {
           brand_id?: string | null
+          citations_checked_at?: string | null
           created_at?: string
           created_by: string
           depth?: string
@@ -671,6 +724,7 @@ export type Database = {
         }
         Update: {
           brand_id?: string | null
+          citations_checked_at?: string | null
           created_at?: string
           created_by?: string
           depth?: string
@@ -1202,6 +1256,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_rate_limit: {
+        Args: {
+          p_bucket: string
+          p_window_start: string
+          p_workspace_id: string
+        }
+        Returns: undefined
       }
       is_workspace_member: {
         Args: { _user_id: string; _workspace_id: string }
