@@ -132,10 +132,11 @@ export function AppSidebar() {
         )}
       </div>
 
-      <nav className="border-t border-border/60 p-2">
+      <nav className="brut-seam p-2">
         <SidebarLink to="/app/campaigns" icon={Megaphone} label="Campaigns" />
         <SidebarLink to="/app/content" icon={PenTool} label="Content Studio" />
         <SidebarLink to="/app/research" icon={Microscope} label="Research Ninja" />
+        <SidebarLink to="/app/knowledge" icon={BrainCircuit} label="Brand Memory" />
         <SidebarLink to="/app/artifacts" icon={Library} label="Artifact Library" />
         <SidebarLink to="/app/brands" icon={Building2} label="Brands" />
         <SidebarLink to="/app/settings" icon={SettingsIcon} label="Settings" />
@@ -143,6 +144,7 @@ export function AppSidebar() {
           <SidebarLink to="/app/sponsors" icon={MegaphoneIcon} label="Sponsors" />
         )}
       </nav>
+
 
       <div className="border-t border-border/60 p-3">
         <Link
