@@ -324,7 +324,7 @@ function ChatPage() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 [scrollbar-width:thin]">
           <div className="mx-auto max-w-3xl space-y-6">
             {messages.length === 0 && !conv.isLoading && (
-              <div className="rounded-xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+              <div className="border-[3px] border-dashed border-border p-8 text-center text-sm text-muted-foreground">
                 Start the conversation below.
               </div>
             )}
@@ -334,9 +334,9 @@ function ChatPage() {
           </div>
         </div>
 
-        <div className="border-t border-border/60 bg-background/80 px-4 py-3 backdrop-blur">
+        <div className="border-t-[3px] border-border bg-background px-4 py-3">
           <div className="mx-auto max-w-3xl">
-            <div className="rounded-2xl border border-border/60 bg-card/60 p-2 shadow-lg shadow-black/20">
+            <div className="border-[3px] border-border bg-card p-2 brutal-shadow">
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -427,7 +427,7 @@ function MessageRow({
   if (m.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-tr-md bg-primary/15 px-4 py-2.5 text-sm text-foreground ring-1 ring-primary/20">
+        <div className="max-w-[85%] bg-primary/15 px-4 py-2.5 text-sm text-foreground ring-1 ring-primary/20">
           {m.text}
         </div>
       </div>
@@ -435,7 +435,7 @@ function MessageRow({
   }
   return (
     <div className="flex gap-3">
-      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary ring-1 ring-primary/20">
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/20">
         <Sparkles className="h-3.5 w-3.5" />
       </div>
       <div className="min-w-0 flex-1 space-y-3">
@@ -453,7 +453,7 @@ function MessageRow({
           </div>
         )}
         {m.citations.length > 0 && (
-          <div className="rounded-lg border border-border/60 bg-card/40 p-3">
+          <div className="border-[3px] border-border bg-card p-3">
             <div className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
               Sources · {m.citations.length}
             </div>
@@ -481,12 +481,12 @@ function MessageRow({
               <button
                 key={a.id}
                 onClick={() => onOpenArtifact(a)}
-                className="group flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs transition-colors hover:border-primary/60 hover:bg-primary/10"
+                className="group flex items-center gap-2 border-[3px] border-primary bg-primary/5 px-3 py-2 text-xs transition-colors hover:border-primary/60 hover:bg-primary/10"
               >
                 <FileText className="h-3.5 w-3.5 text-primary" />
                 <span className="font-medium">{a.title}</span>
                 <span className="rounded bg-background/50 px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
-                  {a.kind.replace("_", " ")}
+                  {a.kind.replace("_", "")}
                 </span>
               </button>
             ))}
@@ -502,12 +502,12 @@ function MessageRow({
 function ToolCard({ t }: { t: ToolEvent }) {
   const Icon =
     t.tool === "web_search" ? Globe : t.tool === "fetch_page" ? Globe : t.tool === "save_artifact" ? FileText : Wrench;
-  const label = t.tool.replace("_", " ");
+  const label = t.tool.replace("_", "");
   const isRunning = t.status === "running";
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-md border border-border/60 bg-card/40 px-2.5 py-1.5 text-xs",
+        "flex items-center gap-2 border-[3px] border-border bg-card px-2.5 py-1.5 text-xs",
         isRunning && "border-primary/40 bg-primary/5",
         t.status === "error" && "border-destructive/40 bg-destructive/5",
       )}
@@ -568,13 +568,13 @@ function ArtifactPanel({
   }, [artifact.id]);
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-30 flex w-full flex-col border-l border-border/60 bg-background shadow-2xl shadow-black/40 lg:w-[min(48%,640px)]">
-      <div className="flex h-12 items-center justify-between border-b border-border/60 px-3">
+    <aside className="fixed inset-y-0 right-0 z-30 flex w-full flex-col border-l-[3px] border-border bg-background brutal-shadow lg:w-[min(48%,640px)]">
+      <div className="flex h-12 items-center justify-between border-b-[3px] border-border px-3">
         <div className="flex min-w-0 items-center gap-2">
           <FileText className="h-4 w-4 shrink-0 text-primary" />
           <span className="truncate text-sm font-medium">{artifact.title}</span>
           <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
-            {artifact.kind.replace("_", " ")}
+            {artifact.kind.replace("_", "")}
           </span>
         </div>
         <div className="flex items-center gap-1">

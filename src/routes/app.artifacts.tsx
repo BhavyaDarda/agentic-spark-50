@@ -92,13 +92,13 @@ function ArtifactLibrary() {
           <Loader2 className="h-4 w-4 animate-spin" /> Loading library…
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border/60 p-12 text-center">
+        <div className="border-[3px] border-dashed border-border p-12 text-center">
           <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">
-            No artifacts yet.{" "}
+            No artifacts yet.{""}
             <Link to="/app" className="text-primary hover:underline">
               Start a chat
-            </Link>{" "}
+            </Link>{""}
             and ask the agent to save one.
           </p>
         </div>
@@ -109,14 +109,14 @@ function ArtifactLibrary() {
               <Link
                 to="/app/c/$conversationId"
                 params={{ conversationId: a.conversation_id ?? "" }}
-                className="group block rounded-xl border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40 hover:bg-card"
+                className="group block border-[3px] border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-card"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold">{a.title}</div>
                     <div className="mt-1 flex items-center gap-2 text-[10px]">
                       <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary">
-                        {a.kind.replace("_", " ")}
+                        {a.kind.replace("_", "")}
                       </span>
                       <span className="text-muted-foreground">
                         {new Date(a.created_at).toLocaleDateString()}

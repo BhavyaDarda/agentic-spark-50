@@ -147,7 +147,7 @@ function KnowledgePage() {
               id="k-title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder={mode === "url" ? "Optional — we read the page title" : "Tone of voice v3"}
+              placeholder={mode === "url" ? "Optional — we read the page title":"Tone of voice v3"}
             />
           </div>
           <div className="space-y-1.5">

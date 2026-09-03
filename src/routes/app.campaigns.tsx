@@ -198,7 +198,7 @@ function CampaignsPage() {
                 <div className="space-y-1.5">
                   <Label>Brand</Label>
                   <select
-                    className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
+                    className="h-9 w-full border-[3px] border-border bg-transparent px-3 text-sm"
                     value={form.brandId}
                     onChange={(e) => setForm({ ...form, brandId: e.target.value })}
                   >
@@ -368,7 +368,7 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
                   </h3>
                   <div className="space-y-1.5">
                     {strategy.channelMix.map((c) => (
-                      <div key={c.channel} className="rounded-md border border-border/60 p-2.5">
+                      <div key={c.channel} className="border-[3px] border-border p-2.5">
                         <div className="flex items-center justify-between text-sm">
                           <span className="font-medium">{c.channel}</span>
                           <span className="font-mono text-xs text-primary">{c.budgetShare}%</span>
@@ -418,7 +418,7 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
                         Replan
                       </Button>
                     </div>
-                    <div className="divide-y divide-border/60 rounded-md border border-border/60">
+                    <div className="divide-y divide-border/60 border-[3px] border-border">
                       {calendar.map((row, i) => (
                         <div key={i} className="flex items-center gap-3 p-2.5">
                           <span className="w-12 font-mono text-xs text-muted-foreground">
@@ -457,7 +457,7 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
                 <h3 className="font-display text-sm uppercase tracking-widest text-muted-foreground">
                   Generated assets
                 </h3>
-                <div className="divide-y divide-border/60 rounded-md border border-border/60">
+                <div className="divide-y divide-border/60 border-[3px] border-border">
                   {detail.data!.assets.map((a) => (
                     <button
                       key={a.id}

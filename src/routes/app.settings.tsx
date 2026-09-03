@@ -224,7 +224,7 @@ function TeamTab({ workspaceId }: { workspaceId?: string }) {
             <CardTitle className="text-base">Members</CardTitle>
             <CardDescription>
               {team.data?.members.length ?? 0} member
-              {(team.data?.members.length ?? 0) !== 1 ? "s" : ""} ·{" "}
+              {(team.data?.members.length ?? 0) !== 1 ? "s" : ""} ·{""}
               {team.data?.invites.length ?? 0} pending invite
               {(team.data?.invites.length ?? 0) !== 1 ? "s" : ""}
             </CardDescription>
@@ -556,7 +556,7 @@ function BillingTab() {
           ].map((p) => (
             <div
               key={p.name}
-              className="rounded-none border border-border/60 bg-card/40 p-4 transition-colors hover:border-primary/40"
+              className="rounded-none border-[3px] border-border bg-card p-4 transition-colors hover:border-primary/40"
             >
               <div className="text-xs uppercase tracking-widest text-muted-foreground">
                 {p.name}
@@ -711,7 +711,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             ))}
           </div>
         ) : connections.data?.items.length === 0 ? (
-          <div className="rounded-none border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-none border-[3px] border-dashed border-border p-8 text-center text-sm text-muted-foreground">
             No MCP servers connected yet.
           </div>
         ) : (
@@ -719,7 +719,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             {connections.data?.items.map((conn) => (
               <div
                 key={conn.id}
-                className="flex items-center justify-between rounded-none border border-border/60 bg-card/40 p-4"
+                className="flex items-center justify-between rounded-none border-[3px] border-border bg-card p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-none bg-primary/10 text-primary">

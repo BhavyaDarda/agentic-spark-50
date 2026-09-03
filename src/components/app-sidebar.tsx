@@ -118,7 +118,7 @@ export function AppSidebar() {
                     to="/app/c/$conversationId"
                     params={{ conversationId: c.id }}
                     className={cn(
-                      "group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      "group flex items-center gap-2 px-2 py-1.5 text-xs text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       active && "bg-sidebar-accent text-sidebar-accent-foreground",
                     )}
                   >
@@ -146,17 +146,17 @@ export function AppSidebar() {
       </nav>
 
 
-      <div className="border-t border-border/60 p-3">
+      <div className="border-t-[3px] border-border p-3">
         <Link
           to="/app"
-          className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <BrainCircuit className="h-3.5 w-3.5" />
           New agent chat
         </Link>
       </div>
 
-      <div className="border-t border-border/60 p-3 text-[10px] text-muted-foreground">
+      <div className="border-t-[3px] border-border p-3 text-[10px] text-muted-foreground">
         <div className="font-mono uppercase tracking-widest">
           {ws.data?.workspace?.plan ?? "free"} · v2.0
         </div>
@@ -177,10 +177,10 @@ function SidebarLink({
   return (
     <Link
       to={to}
-      className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+      className="flex items-center gap-3 px-3 py-2 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       activeProps={{
         className:
-          "flex items-center gap-3 rounded-md px-3 py-2 text-sm bg-sidebar-accent text-sidebar-accent-foreground",
+          "flex items-center gap-3 px-3 py-2 text-sm bg-sidebar-accent text-sidebar-accent-foreground",
       }}
     >
       <Icon className="h-4 w-4" />
