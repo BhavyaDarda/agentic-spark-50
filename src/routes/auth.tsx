@@ -113,9 +113,9 @@ function AuthPage() {
   return (
     <div className="grid min-h-screen bg-background text-foreground lg:grid-cols-[1.05fr_1fr]">
       {/* Left — brutalist manifesto panel */}
-      <aside className="relative hidden overflow-hidden border-r-[6px] border-border bg-primary text-primary-foreground lg:block">
+      <aside className="relative hidden overflow-hidden border-r-[6px] border-border bg-primary text-primary-foreground lg:flex lg:flex-col lg:justify-center">
         <div className="pointer-events-none absolute inset-0 brutal-dots" aria-hidden />
-        <div className="relative flex h-full flex-col justify-between p-10">
+        <div className="relative mx-auto flex h-full max-h-[860px] w-full flex-col justify-between self-center p-10">
           <Link
             to="/"
             className="inline-flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-widest hover:underline"
