@@ -117,7 +117,7 @@ function InvitePage() {
           </div>
           <CardTitle>Join {invite.workspaceName}</CardTitle>
           <CardDescription>
-            You've been invited as a{""}
+            You've been invited as a{" "}
             <span className="font-medium text-foreground">{invite.role}</span>.
           </CardDescription>
         </CardHeader>
@@ -133,8 +133,8 @@ function InvitePage() {
             <div className="flex items-start gap-2 rounded-none border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
-                This invitation was sent to a different email address. Sign out and sign in with{""}
-                <strong>{invite.email}</strong>, or ask the sender to invite{""}
+                This invitation was sent to a different email address. Sign out and sign in with{" "}
+                <strong>{invite.email}</strong>, or ask the sender to invite{" "}
                 {sessionQuery.data.user.email} instead.
               </span>
             </div>

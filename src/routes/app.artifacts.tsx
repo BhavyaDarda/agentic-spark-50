@@ -95,10 +95,10 @@ function ArtifactLibrary() {
         <div className="border-[3px] border-dashed border-border p-12 text-center">
           <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">
-            No artifacts yet.{""}
+            No artifacts yet.{" "}
             <Link to="/app" className="text-primary hover:underline">
               Start a chat
-            </Link>{""}
+            </Link>{" "}
             and ask the agent to save one.
           </p>
         </div>

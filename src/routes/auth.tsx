@@ -188,7 +188,7 @@ function AuthPage() {
             </Button>
 
             <div className="my-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-widest">
-              <div className="h-[3px] flex-1 bg-border" /> or{""}
+              <div className="h-[3px] flex-1 bg-border" /> or{" "}
               <div className="h-[3px] flex-1 bg-border" />
             </div>
 
@@ -238,7 +238,7 @@ function AuthPage() {
           <div className="mt-6 text-center text-sm">
             {tab === "signin" ? (
               <>
-                Don't have an account?{""}
+                Don't have an account?{" "}
                 <button
                   type="button"
                   className="font-bold text-primary underline-offset-4 hover:underline"
@@ -249,7 +249,7 @@ function AuthPage() {
               </>
             ) : (
               <>
-                Already have an account?{""}
+                Already have an account?{" "}
                 <button
                   type="button"
                   className="font-bold text-primary underline-offset-4 hover:underline"

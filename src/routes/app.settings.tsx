@@ -224,7 +224,7 @@ function TeamTab({ workspaceId }: { workspaceId?: string }) {
             <CardTitle className="text-base">Members</CardTitle>
             <CardDescription>
               {team.data?.members.length ?? 0} member
-              {(team.data?.members.length ?? 0) !== 1 ? "s" : ""} ·{""}
+              {(team.data?.members.length ?? 0) !== 1 ? "s" : ""} ·{" "}
               {team.data?.invites.length ?? 0} pending invite
               {(team.data?.invites.length ?? 0) !== 1 ? "s" : ""}
             </CardDescription>
