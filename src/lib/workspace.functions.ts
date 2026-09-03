@@ -2,25 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-export const getMyWorkspaces = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("workspace_members")
-      .select("role, workspace:workspaces(*)")
-      .order("created_at", { ascending: true });
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((r) => ({
-      role: r.role as "owner" | "admin" | "member",
-      workspace: r.workspace as unknown as {
-        id: string;
-        name: string;
-        slug: string;
-        plan: string;
-      },
-    }));
-  });
-
 export const getCurrentWorkspace = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -41,18 +22,6 @@ export const getCurrentWorkspace = createServerFn({ method: "GET" })
         plan: string;
       },
     };
-  });
-
-export const getMembers = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => z.object({ workspaceId: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { data: members, error } = await context.supabase
-      .from("workspace_members")
-      .select("user_id, role, created_at")
-      .eq("workspace_id", data.workspaceId);
-    if (error) throw new Error(error.message);
-    return members ?? [];
   });
 
 export const renameWorkspace = createServerFn({ method: "POST" })
