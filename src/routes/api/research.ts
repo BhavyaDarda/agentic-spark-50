@@ -253,12 +253,49 @@ export const Route = createFileRoute("/api/research")({
                 }
               }
 
+              // ====== BRAND MEMORY (grounding in the workspace's own documents) ======
+              const brandPassages: { title: string; sourceUrl: string | null; text: string }[] = [];
+              try {
+                await writeStep({
+                  type: "step",
+                  agent: "Brand memory",
+                  action: "vector_search",
+                  thought: `Retrieving workspace knowledge for: ${project.topic}`,
+                });
+                const qvec = await embed(`${project.topic}\n${project.goal ?? ""}`);
+                const { data: hits } = await sb.rpc("match_documents", {
+                  _workspace_id: project.workspace_id,
+                  query_embedding: qvec as unknown as string,
+                  match_count: 6,
+                });
+                const seen = new Set(docs.map((d) => d.url));
+                for (const h of hits ?? []) {
+                  if (h.source_url && seen.has(h.source_url)) continue;
+                  brandPassages.push({
+                    title: h.title ?? "Brand document",
+                    sourceUrl: h.source_url ?? null,
+                    text: (h.content ?? "").slice(0, 1800),
+                  });
+                }
+                await writeStep({
+                  type: "step",
+                  agent: "Brand memory",
+                  action: "result",
+                  thought: brandPassages.length
+                    ? `${brandPassages.length} internal passages grounded the report`
+                    : "No brand documents in this workspace yet",
+                  result: { count: brandPassages.length },
+                });
+              } catch {
+                /* brand memory is best-effort; the run continues on web sources */
+              }
+
               // ====== SYNTHESIZER ======
               await writeStep({
                 type: "step",
                 agent: "Synthesizer",
                 action: "compose",
-                thought: `Synthesizing from ${docs.length} sources`,
+                thought: `Synthesizing from ${docs.length} web sources and ${brandPassages.length} brand documents`,
               });
 
               const corpus = docs
@@ -268,12 +305,22 @@ export const Route = createFileRoute("/api/research")({
                 )
                 .join("\n\n---\n\n");
 
+              const brandCorpus = brandPassages
+                .map(
+                  (b, i) =>
+                    `### Brand document [B${i + 1}] ${b.title}${b.sourceUrl ? `\nURL: ${b.sourceUrl}` : ""}\n\n${b.text}`,
+                )
+                .join("\n\n---\n\n");
+
               const report = await generateText({
                 model,
                 system:
-                  "You are the Synthesizer. Write a thorough, well-structured research report in Markdown. Use clear sections (Executive Summary, Key Findings, Detailed Analysis, Implications, Recommendations, References). Cite sources inline as [1], [2], etc., matching the provided source numbering. End with a numbered References list with URLs.",
-                prompt: `Topic: ${project.topic}\nGoal: ${project.goal ?? ""}\n\n### Sources\n${corpus || "(no sources retrieved — answer from general knowledge and flag uncertainty)"}`,
+                  "You are the Synthesizer. Write a thorough, well-structured research report in Markdown. Use clear sections (Executive Summary, Key Findings, Detailed Analysis, Implications, Recommendations, References). Cite web sources inline as [1], [2], … matching the provided numbering, and cite the company's own internal brand documents as [B1], [B2], …. Ground every claim about the company itself in the brand documents. End with a numbered References list with URLs, and list internal brand documents separately under 'Internal sources'.",
+                prompt: `Topic: ${project.topic}\nGoal: ${project.goal ?? ""}\n\n### Sources\n${corpus || "(no sources retrieved — answer from general knowledge and flag uncertainty)"}${
+                  brandCorpus ? `\n\n### Internal brand documents\n${brandCorpus}` : ""
+                }`,
               });
+
 
               // ====== CRITIC ======
               await writeStep({

@@ -99,7 +99,7 @@ function NewChatWelcome() {
   return (
     <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-3xl flex-col justify-center gap-8 px-4 py-10">
       <div className="space-y-2 text-center">
-        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/20">
+        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/20">
           <Sparkles className="h-5 w-5" />
         </div>
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -111,7 +111,7 @@ function NewChatWelcome() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-card/60 p-3 shadow-xl shadow-black/30 backdrop-blur">
+      <div className="border-[3px] border-border bg-card p-3 brutal-shadow">
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -173,9 +173,9 @@ function NewChatWelcome() {
               onClick={() => {
                 setPrompt(s.prompt);
               }}
-              className="group flex items-start gap-3 rounded-lg border border-border/60 bg-card/40 p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
+              className="group flex items-start gap-3 border-[3px] border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
             >
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary">
                 <Icon className="h-3.5 w-3.5" />
               </div>
               <div className="min-w-0">

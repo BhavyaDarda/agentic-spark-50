@@ -84,7 +84,7 @@ function Glyph({ className = "" }: { className?: string }) {
   return (
     <div
       className={
-        "brut flex h-11 w-11 -rotate-12 items-center justify-center bg-primary " + className
+        "brut flex h-11 w-11 -rotate-12 items-center justify-center bg-primary" + className
       }
     >
       <Zap className="h-6 w-6 text-primary-foreground" strokeWidth={3} />

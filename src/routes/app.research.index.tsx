@@ -150,13 +150,13 @@ function ResearchListPage() {
               </Link>
               {p.is_public && p.share_slug && (
                 <div className="absolute right-3 top-3 flex items-center gap-1">
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                  <span className="bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
                     public
                   </span>
                   <button
                     type="button"
                     aria-label="Copy public link"
-                    className="rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+                    className="p-1 text-muted-foreground transition-colors hover:text-foreground"
                     onClick={(e) => {
                       e.preventDefault();
                       navigator.clipboard.writeText(

@@ -81,7 +81,7 @@ function SharedResearchPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur">
+      <header className="sticky top-0 z-10 border-b-[3px] border-border bg-background">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-sm font-medium text-foreground">
             <ArrowLeft className="h-4 w-4" />
@@ -108,7 +108,7 @@ function SharedResearchPage() {
         </div>
 
         {/* Trust surface: what the run actually did, in the open. */}
-        <section className="mb-6 rounded-none border border-border/60 bg-card/50 p-4">
+        <section className="mb-6 rounded-none border-[3px] border-border bg-card/50 p-4">
           <div className="mb-3 flex items-center gap-2">
             <ShieldCheck className="h-4 w-4 text-primary" />
             <h2 className="text-sm font-semibold">How this report was made</h2>

@@ -197,7 +197,7 @@ function ContentPage() {
         <Card className="min-h-[400px]">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">
-              {selectedRun?.title || selectedRun?.kind?.replace("_", " ") || "Output"}
+              {selectedRun?.title || selectedRun?.kind?.replace("_", "") || "Output"}
             </CardTitle>
             {selectedRun?.output_text && (
               <div className="flex items-center gap-1">
@@ -256,7 +256,7 @@ function ContentPage() {
                     className="flex w-full items-center justify-between py-2.5 text-left hover:bg-muted/40"
                   >
                     <div className="min-w-0">
-                      <div className="truncate text-sm">{r.title || r.kind.replace("_", " ")}</div>
+                      <div className="truncate text-sm">{r.title || r.kind.replace("_", "")}</div>
                       <div className="font-mono text-xs text-muted-foreground">
                         {new Date(r.created_at).toLocaleString()} · {r.kind} · {r.status}
                       </div>

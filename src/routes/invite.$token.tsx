@@ -122,7 +122,7 @@ function InvitePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-none border border-border/60 bg-muted/30 p-3 text-sm">
+          <div className="rounded-none border-[3px] border-border bg-muted/30 p-3 text-sm">
             <div className="text-muted-foreground">Invitation sent to</div>
             <div className="font-medium">{invite.email}</div>
             <div className="mt-2 text-muted-foreground">You are signed in as</div>
