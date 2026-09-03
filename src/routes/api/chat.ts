@@ -379,7 +379,62 @@ export const Route = createFileRoute("/api/chat")({
                       : { error: "fetch_failed" };
                   },
                 }),
+                search_brand_knowledge: tool({
+                  description:
+                    "Semantic search over THIS workspace's own brand memory (documents the user ingested: brand guidelines, past campaigns, product docs, site pages). Call this BEFORE writing any on-brand deliverable, and before answering questions about the user's own product, positioning, or past work. Returns the user's own passages — ground your output in them.",
+                  inputSchema: z.object({
+                    query: z.string().min(2).max(500),
+                  }),
+                  execute: async ({ query }) => {
+                    write({ type: "tool_call", tool: "search_brand_knowledge", input: { query } });
+                    write({ type: "agent", name: "Brand memory", status: "start", note: query });
+                    try {
+                      const vector = await embed(query);
+                      const { data: rows, error } = await sb.rpc("match_documents", {
+                        _workspace_id: workspaceId,
+                        query_embedding: vector as unknown as string,
+                        match_count: 6,
+                      });
+                      if (error) throw new Error(error.message);
+                      const hits = (rows ?? []).filter((r) => r.source_type !== "web" || true);
+                      write({
+                        type: "tool_result",
+                        tool: "search_brand_knowledge",
+                        ok: true,
+                        summary: hits.length
+                          ? `${hits.length} brand passages`
+                          : "no brand documents yet",
+                      });
+                      write({ type: "agent", name: "Brand memory", status: "end" });
+                      if (!hits.length) {
+                        return {
+                          passages: [],
+                          note: "This workspace has no brand documents matching that query yet. Tell the user they can add brand guidelines, past campaigns or their website under Brand Memory in the app, then proceed using the brand context you already have.",
+                        };
+                      }
+                      return {
+                        passages: hits.map((h, i) => ({
+                          index: i + 1,
+                          title: h.title ?? "Brand document",
+                          sourceUrl: h.source_url,
+                          similarity: Math.round((h.similarity ?? 0) * 100) / 100,
+                          text: (h.content ?? "").slice(0, 1800),
+                        })),
+                      };
+                    } catch {
+                      write({
+                        type: "tool_result",
+                        tool: "search_brand_knowledge",
+                        ok: false,
+                        summary: "brand memory unavailable",
+                      });
+                      write({ type: "agent", name: "Brand memory", status: "end" });
+                      return { passages: [], error: "brand_memory_unavailable" };
+                    }
+                  },
+                }),
                 save_artifact: tool({
+
                   description:
                     "Persist a long-form marketing deliverable to the user's Library so they can find, edit, and share it later. Use for blog posts, campaign briefs, ad copy sets, email sequences, SEO audits, research reports, video scripts, or strategy docs.",
                   inputSchema: z.object({
