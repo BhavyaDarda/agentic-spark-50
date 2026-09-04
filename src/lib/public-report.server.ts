@@ -100,6 +100,20 @@ export async function loadPublicReport(slug: string): Promise<PublicReport | nul
   const started = run?.started_at ? Date.parse(run.started_at) : null;
   const completed = run?.completed_at ? Date.parse(run.completed_at) : null;
 
+  const { data: citationRows } = await sb
+    .from("report_citations")
+    .select("engine, citing_url, citing_title, first_seen_at")
+    .eq("project_id", project.id)
+    .order("last_seen_at", { ascending: false })
+    .limit(12);
+
+  const citations: ReportCitation[] = (citationRows ?? []).map((c) => ({
+    engine: c.engine,
+    citingUrl: c.citing_url,
+    citingTitle: c.citing_title,
+    firstSeenAt: c.first_seen_at,
+  }));
+
   const sponsor = await selectSponsorForTopic(
     `${project.topic} ${project.goal ?? ""}`,
     "report_source_card",
