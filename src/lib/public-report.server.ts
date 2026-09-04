@@ -142,5 +142,6 @@ export async function loadPublicReport(slug: string): Promise<PublicReport | nul
         started && completed && completed > started ? Math.round((completed - started) / 1000) : null,
     },
     sponsor,
+    citations,
   };
 }
