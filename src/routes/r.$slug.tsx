@@ -77,7 +77,7 @@ function SharedResearchPage() {
 
   if (!report) return <ReportUnavailable />;
 
-  const { project, run, sources, trust, sponsor } = report;
+  const { project, run, sources, trust, sponsor, citations } = report;
 
   return (
     <div className="min-h-screen bg-background">
