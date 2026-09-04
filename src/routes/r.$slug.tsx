@@ -77,7 +77,7 @@ function SharedResearchPage() {
 
   if (!report) return <ReportUnavailable />;
 
-  const { project, run, sources, trust, sponsor } = report;
+  const { project, run, sources, trust, sponsor, citations } = report;
 
   return (
     <div className="min-h-screen bg-background">
@@ -198,6 +198,42 @@ function SharedResearchPage() {
                       {source.snippet}
                     </p>
                   )}
+                </a>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Cited by — the loop closes here: published, then measured. */}
+        {citations.length > 0 && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Quote className="h-4 w-4 text-primary" />
+                Cited by ({citations.length})
+              </CardTitle>
+              <CardDescription>
+                Answer engines and pages observed pointing at this report.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {citations.map((c, i) => (
+                <a
+                  key={`${c.engine}-${c.citingUrl}-${i}`}
+                  href={c.citingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="flex flex-wrap items-center gap-2 border-[3px] border-border p-3 transition-colors hover:bg-muted/30"
+                >
+                  <span className="bg-primary px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-primary-foreground">
+                    {c.engine}
+                  </span>
+                  <span className="min-w-0 flex-1 truncate text-sm text-foreground">
+                    {c.citingTitle ?? c.citingUrl}
+                  </span>
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    since {new Date(c.firstSeenAt).toLocaleDateString()}
+                  </span>
                 </a>
               ))}
             </CardContent>

@@ -27,6 +27,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
 import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
+import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -118,6 +119,11 @@ const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
   path: '/c/$conversationId',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
+  id: '/api/public/citation-sweep',
+  path: '/api/public/citation-sweep',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByTo {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app': typeof AppIndexRoute
+  '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research': typeof AppResearchIndexRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/invite/$token': typeof InviteTokenRoute
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app/'
+    | '/api/public/citation-sweep'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app'
+    | '/api/public/citation-sweep'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research'
@@ -236,6 +247,7 @@ export interface FileRouteTypes {
     | '/invite/$token'
     | '/r/$slug'
     | '/app/'
+    | '/api/public/citation-sweep'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   ApiResearchRoute: typeof ApiResearchRoute
   InviteTokenRoute: typeof InviteTokenRoute
   RSlugRoute: typeof RSlugRoute
+  ApiPublicCitationSweepRoute: typeof ApiPublicCitationSweepRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -379,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCConversationIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/citation-sweep': {
+      id: '/api/public/citation-sweep'
+      path: '/api/public/citation-sweep'
+      fullPath: '/api/public/citation-sweep'
+      preLoaderRoute: typeof ApiPublicCitationSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -420,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiResearchRoute: ApiResearchRoute,
   InviteTokenRoute: InviteTokenRoute,
   RSlugRoute: RSlugRoute,
+  ApiPublicCitationSweepRoute: ApiPublicCitationSweepRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
