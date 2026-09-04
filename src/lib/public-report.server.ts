@@ -18,6 +18,13 @@ export interface TrustSurface {
   durationSeconds: number | null;
 }
 
+export interface ReportCitation {
+  engine: string;
+  citingUrl: string;
+  citingTitle: string | null;
+  firstSeenAt: string;
+}
+
 export interface PublicReport {
   project: { topic: string; goal: string | null; depth: string };
   run: {
@@ -28,6 +35,8 @@ export interface PublicReport {
   sources: { url: string; title: string | null; snippet: string | null }[];
   trust: TrustSurface;
   sponsor: PublicSponsor | null;
+  /** Answer engines and web pages observed citing this report. */
+  citations: ReportCitation[];
 }
 
 function publicClient() {
