@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ExternalLink, Lock, Quote, ShieldCheck } from "lucide-react";
 import { getPublicReport } from "@/lib/public-report.functions";
 import type { PublicReport } from "@/lib/public-report.server";
 import { SponsorUnit } from "@/components/sponsor-unit";

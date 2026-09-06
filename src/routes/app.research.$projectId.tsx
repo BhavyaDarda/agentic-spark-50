@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { getProject, getRunDetail, toggleSharing } from "@/lib/research.functions";
+import { listCitations } from "@/lib/citations.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,12 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 
 export const Route = createFileRoute("/app/research/$projectId")({
   head: () => ({ meta: [{ title: "Research · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchDetail,
 });
 
@@ -421,6 +424,61 @@ function ResearchDetail() {
           </CardContent>
         </Card>
       </div>
+
+      <CitationPanel projectId={projectId} isPublic={!!p.is_public} />
     </div>
+  );
+}
+
+function CitationPanel({ projectId, isPublic }: { projectId: string; isPublic: boolean }) {
+  const cites = useQuery({
+    queryKey: ["citations", projectId],
+    queryFn: () => listCitations({ data: { projectId } }),
+  });
+  const rows = cites.data?.citations ?? [];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Who cites this report</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {cites.isLoading ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Checking…
+          </div>
+        ) : !isPublic ? (
+          <p className="text-sm text-muted-foreground">
+            Publish this report to start tracking whether answer engines cite it.
+          </p>
+        ) : rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No citations picked up yet. We keep checking answer engines and the open web.
+          </p>
+        ) : (
+          <ul className="divide-y-[3px] divide-border border-[3px] border-border">
+            {rows.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-center gap-2 p-3 text-xs">
+                <span className="bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary">
+                  {c.engine}
+                </span>
+                <a
+                  href={c.citingUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="min-w-0 flex-1 truncate text-primary hover:underline"
+                >
+                  {c.citingTitle || c.citingUrl}
+                </a>
+                <span className="text-muted-foreground">
+                  first seen {new Date(c.firstSeenAt).toLocaleDateString()} · last{" "}
+                  {new Date(c.lastSeenAt).toLocaleDateString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }

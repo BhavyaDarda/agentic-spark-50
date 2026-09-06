@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { BrainCircuit, Globe, Loader2, Search, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/knowledge")({
   head: () => ({
@@ -40,6 +41,7 @@ export const Route = createFileRoute("/app/knowledge")({
       { name: "robots", content: "noindex" },
     ],
   }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: KnowledgePage,
 });
 

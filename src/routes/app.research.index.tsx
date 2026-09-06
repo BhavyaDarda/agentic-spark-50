@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { listProjects, createProject } from "@/lib/research.functions";
+import { citationCounts } from "@/lib/citations.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,9 +26,11 @@ import {
 } from "@/components/ui/select";
 import { Plus, Microscope, ArrowRight, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/research/")({
   head: () => ({ meta: [{ title: "Research Ninja · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchListPage,
 });
 
@@ -38,6 +41,11 @@ function ResearchListPage() {
   const projects = useQuery({
     queryKey: ["research", workspaceId],
     queryFn: () => listProjects({ data: { workspaceId: workspaceId! } }),
+    enabled: !!workspaceId,
+  });
+  const counts = useQuery({
+    queryKey: ["citation-counts", workspaceId],
+    queryFn: () => citationCounts({ data: { workspaceId: workspaceId! } }),
     enabled: !!workspaceId,
   });
 
@@ -142,7 +150,14 @@ function ResearchListPage() {
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
                     {p.goal && <p className="line-clamp-2">{p.goal}</p>}
                     <div className="flex items-center justify-between pt-2 font-mono text-xs">
-                      <span>{p.depth}</span>
+                      <span>
+                        {p.depth}
+                        {(counts.data?.[p.id] ?? 0) > 0 && (
+                          <span className="ml-2 bg-primary/10 px-1.5 py-0.5 uppercase text-primary">
+                            {counts.data![p.id]} cited
+                          </span>
+                        )}
+                      </span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   </CardContent>

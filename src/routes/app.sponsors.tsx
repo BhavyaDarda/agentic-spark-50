@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Loader2, Megaphone } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/sponsors")({
   head: () => ({
@@ -39,6 +40,7 @@ export const Route = createFileRoute("/app/sponsors")({
       { name: "robots", content: "noindex" },
     ],
   }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: SponsorsAdmin,
 });
 

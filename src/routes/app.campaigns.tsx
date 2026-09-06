@@ -32,6 +32,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Markdown } from "@/components/markdown";
 import { Loader2, Plus, Megaphone, Trash2, Wand2, Sparkle } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/campaigns")({
   head: () => ({
@@ -51,6 +52,7 @@ export const Route = createFileRoute("/app/campaigns")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: CampaignsPage,
 });
 
