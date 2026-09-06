@@ -40,6 +40,11 @@ function ResearchListPage() {
     queryFn: () => listProjects({ data: { workspaceId: workspaceId! } }),
     enabled: !!workspaceId,
   });
+  const counts = useQuery({
+    queryKey: ["citation-counts", workspaceId],
+    queryFn: () => citationCounts({ data: { workspaceId: workspaceId! } }),
+    enabled: !!workspaceId,
+  });
 
   const [open, setOpen] = useState(false);
   const [topic, setTopic] = useState("");
