@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 import { listProjects, createProject } from "@/lib/research.functions";
+import { citationCounts } from "@/lib/citations.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
