@@ -148,7 +148,14 @@ function ResearchListPage() {
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
                     {p.goal && <p className="line-clamp-2">{p.goal}</p>}
                     <div className="flex items-center justify-between pt-2 font-mono text-xs">
-                      <span>{p.depth}</span>
+                      <span>
+                        {p.depth}
+                        {(counts.data?.[p.id] ?? 0) > 0 && (
+                          <span className="ml-2 bg-primary/10 px-1.5 py-0.5 uppercase text-primary">
+                            {counts.data![p.id]} cited
+                          </span>
+                        )}
+                      </span>
                       <ArrowRight className="h-4 w-4" />
                     </div>
                   </CardContent>
