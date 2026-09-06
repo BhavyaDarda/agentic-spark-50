@@ -29,9 +29,11 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/c/$conversationId")({
   head: () => ({ meta: [{ title: "Chat · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ChatPage,
 });
 

@@ -33,10 +33,12 @@ import {
   EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 
 export const Route = createFileRoute("/app/research/$projectId")({
   head: () => ({ meta: [{ title: "Research · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchDetail,
 });
 

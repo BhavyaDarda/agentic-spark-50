@@ -23,9 +23,11 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({ meta: [{ title: "New chat · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: NewChatWelcome,
 });
 

@@ -57,9 +57,11 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({ meta: [{ title: "Settings · Marketing Agent" }] }),
+  errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: SettingsPage,
 });
 
