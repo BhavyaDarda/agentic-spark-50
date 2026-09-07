@@ -150,17 +150,18 @@ function BrandsPage() {
       </div>
 
       {brands.isLoading ? (
-        <div className="text-sm text-muted-foreground">Loading…</div>
+        <ListSkeleton count={3} columns={3} lines={3} />
       ) : (brands.data?.length ?? 0) === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-            <Building2 className="h-8 w-8 text-muted-foreground" />
-            <div className="font-medium">No brands yet</div>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Create your first brand so the agents can speak in your voice.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Building2 className="h-5 w-5" strokeWidth={2.5} />}
+          title="No brands yet"
+          description="A brand holds your product, audience, tone and goals so every agent speaks in your voice."
+          action={
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="mr-1 h-4 w-4" /> Add your first brand
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {brands.data!.map((b) => (
