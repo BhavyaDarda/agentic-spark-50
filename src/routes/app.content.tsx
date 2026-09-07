@@ -250,26 +250,33 @@ function ContentPage() {
             <CardTitle className="text-base">Recent runs</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y divide-border/60">
-              {(runs.data ?? []).map((r) => (
-                <li key={r.id}>
-                  <button
-                    onClick={() => setSelectedRunId(r.id)}
-                    className="flex w-full items-center justify-between py-2.5 text-left hover:bg-muted/40"
-                  >
-                    <div className="min-w-0">
-                      <div className="truncate text-sm">{r.title || r.kind.replace("_", "")}</div>
-                      <div className="font-mono text-xs text-muted-foreground">
-                        {new Date(r.created_at).toLocaleString()} · {r.kind} · {r.status}
+            {runs.isLoading ? (
+              <ListSkeleton count={3} lines={2} />
+            ) : (runs.data?.length ?? 0) === 0 ? (
+              <EmptyState
+                icon={<Sparkles className="h-5 w-5" strokeWidth={2.5} />}
+                title="No runs yet"
+                description="Fill in the brief on the left and generate your first piece — every run is kept here so you can reopen and rate it."
+              />
+            ) : (
+              <ul className="divide-y divide-border/60">
+                {(runs.data ?? []).map((r) => (
+                  <li key={r.id}>
+                    <button
+                      onClick={() => setSelectedRunId(r.id)}
+                      className="flex w-full items-center justify-between py-2.5 text-left hover:bg-muted/40"
+                    >
+                      <div className="min-w-0">
+                        <div className="truncate text-sm">{r.title || r.kind.replace("_", "")}</div>
+                        <div className="font-mono text-xs text-muted-foreground">
+                          {new Date(r.created_at).toLocaleString()} · {r.kind} · {r.status}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </li>
-              ))}
-              {(runs.data?.length ?? 0) === 0 && (
-                <li className="py-2 text-sm text-muted-foreground">No runs yet.</li>
-              )}
-            </ul>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
       </div>
