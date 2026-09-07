@@ -90,20 +90,24 @@ function ArtifactLibrary() {
       </div>
 
       {arts.isLoading ? (
-        <div className="flex items-center gap-2 py-12 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Loading library…
-        </div>
+        <ListSkeleton count={4} columns={2} lines={2} />
       ) : filtered.length === 0 ? (
-        <div className="border-[3px] border-dashed border-border p-12 text-center">
-          <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">
-            No artifacts yet.{" "}
-            <Link to="/app" className="text-primary hover:underline">
-              Start a chat
-            </Link>{" "}
-            and ask the agent to save one.
-          </p>
-        </div>
+        <EmptyState
+          icon={<FileText className="h-5 w-5" strokeWidth={2.5} />}
+          title={q.trim() || kind !== "all" ? "Nothing matches" : "No artifacts yet"}
+          description={
+            q.trim() || kind !== "all"
+              ? "No saved deliverable matches this search or filter. Clear them to see everything."
+              : "Every deliverable the agent saves lands here — reports, posts, briefs and ad copy."
+          }
+          action={
+            <Link to="/app" className="brut-press inline-flex">
+              <span className="border-[3px] border-border bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">
+                Start a chat
+              </span>
+            </Link>
+          }
+        />
       ) : (
         <ul className="grid gap-2 sm:grid-cols-2">
           {filtered.map((a) => (
