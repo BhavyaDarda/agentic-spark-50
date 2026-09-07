@@ -112,7 +112,7 @@ function InvitePage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-none bg-primary/10 text-primary">
+          <div className="mb-3 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">
             <Mail className="h-5 w-5" />
           </div>
           <CardTitle>Join {invite.workspaceName}</CardTitle>
@@ -122,7 +122,7 @@ function InvitePage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-none border-[3px] border-border bg-muted/30 p-3 text-sm">
+          <div className=" border-[3px] border-border bg-muted/30 p-3 text-sm">
             <div className="text-muted-foreground">Invitation sent to</div>
             <div className="font-medium">{invite.email}</div>
             <div className="mt-2 text-muted-foreground">You are signed in as</div>
@@ -130,7 +130,7 @@ function InvitePage() {
           </div>
 
           {emailMismatch && (
-            <div className="flex items-start gap-2 rounded-none border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="flex items-start gap-2 border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
               <span>
                 This invitation was sent to a different email address. Sign out and sign in with{" "}
