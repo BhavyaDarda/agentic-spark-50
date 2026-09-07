@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Loader2, Megaphone } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/sponsors")({
   head: () => ({
