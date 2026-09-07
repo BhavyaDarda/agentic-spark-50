@@ -331,7 +331,9 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
         </SheetHeader>
 
         {detail.isLoading ? (
-          <div className="p-4 text-sm text-muted-foreground">Loading…</div>
+          <div className="p-4">
+            <ListSkeleton count={2} lines={4} />
+          </div>
         ) : !campaign ? (
           <div className="p-4 text-sm text-muted-foreground">Campaign not found.</div>
         ) : (
