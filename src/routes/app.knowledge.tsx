@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { BrainCircuit, Globe, Loader2, Search, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/knowledge")({
   head: () => ({
@@ -268,16 +268,13 @@ function KnowledgePage() {
           Stored sources {rows.length > 0 && <span className="brut-chip ml-2">{rows.length}</span>}
         </h2>
         {sources.isLoading ? (
-          <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading memory
-          </div>
+          <ListSkeleton count={4} columns={2} lines={2} />
         ) : rows.length === 0 ? (
-          <div className="brut bg-card p-8 text-center">
-            <BrainCircuit className="mx-auto h-8 w-8" strokeWidth={2.5} />
-            <p className="mt-3 text-sm text-muted-foreground">
-              Memory is empty. Until you add something, the agent works from the brand fields only.
-            </p>
-          </div>
+          <EmptyState
+            icon={<BrainCircuit className="h-5 w-5" strokeWidth={2.5} />}
+            title="Memory is empty"
+            description="Paste text or add a public page above. Until you do, the agent works from the brand fields alone."
+          />
         ) : (
           <ul className="grid gap-2 sm:grid-cols-2">
             {rows.map((s) => (

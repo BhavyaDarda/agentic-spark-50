@@ -32,7 +32,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Markdown } from "@/components/markdown";
 import { Loader2, Plus, Megaphone, Trash2, Wand2, Sparkle } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/campaigns")({
   head: () => ({
@@ -225,18 +225,18 @@ function CampaignsPage() {
       </div>
 
       {campaigns.isLoading ? (
-        <div className="text-sm text-muted-foreground">Loading…</div>
+        <ListSkeleton count={2} columns={2} lines={3} />
       ) : (campaigns.data?.length ?? 0) === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-            <Megaphone className="h-8 w-8 text-muted-foreground" />
-            <div className="font-medium">No campaigns yet</div>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Start with a one-line objective. The strategist fills in positioning, channel mix,
-              KPIs and a week-by-week calendar.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Megaphone className="h-5 w-5" strokeWidth={2.5} />}
+          title="No campaigns yet"
+          description="Give a one-line objective and the strategist fills in positioning, channel mix, KPIs and a week-by-week calendar."
+          action={
+            <Button onClick={() => setCreating(true)}>
+              <Plus className="mr-1 h-4 w-4" /> Create your first campaign
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {campaigns.data!.map((c) => (
@@ -331,7 +331,9 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
         </SheetHeader>
 
         {detail.isLoading ? (
-          <div className="p-4 text-sm text-muted-foreground">Loading…</div>
+          <div className="p-4">
+            <ListSkeleton count={2} lines={4} />
+          </div>
         ) : !campaign ? (
           <div className="p-4 text-sm text-muted-foreground">Campaign not found.</div>
         ) : (

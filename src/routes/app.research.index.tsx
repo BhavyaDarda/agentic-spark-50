@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Microscope, ArrowRight, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/research/")({
   head: () => ({ meta: [{ title: "Research Ninja · Marketing Agent" }] }),
@@ -127,17 +127,18 @@ function ResearchListPage() {
       </div>
 
       {projects.isLoading ? (
-        <div className="text-sm text-muted-foreground">Loading…</div>
+        <ListSkeleton count={3} columns={3} lines={3} />
       ) : (projects.data?.length ?? 0) === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 py-16 text-center">
-            <Microscope className="h-8 w-8 text-muted-foreground" />
-            <div className="font-medium">No research yet</div>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Start a project — the agent team will plan, search, read, synthesize, and critique.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={<Microscope className="h-5 w-5" strokeWidth={2.5} />}
+          title="No research yet"
+          description="Start a project and the agent team plans, searches, reads, synthesizes and critiques — then you can publish it as a citable report."
+          action={
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="mr-1 h-4 w-4" /> New research project
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {projects.data!.map((p) => (

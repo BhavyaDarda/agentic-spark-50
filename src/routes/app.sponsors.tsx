@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Loader2, Megaphone } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/sponsors")({
   head: () => ({
@@ -144,21 +144,18 @@ function SponsorsAdmin() {
           />
         </section>
       ) : sponsors.isLoading ? (
-        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-muted-foreground">
-          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading sponsors
-        </div>
+        <ListSkeleton count={3} lines={2} />
       ) : rows.length === 0 ? (
-        <section className="brut bg-card p-8 text-center">
-          <Megaphone className="mx-auto h-8 w-8" />
-          <h2 className="mt-3 text-lg font-bold">No sponsors yet</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Reports render no ad slot at all until a sponsor is live. Add one and it appears beside
-            published reports whose topic matches its keywords.
-          </p>
-          <Button className="mt-4" onClick={() => setDraft(emptyDraft())}>
-            <Plus className="mr-1 h-4 w-4" /> Add the first sponsor
-          </Button>
-        </section>
+        <EmptyState
+          icon={<Megaphone className="h-5 w-5" strokeWidth={2.5} />}
+          title="No sponsors yet"
+          description="Reports show no ad slot at all until a sponsor is live. Add one and it appears beside published reports whose topic matches its keywords."
+          action={
+            <Button onClick={() => setDraft(emptyDraft())}>
+              <Plus className="mr-1 h-4 w-4" /> Add the first sponsor
+            </Button>
+          }
+        />
       ) : (
         <div className="brut overflow-x-auto bg-card">
           <table className="w-full text-sm">
