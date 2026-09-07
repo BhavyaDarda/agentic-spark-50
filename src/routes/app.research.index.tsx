@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Microscope, ArrowRight, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/research/")({
   head: () => ({ meta: [{ title: "Research Ninja · Marketing Agent" }] }),
