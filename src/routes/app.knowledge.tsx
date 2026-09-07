@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { BrainCircuit, Globe, Loader2, Search, Trash2, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/knowledge")({
   head: () => ({
