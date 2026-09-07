@@ -20,7 +20,7 @@ import {
 import { Sparkles, Loader2, ThumbsUp, ThumbsDown, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Markdown } from "@/components/markdown";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 const search = z.object({ brand: z.string().uuid().optional() });
 
