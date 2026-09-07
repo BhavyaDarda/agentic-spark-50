@@ -11,8 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FileText, Loader2, Search, Star } from "lucide-react";
-import { RouteError } from "@/components/route-error";
+import { FileText, Search, Star } from "lucide-react";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/artifacts")({
   head: () => ({ meta: [{ title: "Artifact Library · Marketing Agent" }] }),
