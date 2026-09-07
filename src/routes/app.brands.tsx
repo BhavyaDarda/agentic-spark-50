@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Building2, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { RouteError } from "@/components/route-error";
+import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/brands")({
   head: () => ({ meta: [{ title: "Brands · Marketing Agent" }] }),
