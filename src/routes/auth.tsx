@@ -43,10 +43,11 @@ function Glyph() {
 function AuthPage() {
   const { mode = "signin", next } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"signin" | "signup">(mode);
+  const [tab, setTab] = useState<"signin" | "signup" | "forgot">(mode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
   // If the user is already signed in, send them onward immediately.
   useEffect(() => {
