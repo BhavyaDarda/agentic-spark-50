@@ -40,7 +40,10 @@ Sign in as a test account in a real browser and walk: sign in → forgot/reset p
 
 ## Technical notes
 
-- Reset flow: `resetPasswordForEmail` with `redirectTo: ${origin}/reset-password`, new public route `src/routes/reset-password.tsx` handling the recovery session and calling `updateUser({ password })`; settings change sends `current_password`.
+- Reset flow: `resetPasswordForEmail` with `redirectTo: ${origin}/reset-password`, new public route `src/routes/reset-password.tsx` handling the recovery session and calling `updateUser({ password })`; settings change sends `current_password`.  
+  
+Add a delete account button and fully working functionality as well.  
+
 - Radius sweep: `src/components/ui/progress.tsx`, `slider.tsx`, `skeleton.tsx`, `tooltip.tsx`, `drawer.tsx`, and the menu/popover primitives in use.
 - Starter content: migration that updates `handle_new_user` to insert the sample brand, document, campaign, content runs and a succeeded research run + sources for the new workspace; idempotent, no runtime or page-load seeding.
 - Audit: trace `src/lib/*.functions.ts`, `src/routes/api/*`, RLS/grants per table; E2E via Playwright under `/tmp/browser/` with a session minted by `lovable auth-session`.

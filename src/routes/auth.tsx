@@ -43,10 +43,11 @@ function Glyph() {
 function AuthPage() {
   const { mode = "signin", next } = useSearch({ from: "/auth" });
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"signin" | "signup">(mode);
+  const [tab, setTab] = useState<"signin" | "signup" | "forgot">(mode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
   // If the user is already signed in, send them onward immediately.
   useEffect(() => {
@@ -69,7 +70,14 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      if (tab === "signin") {
+      if (tab === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setSent(true);
+        toast.success("Reset link sent — check your inbox");
+      } else if (tab === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Welcome back");
@@ -168,71 +176,108 @@ function AuthPage() {
 
           <div className="brut bg-card p-6">
             <h2 className="font-display text-2xl font-black uppercase leading-tight tracking-[-0.03em]">
-              {tab === "signin" ? "Welcome back." : "Create your workspace."}
+              {tab === "signin"
+                ? "Welcome back."
+                : tab === "signup"
+                  ? "Create your workspace."
+                  : "Reset your password."}
             </h2>
             <p className="mt-2 text-sm">
               {tab === "signin"
                 ? "Sign in to pick up where you left off."
-                : "No credit card. No plans. Free forever."}
+                : tab === "signup"
+                  ? "No credit card. No plans. Free forever."
+                  : "We'll email you a link to set a new password."}
             </p>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-6 w-full"
-              onClick={oauth}
-              disabled={busy}
-            >
-              <GoogleGlyph />
-              Continue with Google
-            </Button>
-
-            <div className="my-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-widest">
-              <div className="h-[3px] flex-1 bg-border" /> or{" "}
-              <div className="h-[3px] flex-1 bg-border" />
-            </div>
-
-            <form onSubmit={submit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="email"
-                  className="font-mono text-[10px] font-bold uppercase tracking-widest"
+            {tab !== "forgot" && (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-6 w-full"
+                  onClick={oauth}
+                  disabled={busy}
                 >
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  className="h-11"
-                />
+                  <GoogleGlyph />
+                  Continue with Google
+                </Button>
+
+                <div className="my-5 flex items-center gap-3 font-mono text-[10px] font-bold uppercase tracking-widest">
+                  <div className="h-[3px] flex-1 bg-border" /> or{" "}
+                  <div className="h-[3px] flex-1 bg-border" />
+                </div>
+              </>
+            )}
+
+            {tab === "forgot" && sent ? (
+              <div className="mt-6 border-[3px] border-border bg-secondary p-4 text-sm text-secondary-foreground">
+                Check <span className="font-bold">{email}</span> for the reset link. It opens a page
+                where you can set a new password.
               </div>
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="password"
-                  className="font-mono text-[10px] font-bold uppercase tracking-widest"
-                >
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  autoComplete={tab === "signin" ? "current-password" : "new-password"}
-                  className="h-11"
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={busy}>
-                {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {tab === "signin" ? "Sign in" : "Create account"}
-              </Button>
-            </form>
+            ) : (
+              <form onSubmit={submit} className={tab === "forgot" ? "mt-6 space-y-4" : "space-y-4"}>
+                <div className="space-y-1.5">
+                  <Label
+                    htmlFor="email"
+                    className="font-mono text-[10px] font-bold uppercase tracking-widest"
+                  >
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="h-11"
+                  />
+                </div>
+                {tab !== "forgot" && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor="password"
+                        className="font-mono text-[10px] font-bold uppercase tracking-widest"
+                      >
+                        Password
+                      </Label>
+                      {tab === "signin" && (
+                        <button
+                          type="button"
+                          className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary underline-offset-4 hover:underline"
+                          onClick={() => {
+                            setSent(false);
+                            setTab("forgot");
+                          }}
+                        >
+                          Forgot password?
+                        </button>
+                      )}
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      autoComplete={tab === "signin" ? "current-password" : "new-password"}
+                      className="h-11"
+                    />
+                  </div>
+                )}
+                <Button type="submit" className="w-full" disabled={busy}>
+                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {tab === "signin"
+                    ? "Sign in"
+                    : tab === "signup"
+                      ? "Create account"
+                      : "Email me a reset link"}
+                </Button>
+              </form>
+            )}
           </div>
 
           <div className="mt-6 text-center text-sm">
@@ -249,7 +294,7 @@ function AuthPage() {
               </>
             ) : (
               <>
-                Already have an account?{" "}
+                {tab === "forgot" ? "Remembered it?" : "Already have an account?"}{" "}
                 <button
                   type="button"
                   className="font-bold text-primary underline-offset-4 hover:underline"
