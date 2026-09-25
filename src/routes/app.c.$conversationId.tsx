@@ -344,17 +344,19 @@ function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                  // Enter sends; Shift+Enter adds a line, like every chat app people already use.
+                  if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                     e.preventDefault();
-                    void send(input);
+                    if (!sending && input.trim()) void send(input);
                   }
                 }}
                 rows={2}
-                placeholder="Reply, refine, or ask for a new artifact…"
+                aria-label="Message the agent"
+                placeholder="Reply, refine, or ask for a new artifact… (Shift+Enter for a new line)"
                 className="resize-none border-0 bg-transparent p-2 text-sm shadow-none focus-visible:ring-0"
                 disabled={sending}
               />
-              <div className="flex items-center justify-between gap-2 border-t border-border/50 pt-2">
+              <div className="flex items-center justify-between gap-2 border-t-[3px] border-border pt-2">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Building2 className="h-3.5 w-3.5" />
                   <Select
@@ -384,7 +386,7 @@ function ChatPage() {
                     </SelectContent>
                   </Select>
                   {brandName && (
-                    <span className="hidden truncate rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary-dark md:inline">
+                    <span className="hidden truncate border-[2px] border-border bg-secondary px-1.5 py-0.5 font-mono text-[10px] font-bold text-secondary-foreground md:inline">
                       @{brandName}
                     </span>
                   )}
