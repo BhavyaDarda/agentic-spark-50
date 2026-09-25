@@ -287,6 +287,29 @@ export async function deleteSponsorById(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+/**
+ * Is this sponsor live right now? Reads through the public policy, which only
+ * exposes active, in-window rows, and re-checks the window explicitly so a
+ * stale id from an old page can never be credited or clicked through.
+ */
+export async function isSponsorLive(sponsorId: string): Promise<boolean> {
+  try {
+    const nowIso = new Date().toISOString();
+    const { data } = await publicClient()
+      .from("sponsors")
+      .select("id")
+      .eq("id", sponsorId)
+      .eq("is_active", true)
+      .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+      .or(`ends_at.is.null,ends_at.gt.${nowIso}`)
+      .maybeSingle();
+    return !!data;
+  } catch (e) {
+    console.error("[sponsors] live check failed", e);
+    return false;
+  }
+}
+
 /** Resolve a sponsor's destination for a click, and record the click. */
 export async function resolveSponsorClick(
   sponsorId: string,
@@ -295,10 +318,14 @@ export async function resolveSponsorClick(
   projectId?: string | null,
 ): Promise<string | null> {
   try {
+    const nowIso = new Date().toISOString();
     const { data } = await publicClient()
       .from("sponsors")
       .select("destination_url")
       .eq("id", sponsorId)
+      .eq("is_active", true)
+      .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+      .or(`ends_at.is.null,ends_at.gt.${nowIso}`)
       .maybeSingle();
     if (!data) return null;
     // Only ever hand back http(s) destinations that were vetted at save time.

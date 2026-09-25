@@ -102,7 +102,7 @@ function NewChatWelcome() {
   return (
     <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-3xl flex-col justify-center gap-8 px-4 py-10">
       <div className="space-y-2 text-center">
-        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/20">
+        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center bg-primary/10 text-primary-dark ring-1 ring-primary/20">
           <Sparkles className="h-5 w-5" />
         </div>
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -178,7 +178,7 @@ function NewChatWelcome() {
               }}
               className="group flex items-start gap-3 border-[3px] border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
             >
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark">
                 <Icon className="h-3.5 w-3.5" />
               </div>
               <div className="min-w-0">

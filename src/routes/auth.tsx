@@ -252,7 +252,7 @@ function AuthPage() {
                       {tab === "signin" && (
                         <button
                           type="button"
-                          className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary underline-offset-4 hover:underline"
+                          className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary-dark underline-offset-4 hover:underline"
                           onClick={() => {
                             setSent(false);
                             setTab("forgot");
@@ -292,7 +292,7 @@ function AuthPage() {
                 Don't have an account?{" "}
                 <button
                   type="button"
-                  className="font-bold text-primary underline-offset-4 hover:underline"
+                  className="font-bold text-primary-dark underline-offset-4 hover:underline"
                   onClick={() => setTab("signup")}
                 >
                   Sign up
@@ -303,7 +303,7 @@ function AuthPage() {
                 {tab === "forgot" ? "Remembered it?" : "Already have an account?"}{" "}
                 <button
                   type="button"
-                  className="font-bold text-primary underline-offset-4 hover:underline"
+                  className="font-bold text-primary-dark underline-offset-4 hover:underline"
                   onClick={() => setTab("signin")}
                 >
                   Sign in

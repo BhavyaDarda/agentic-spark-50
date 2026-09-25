@@ -6,7 +6,7 @@ import { AlertTriangle } from "lucide-react";
 export function RouteError({ error }: { error?: Error }) {
   return (
     <div className="mx-auto max-w-lg border-[3px] border-border bg-card p-8 text-center">
-      <AlertTriangle className="mx-auto h-8 w-8 text-primary" />
+      <AlertTriangle className="mx-auto h-8 w-8 text-primary-dark" />
       <h2 className="mt-4 text-lg font-semibold">This screen didn't load</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         {error?.message || "Something went wrong on our side."}

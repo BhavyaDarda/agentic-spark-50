@@ -133,6 +133,14 @@ export const acceptRunSponsorship = createServerFn({ method: "POST" })
     z.object({ sponsorId: z.string().uuid(), projectId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    const { recordSponsorEvent, isSponsorLive } = await import("@/lib/sponsors.server");
+
+    // The sponsor must be live right now; an expired or paused sponsor cannot
+    // be credited for a run, and the run stays at its chosen depth.
+    if (!(await isSponsorLive(data.sponsorId))) {
+      throw new Error("That sponsor offer is no longer available.");
+    }
+
     // RLS: only workspace members can update the project. If nothing comes
     // back the caller does not own it, and no event is recorded.
     const { data: updated, error } = await context.supabase
@@ -144,7 +152,6 @@ export const acceptRunSponsorship = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     if (!updated) throw new Error("Project not found.");
 
-    const { recordSponsorEvent } = await import("@/lib/sponsors.server");
     await recordSponsorEvent(
       data.sponsorId,
       "run_sponsorship",

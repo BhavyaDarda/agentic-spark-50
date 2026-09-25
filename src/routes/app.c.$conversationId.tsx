@@ -384,7 +384,7 @@ function ChatPage() {
                     </SelectContent>
                   </Select>
                   {brandName && (
-                    <span className="hidden truncate rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary md:inline">
+                    <span className="hidden truncate rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] text-primary-dark md:inline">
                       @{brandName}
                     </span>
                   )}
@@ -438,7 +438,7 @@ function MessageRow({
   }
   return (
     <div className="flex gap-3">
-      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/20">
+      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark ring-1 ring-primary/20">
         <Sparkles className="h-3.5 w-3.5" />
       </div>
       <div className="min-w-0 flex-1 space-y-3">
@@ -468,7 +468,7 @@ function MessageRow({
                     href={c.url}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="min-w-0 flex-1 truncate text-primary hover:underline"
+                    className="min-w-0 flex-1 truncate text-primary-dark hover:underline"
                   >
                     {c.title || c.url}
                   </a>
@@ -486,7 +486,7 @@ function MessageRow({
                 onClick={() => onOpenArtifact(a)}
                 className="group flex items-center gap-2 border-[3px] border-primary bg-primary/5 px-3 py-2 text-xs transition-colors hover:border-primary/60 hover:bg-primary/10"
               >
-                <FileText className="h-3.5 w-3.5 text-primary" />
+                <FileText className="h-3.5 w-3.5 text-primary-dark" />
                 <span className="font-medium">{a.title}</span>
                 <span className="rounded bg-background/50 px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
                   {a.kind.replace("_", "")}
@@ -516,7 +516,7 @@ function ToolCard({ t }: { t: ToolEvent }) {
       )}
     >
       {isRunning ? (
-        <Loader2 className="h-3 w-3 shrink-0 animate-spin text-primary" />
+        <Loader2 className="h-3 w-3 shrink-0 animate-spin text-primary-dark" />
       ) : (
         <Icon className="h-3 w-3 shrink-0 opacity-70" />
       )}
@@ -574,7 +574,7 @@ function ArtifactPanel({
     <aside className="fixed inset-y-0 right-0 z-30 flex w-full flex-col border-l-[3px] border-border bg-background brutal-shadow lg:w-[min(48%,640px)]">
       <div className="flex h-12 items-center justify-between border-b-[3px] border-border px-3">
         <div className="flex min-w-0 items-center gap-2">
-          <FileText className="h-4 w-4 shrink-0 text-primary" />
+          <FileText className="h-4 w-4 shrink-0 text-primary-dark" />
           <span className="truncate text-sm font-medium">{artifact.title}</span>
           <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
             {artifact.kind.replace("_", "")}

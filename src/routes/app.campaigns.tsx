@@ -376,7 +376,7 @@ function CampaignSheet({ id, onClose }: { id: string | null; onClose: () => void
                       <div key={c.channel} className="border-[3px] border-border p-2.5">
                         <div className="flex items-center justify-between text-sm">
                           <span className="font-medium">{c.channel}</span>
-                          <span className="font-mono text-xs text-primary">{c.budgetShare}%</span>
+                          <span className="font-mono text-xs text-primary-dark">{c.budgetShare}%</span>
                         </div>
                         <p className="text-xs text-muted-foreground">{c.role}</p>
                       </div>

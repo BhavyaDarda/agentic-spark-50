@@ -296,7 +296,7 @@ function TeamTab({ workspaceId }: { workspaceId?: string }) {
               {team.data?.members.map((m) => (
                 <li key={m.userId} className="flex items-center justify-between py-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 items-center justify-center bg-primary/10 text-primary">
+                    <div className="flex h-8 w-8 items-center justify-center bg-primary/10 text-primary-dark">
                       <User className="h-4 w-4" />
                     </div>
                     <div>
@@ -730,7 +730,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                 className="flex items-center justify-between border-[3px] border-border bg-card p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary">
+                  <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary-dark">
                     <Server className="h-4 w-4" />
                   </div>
                   <div>

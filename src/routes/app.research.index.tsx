@@ -155,7 +155,7 @@ function ResearchListPage() {
                       <span>
                         {p.depth}
                         {(counts.data?.[p.id] ?? 0) > 0 && (
-                          <span className="ml-2 bg-primary/10 px-1.5 py-0.5 uppercase text-primary">
+                          <span className="ml-2 bg-primary/10 px-1.5 py-0.5 uppercase text-primary-dark">
                             {counts.data![p.id]} cited
                           </span>
                         )}

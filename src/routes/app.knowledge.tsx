@@ -306,7 +306,7 @@ function KnowledgePage() {
                     href={s.sourceUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="truncate font-mono text-[10px] text-primary underline"
+                    className="truncate font-mono text-[10px] text-primary-dark underline"
                   >
                     {s.sourceUrl}
                   </a>

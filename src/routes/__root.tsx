@@ -21,26 +21,35 @@ import "@fontsource-variable/jetbrains-mono";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SITE } from "../lib/site";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-display text-7xl font-semibold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <main id="main" className="flex min-h-dvh items-center justify-center bg-background px-4">
+      <div className="brut max-w-md bg-card p-8 text-center">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+          Error 404
         </p>
-        <div className="mt-6">
+        <h1 className="mt-2 font-display text-7xl font-black text-foreground">Lost</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          That page does not exist or has moved. Nothing was deleted on your side.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="brut-sm brut-press inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
           >
             Go home
           </Link>
+          <Link
+            to="/app"
+            className="brut-sm brut-press inline-flex items-center justify-center bg-secondary px-4 py-2 text-sm font-bold text-secondary-foreground"
+          >
+            Open the app
+          </Link>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -52,33 +61,37 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
+    <main id="main" className="flex min-h-dvh items-center justify-center bg-background px-4">
+      <div className="brut max-w-md bg-card p-8 text-center" role="alert">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
+          Something broke
+        </p>
+        <h1 className="mt-2 font-display text-2xl font-black text-foreground">
           This page didn't load
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+        <p className="mt-3 text-sm text-muted-foreground">
+          The error has been logged on our side. Try again, or head back home; your work is saved
+          as you go.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="brut-sm brut-press inline-flex items-center justify-center bg-primary px-4 py-2 text-sm font-bold text-primary-foreground"
           >
             Try again
           </button>
           <a
             href="/"
-            className="inline-flex items-center justify-center border-[3px] border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            className="brut-sm brut-press inline-flex items-center justify-center bg-background px-4 py-2 text-sm font-bold text-foreground"
           >
             Go home
           </a>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -88,19 +101,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Marketing Agent — the AI marketing operator" },
-      {
-        name: "description",
-        content:
-          "One prompt window. A coordinated team of AI agents plans, researches, and ships on-brand marketing work — with citations, brand memory, and enterprise-grade security.",
-      },
-      { name: "theme-color", content: "#1a1310" },
-      { property: "og:title", content: "Marketing Agent" },
-      {
-        property: "og:description",
-        content:
-          "Chat-first marketing operator with a built-in research swarm, brand memory, and enterprise security.",
-      },
+      { title: `${SITE.name} — ${SITE.operator}` },
+      { name: "description", content: SITE.description },
+      { name: "theme-color", content: "#ffffff" },
+      { name: "application-name", content: SITE.name },
+      { property: "og:site_name", content: SITE.name },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

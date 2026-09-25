@@ -128,7 +128,7 @@ function SharedResearchPage() {
         {/* Trust surface: what the run actually did, in the open. */}
         <section className="mb-6 border-[3px] border-border bg-card/50 p-4">
           <div className="mb-3 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-primary" />
+            <ShieldCheck className="h-4 w-4 text-primary-dark" />
             <h2 className="text-sm font-semibold">How this report was made</h2>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
@@ -167,7 +167,7 @@ function SharedResearchPage() {
         {run?.summary && (
           <Card className="mb-6 border-primary/20 bg-primary/5">
             <CardHeader>
-              <CardTitle className="text-base text-primary">Executive summary</CardTitle>
+              <CardTitle className="text-base text-primary-dark">Executive summary</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm">{run.summary}</p>
@@ -227,7 +227,7 @@ function SharedResearchPage() {
           <Card className="mt-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Quote className="h-4 w-4 text-primary" />
+                <Quote className="h-4 w-4 text-primary-dark" />
                 Cited by ({citations.length})
               </CardTitle>
               <CardDescription>

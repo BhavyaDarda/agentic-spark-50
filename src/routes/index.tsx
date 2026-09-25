@@ -13,43 +13,62 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { SiteFooter } from "@/components/site-footer";
+import { SITE } from "@/lib/site";
+import demoVideo from "@/assets/marketing-agent-demo.mp4.asset.json";
+import demoPoster from "@/assets/demo-poster.jpg";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Marketing Agent — the AI marketing operator" },
+      { title: "Marketing Agent — the AI marketing team that shows its work" },
       {
         name: "description",
         content:
-          "One prompt window. A coordinated team of AI agents plans, researches, and ships on-brand marketing work — with citations, brand memory, and enterprise-grade security.",
+          "One prompt window. Six coordinated AI agents research the live web, write on-brand, and publish citable reports with every source, the critic score and the cost of the run on the record. Free to use.",
       },
-      { property: "og:title", content: "Marketing Agent" },
+      { property: "og:title", content: "Marketing Agent — the AI marketing team that shows its work" },
       {
         property: "og:description",
-        content: "One prompt. Five specialist agents. On-brand marketing work with citations.",
+        content: "One prompt. Six specialist agents. Cited research, on-brand content, public reports with a critic score.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "https://reacher-ai.lovable.app/" },
+      { property: "og:url", content: `${SITE.origin}/` },
     ],
-    links: [{ rel: "canonical", href: "https://reacher-ai.lovable.app/" }],
+    links: [{ rel: "canonical", href: `${SITE.origin}/` }],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@graph": [
-            { "@type": "Organization", name: "Reacher AI", url: "https://reacher-ai.lovable.app/" },
+            {
+              "@type": "Organization",
+              name: SITE.operator,
+              url: `${SITE.origin}/`,
+              contactPoint: { "@type": "ContactPoint", contactType: "customer support", url: `${SITE.origin}/contact` },
+            },
             {
               "@type": "SoftwareApplication",
-              name: "Marketing Agent",
+              name: SITE.name,
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
-              url: "https://reacher-ai.lovable.app/",
-              description:
-                "AI marketing agent with a multi-agent research engine that cites sources, scores its own work and shows the cost of every run.",
+              url: `${SITE.origin}/`,
+              description: SITE.description,
               offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+              publisher: { "@type": "Organization", name: SITE.operator },
+            },
+            {
+              "@type": "VideoObject",
+              name: "Marketing Agent product walkthrough",
+              description:
+                "A 23-second silent walkthrough: sign in, the agent chat, Brand Memory, a Research Ninja run, and a published report with its trust panel.",
+              thumbnailUrl: `${SITE.origin}${demoPoster}`,
+              contentUrl: `${SITE.origin}${demoVideo.url}`,
+              uploadDate: "2026-09-25",
+              duration: "PT23S",
             },
           ],
         }),
@@ -67,11 +86,12 @@ const PROMPTS = [
 ];
 
 const AGENTS = [
-  { code: "01", name: "Planner", role: "Breaks the goal into a search plan." },
-  { code: "02", name: "Searcher", role: "Runs parallel web queries." },
-  { code: "03", name: "Reader", role: "Extracts and cleans source pages." },
-  { code: "04", name: "Synthesizer", role: "Writes the cited brief." },
-  { code: "05", name: "Critic", role: "Scores quality before delivery." },
+  { code: "00", name: "Orchestrator", role: "Reads the prompt, picks the tools, keeps the thread." },
+  { code: "01", name: "Planner", role: "Breaks the goal into three to seven search angles." },
+  { code: "02", name: "Searcher", role: "Runs live web queries and records every source." },
+  { code: "03", name: "Reader", role: "Fetches and cleans the pages worth reading in full." },
+  { code: "04", name: "Synthesizer", role: "Writes the cited report from those pages only." },
+  { code: "05", name: "Critic", role: "Scores evidence and coverage before you see it." },
 ];
 
 const MARQUEE = [
@@ -81,21 +101,28 @@ const MARQUEE = [
   "PUBLIC REPORTS",
   "CRITIC SCORES",
   "NO PIXELS",
-  "FREE FOREVER",
+  "FREE TO USE",
 ];
 
 function Landing() {
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
       <Nav />
-      <Hero />
-      <Marquee />
-      <Loop />
-      <Capabilities />
-      <AgentLineup />
-      <Security />
-      <WhyFree />
-      <CtaFooter />
+      <main id="main" tabIndex={-1}>
+        <Hero />
+        <Marquee />
+        <Demo />
+        <Loop />
+        <Capabilities />
+        <AgentLineup />
+        <Security />
+        <WhyFree />
+        <CtaFooter />
+      </main>
+      <SiteFooter />
     </div>
   );
 }
@@ -173,7 +200,7 @@ function Nav() {
             <a
               key={href}
               href={href}
-              className="font-display text-xs font-black uppercase tracking-wide hover:text-primary"
+              className="font-display text-xs font-black uppercase tracking-wide hover:text-primary-dark"
             >
               {label}
             </a>
@@ -205,7 +232,7 @@ function Hero() {
           <div className="flex flex-wrap gap-2">
             <Chip tone="primary">one prompt window</Chip>
             <Chip>six agents</Chip>
-            <Chip tone="accent">free, sponsor-funded</Chip>
+            <Chip tone="accent">free to use, sponsor-funded</Chip>
           </div>
 
           <h1 className="mt-6 font-display text-[clamp(2.4rem,7vw,4.6rem)] font-black uppercase leading-[0.92] tracking-[-0.04em]">
@@ -240,7 +267,7 @@ function Hero() {
           <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[11px] font-bold uppercase tracking-widest">
             {["No credit card", "No exposed keys", "RLS on every table"].map((t) => (
               <span key={t} className="inline-flex items-center gap-1.5">
-                <Check className="h-3.5 w-3.5 text-primary" strokeWidth={4} /> {t}
+                <Check className="h-3.5 w-3.5 text-primary-dark" strokeWidth={4} /> {t}
               </span>
             ))}
           </div>
@@ -290,31 +317,97 @@ function LiveComposer() {
           </p>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <ol className="mt-4 space-y-2" aria-label="The six agents, in the order they work">
           {AGENTS.map((a, idx) => (
-            <div
+            <li
               key={a.code}
               className="brut-sm flex items-center gap-3 bg-background px-3 py-2"
-              style={{ marginLeft: `${idx * 6}px` }}
+              style={{ marginLeft: `${idx * 5}px` }}
             >
               <span className="border-[3px] border-border bg-secondary px-1.5 font-mono text-[10px] font-bold">
                 {a.code}
               </span>
               <span className="font-display text-xs font-black uppercase">{a.name}</span>
-              <span className="ml-auto hidden font-mono text-[10px] uppercase tracking-widest sm:inline">
-                {idx === 0 ? "running" : "queued"}
+              <span className="ml-auto hidden truncate font-mono text-[10px] uppercase tracking-widest text-muted-foreground sm:inline">
+                {a.role}
               </span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div className="brut-seam mt-4 flex flex-wrap items-center gap-2 pt-3">
-          <Chip>critic 87</Chip>
-          <Chip>14 sources</Chip>
-          <Chip tone="accent">2m 41s</Chip>
+          <Chip>3–7 search angles</Chip>
+          <Chip>critic score 0–100</Chip>
+          <Chip tone="accent">every claim cited</Chip>
         </div>
       </div>
     </div>
+  );
+}
+
+/* ────────────────────────────── demo ────────────────────────────── */
+
+function Demo() {
+  return (
+    <section id="demo" className="border-b-[6px] border-border bg-secondary">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
+        <div className="mb-6 flex items-center gap-3">
+          <span className="brut-sm bg-foreground px-2 py-0.5 font-mono text-[11px] font-bold text-background">
+            00
+          </span>
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.24em] text-secondary-foreground">
+            Twenty-three seconds, no voice-over
+          </span>
+          <span className="h-1 flex-1 bg-border" />
+        </div>
+        <div className="grid gap-8 lg:grid-cols-[1fr_320px] lg:items-start">
+          <figure className="brut-lg bg-card">
+            <video
+              controls
+              muted
+              playsInline
+              preload="metadata"
+              poster={demoPoster}
+              className="block aspect-video w-full bg-foreground"
+              aria-describedby="demo-transcript"
+            >
+              <source src={demoVideo.url} type="video/mp4" />
+              Your browser cannot play this video. The walkthrough is described in the text beside it.
+            </video>
+            <figcaption className="border-t-[4px] border-border px-4 py-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em]">
+              Recorded from the real product. Nothing staged, nothing sped up.
+            </figcaption>
+          </figure>
+          <div id="demo-transcript" className="space-y-3 text-secondary-foreground">
+            <h2 className="font-display text-2xl font-black uppercase leading-[0.95] tracking-[-0.03em]">
+              What the clip shows
+            </h2>
+            <ol className="space-y-2 text-sm leading-relaxed">
+              <li>
+                <span className="font-mono text-[10px] font-bold">01 </span>
+                Sign in with email, Google, or a password-reset link.
+              </li>
+              <li>
+                <span className="font-mono text-[10px] font-bold">02 </span>
+                The prompt window: one place to ask, with the agents' work streaming beneath.
+              </li>
+              <li>
+                <span className="font-mono text-[10px] font-bold">03 </span>
+                Brand Memory: your documents and pages, searchable by meaning.
+              </li>
+              <li>
+                <span className="font-mono text-[10px] font-bold">04 </span>
+                A Research Ninja run, step by step, from plan to critic score.
+              </li>
+              <li>
+                <span className="font-mono text-[10px] font-bold">05 </span>
+                The published report page with its sources and trust panel.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -384,14 +477,14 @@ const CAPS = [
   {
     icon: Microscope,
     title: "Research Ninja",
-    body: "Six-agent research runs with planner, searcher, reader, synthesizer, critic and writer. Every claim carries a source.",
+    body: "Planner, searcher, reader, synthesizer and critic run in sequence on the live web. Every claim in the report points at a page the agents actually read.",
     tone: "bg-primary text-primary-foreground",
     wide: true,
   },
   {
     icon: Building2,
-    title: "Brand memory",
-    body: "Voice, audience, do/don't rules and knowledge base — applied to every output automatically.",
+    title: "Brand profiles",
+    body: "Product, audience, tone, goals and channels — picked per chat and applied to every draft.",
     tone: "bg-secondary text-secondary-foreground",
   },
   {
@@ -402,8 +495,8 @@ const CAPS = [
   },
   {
     icon: Database,
-    title: "Knowledge base",
-    body: "Drop in docs and URLs. Retrieval grounds the agents in your own material.",
+    title: "Brand Memory",
+    body: "Paste text or add public pages. They are chunked, embedded and searched by meaning whenever an answer needs your own material.",
     tone: "bg-card text-card-foreground",
   },
   {
@@ -449,7 +542,7 @@ function AgentLineup() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionLabel n="03">The crew</SectionLabel>
         <h2 className="max-w-2xl font-display text-[clamp(1.8rem,4vw,3rem)] font-black uppercase leading-[0.95] tracking-[-0.03em]">
-          Five specialists, one window.
+          Six specialists, one window.
         </h2>
         <div className="mt-10 divide-y-[4px] divide-border border-[4px] border-border">
           {AGENTS.map((a) => (
@@ -505,7 +598,7 @@ function Security() {
               key={s}
               className="flex items-start gap-3 border-[4px] border-background bg-foreground p-4"
             >
-              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" strokeWidth={2.5} />
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary-dark" strokeWidth={2.5} />
               <span className="text-sm">{s}</span>
             </li>
           ))}
@@ -560,11 +653,14 @@ function WhyFree() {
 
 function CtaFooter() {
   return (
-    <footer className="relative overflow-hidden">
+    <section aria-labelledby="cta-heading" className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 brutal-dots" aria-hidden />
       <div className="relative mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 sm:py-24">
         <Glyph className="mx-auto animate-brutal-bounce" />
-        <h2 className="mx-auto mt-8 max-w-3xl font-display text-[clamp(2rem,6vw,4rem)] font-black uppercase leading-[0.9] tracking-[-0.04em]">
+        <h2
+          id="cta-heading"
+          className="mx-auto mt-8 max-w-3xl font-display text-[clamp(2rem,6vw,4rem)] font-black uppercase leading-[0.9] tracking-[-0.04em]"
+        >
           Stop briefing.
           <br />
           <span className="bg-secondary px-2 text-secondary-foreground">Start shipping.</span>
@@ -582,9 +678,9 @@ function CtaFooter() {
           </Link>
         </div>
         <p className="mt-12 border-t-[4px] border-border pt-6 font-mono text-[11px] font-bold uppercase tracking-[0.2em]">
-          Marketing Agent · sponsor-funded, never paywalled
+          Marketing Agent · free to use · funded by one labelled sponsor card per public report
         </p>
       </div>
-    </footer>
+    </section>
   );
 }
