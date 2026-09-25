@@ -122,7 +122,7 @@ function ArtifactLibrary() {
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold">{a.title}</div>
                     <div className="mt-1 flex items-center gap-2 text-[10px]">
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary">
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary-dark">
                         {a.kind.replace("_", "")}
                       </span>
                       <span className="text-muted-foreground">
@@ -130,7 +130,7 @@ function ArtifactLibrary() {
                       </span>
                     </div>
                   </div>
-                  {a.starred && <Star className="h-3.5 w-3.5 fill-primary text-primary" />}
+                  {a.starred && <Star className="h-3.5 w-3.5 fill-primary text-primary-dark" />}
                 </div>
               </Link>
             </li>

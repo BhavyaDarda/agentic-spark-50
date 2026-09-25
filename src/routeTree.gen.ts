@@ -11,10 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SecurityRouteImport } from './routes/security'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as CreditsRouteImport } from './routes/credits'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AdvertiseRouteImport } from './routes/advertise'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
 import { Route as AcceptableUseRouteImport } from './routes/acceptable-use'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -44,6 +49,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -54,6 +64,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreditsRoute = CreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -62,6 +82,16 @@ const AuthRoute = AuthRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvertiseRoute = AdvertiseRouteImport.update({
+  id: '/advertise',
+  path: '/advertise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcceptableUseRoute = AcceptableUseRouteImport.update({
@@ -158,10 +188,15 @@ const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/acceptable-use': typeof AcceptableUseRoute
+  '/accessibility': typeof AccessibilityRoute
+  '/advertise': typeof AdvertiseRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/credits': typeof CreditsRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
@@ -184,9 +219,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/acceptable-use': typeof AcceptableUseRoute
+  '/accessibility': typeof AccessibilityRoute
+  '/advertise': typeof AdvertiseRoute
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/credits': typeof CreditsRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
@@ -210,10 +250,15 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/acceptable-use': typeof AcceptableUseRoute
+  '/accessibility': typeof AccessibilityRoute
+  '/advertise': typeof AdvertiseRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/credits': typeof CreditsRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/security': typeof SecurityRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
@@ -238,10 +283,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/acceptable-use'
+    | '/accessibility'
+    | '/advertise'
     | '/app'
     | '/auth'
+    | '/contact'
+    | '/credits'
     | '/privacy'
     | '/reset-password'
+    | '/security'
     | '/sitemap.xml'
     | '/terms'
     | '/api/chat'
@@ -264,9 +314,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/acceptable-use'
+    | '/accessibility'
+    | '/advertise'
     | '/auth'
+    | '/contact'
+    | '/credits'
     | '/privacy'
     | '/reset-password'
+    | '/security'
     | '/sitemap.xml'
     | '/terms'
     | '/api/chat'
@@ -289,10 +344,15 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/acceptable-use'
+    | '/accessibility'
+    | '/advertise'
     | '/app'
     | '/auth'
+    | '/contact'
+    | '/credits'
     | '/privacy'
     | '/reset-password'
+    | '/security'
     | '/sitemap.xml'
     | '/terms'
     | '/api/chat'
@@ -316,10 +376,15 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AcceptableUseRoute: typeof AcceptableUseRoute
+  AccessibilityRoute: typeof AccessibilityRoute
+  AdvertiseRoute: typeof AdvertiseRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
+  CreditsRoute: typeof CreditsRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SecurityRoute: typeof SecurityRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -345,6 +410,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -359,6 +431,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/credits': {
+      id: '/credits'
+      path: '/credits'
+      fullPath: '/credits'
+      preLoaderRoute: typeof CreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -371,6 +457,20 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advertise': {
+      id: '/advertise'
+      path: '/advertise'
+      fullPath: '/advertise'
+      preLoaderRoute: typeof AdvertiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acceptable-use': {
@@ -535,10 +635,15 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AcceptableUseRoute: AcceptableUseRoute,
+  AccessibilityRoute: AccessibilityRoute,
+  AdvertiseRoute: AdvertiseRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
+  CreditsRoute: CreditsRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SecurityRoute: SecurityRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,

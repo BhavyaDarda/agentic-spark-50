@@ -40,7 +40,7 @@ export function LegalPage({
           </Link>
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] hover:text-primary"
+            className="inline-flex items-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-[0.18em] hover:text-primary-dark"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back home
           </Link>
@@ -65,7 +65,7 @@ export function LegalPage({
                 <li key={s.id}>
                   <a
                     href={`#${s.id}`}
-                    className="text-sm underline-offset-4 hover:text-primary hover:underline"
+                    className="text-sm underline-offset-4 hover:text-primary-dark hover:underline"
                   >
                     <span className="mr-1.5 font-mono text-[10px] text-muted-foreground">
                       {String(i + 1).padStart(2, "0")}

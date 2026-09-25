@@ -86,7 +86,7 @@
   --popover-foreground: hsl(0 0% 0%);
 
   --primary: hsl(314 100% 50%);
-  --primary-foreground: hsl(0 0% 100%);
+  --primary-foreground: hsl(0 0% 0%);
   --primary-dark: hsl(314 100% 35%);
 
   --secondary: hsl(60 100% 50%);
@@ -94,14 +94,14 @@
   --secondary-dark: hsl(45 100% 40%);
 
   --accent: hsl(271 91% 65%);
-  --accent-foreground: hsl(0 0% 100%);
+  --accent-foreground: hsl(0 0% 0%);
 
   --muted: hsl(0 0% 96%);
   --muted-foreground: hsl(0 0% 28%);
 
-  --destructive: hsl(0 84% 60%);
+  --destructive: hsl(0 72% 42%);
   --destructive-foreground: hsl(0 0% 100%);
-  --success: hsl(152 76% 36%);
+  --success: hsl(152 76% 28%);
   --success-foreground: hsl(0 0% 100%);
   --warning: hsl(45 100% 45%);
   --warning-foreground: hsl(0 0% 0%);
@@ -119,7 +119,7 @@
   --sidebar: hsl(0 0% 100%);
   --sidebar-foreground: hsl(0 0% 0%);
   --sidebar-primary: hsl(314 100% 50%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
   --sidebar-accent: hsl(60 100% 50%);
   --sidebar-accent-foreground: hsl(0 0% 0%);
   --sidebar-border: hsl(0 0% 0%);
@@ -140,7 +140,7 @@
   --popover-foreground: hsl(0 0% 100%);
 
   --primary: hsl(314 100% 50%);
-  --primary-foreground: hsl(0 0% 100%);
+  --primary-foreground: hsl(0 0% 0%);
   --primary-dark: hsl(314 100% 35%);
 
   --secondary: hsl(60 100% 50%);
@@ -148,13 +148,13 @@
   --secondary-dark: hsl(45 100% 40%);
 
   --accent: hsl(271 91% 65%);
-  --accent-foreground: hsl(0 0% 100%);
+  --accent-foreground: hsl(0 0% 0%);
 
   --muted: hsl(0 0% 10%);
   --muted-foreground: hsl(0 0% 78%);
 
-  --destructive: hsl(0 84% 60%);
-  --destructive-foreground: hsl(0 0% 100%);
+  --destructive: hsl(0 80% 66%);
+  --destructive-foreground: hsl(0 0% 0%);
   --success: hsl(152 66% 50%);
   --success-foreground: hsl(0 0% 0%);
   --warning: hsl(48 100% 55%);
@@ -167,7 +167,7 @@
   --sidebar: hsl(0 0% 0%);
   --sidebar-foreground: hsl(0 0% 100%);
   --sidebar-primary: hsl(314 100% 50%);
-  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
   --sidebar-accent: hsl(60 100% 50%);
   --sidebar-accent-foreground: hsl(0 0% 0%);
   --sidebar-border: hsl(0 0% 100%);
@@ -209,6 +209,57 @@
   ::selection {
     background: var(--color-primary);
     color: var(--color-primary-foreground);
+  }
+  /* One focus style everywhere: thick ring, offset so it reads on any slab. */
+  :focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  /* Skip link: first tab stop on every page, visible only when focused. */
+  .skip-link {
+    position: absolute;
+    left: 0.75rem;
+    top: -100vh;
+    z-index: 100;
+    border: 3px solid var(--color-border);
+    background: var(--color-secondary);
+    color: var(--color-secondary-foreground);
+    padding: 0.5rem 0.875rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    box-shadow: 4px 4px 0 var(--brut-ink);
+  }
+  .skip-link:focus-visible {
+    top: 0.75rem;
+  }
+  /* Long-form documents: readable links and lists without a typography plugin. */
+  .legal-prose a {
+    text-decoration-thickness: 2px;
+  }
+  .legal-prose strong {
+    font-weight: 700;
+  }
+  .legal-prose table td,
+  .legal-prose table th {
+    vertical-align: top;
+  }
+  /* Respect the system setting: no marquee, no bounce, no press physics. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    .brut-press:hover,
+    .brutal-hover:hover {
+      transform: none;
+    }
   }
 }
 

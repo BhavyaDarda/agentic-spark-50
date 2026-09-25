@@ -300,7 +300,7 @@ function ResearchDetail() {
               onClick={() => setActiveRunId(r.id)}
               className={` border px-2 py-1 text-xs ${
                 activeRunId === r.id
-                  ? "border-primary bg-primary/10 text-primary"
+                  ? "border-primary bg-primary/10 text-primary-dark"
                   : "border-border/60 text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -327,7 +327,7 @@ function ResearchDetail() {
                   const Icon = AGENT_ICON[s.agent] ?? Sparkles;
                   return (
                     <li key={i} className="flex gap-3">
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark">
                         <Icon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0">
@@ -373,7 +373,7 @@ function ResearchDetail() {
                         href={s.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="line-clamp-1 text-primary hover:underline"
+                        className="line-clamp-1 text-primary-dark hover:underline"
                       >
                         [{i + 1}] {s.title || s.url}
                       </a>
@@ -396,7 +396,7 @@ function ResearchDetail() {
           <CardContent className="space-y-4">
             {showSummary && (
               <div className="border-[3px] border-primary bg-primary/5 p-4">
-                <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-primary">
+                <div className="mb-1 text-xs font-semibold uppercase tracking-wider text-primary-dark">
                   Executive summary
                 </div>
                 <p className="text-sm">{showSummary}</p>
@@ -460,14 +460,14 @@ function CitationPanel({ projectId, isPublic }: { projectId: string; isPublic: b
           <ul className="divide-y-[3px] divide-border border-[3px] border-border">
             {rows.map((c) => (
               <li key={c.id} className="flex flex-wrap items-center gap-2 p-3 text-xs">
-                <span className="bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary">
+                <span className="bg-primary/10 px-1.5 py-0.5 font-mono uppercase text-primary-dark">
                   {c.engine}
                 </span>
                 <a
                   href={c.citingUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="min-w-0 flex-1 truncate text-primary hover:underline"
+                  className="min-w-0 flex-1 truncate text-primary-dark hover:underline"
                 >
                   {c.citingTitle || c.citingUrl}
                 </a>

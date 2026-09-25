@@ -66,7 +66,7 @@ function InvitePage() {
   if (sessionQuery.isLoading || inviteQuery.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary-dark" />
       </div>
     );
   }
@@ -74,7 +74,7 @@ function InvitePage() {
   if (!sessionQuery.data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary-dark" />
       </div>
     );
   }
@@ -113,7 +113,7 @@ function InvitePage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <div className="mb-3 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary">
+          <div className="mb-3 flex h-10 w-10 items-center justify-center bg-primary/10 text-primary-dark">
             <Mail className="h-5 w-5" />
           </div>
           <CardTitle>Join {invite.workspaceName}</CardTitle>

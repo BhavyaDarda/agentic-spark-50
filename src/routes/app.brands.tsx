@@ -195,7 +195,7 @@ function BrandsPage() {
                   <Link
                     to="/app/content"
                     search={{ brand: b.id }}
-                    className="text-xs text-primary hover:underline"
+                    className="text-xs text-primary-dark hover:underline"
                   >
                     Generate content →
                   </Link>

@@ -69,7 +69,7 @@ export function SiteFooter() {
                 <li key={l.to}>
                   <a
                     href={l.to}
-                    className="text-sm font-medium underline-offset-4 hover:text-primary hover:underline focus-visible:text-primary"
+                    className="text-sm font-medium underline-offset-4 hover:text-primary-dark hover:underline focus-visible:text-primary-dark"
                   >
                     {l.label}
                   </a>
