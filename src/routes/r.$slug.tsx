@@ -18,6 +18,7 @@ export const Route = createFileRoute("/r/$slug")({
       report?.run?.summary?.slice(0, 155) ??
       report?.project.goal?.slice(0, 155) ??
       "A cited, multi-agent research report shared from Marketing Agent.";
+    const url = `https://reacher-ai.lovable.app/r/${params.slug}`;
     return {
       meta: [
         { title },
@@ -25,10 +26,26 @@ export const Route = createFileRoute("/r/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/r/${params.slug}` },
+        { property: "og:url", content: url },
         { name: "twitter:card", content: "summary_large_image" },
+        ...(report ? [] : [{ name: "robots", content: "noindex" }]),
       ],
-      links: [{ rel: "canonical", href: `/r/${params.slug}` }],
+      links: [{ rel: "canonical", href: url }],
+      scripts: report
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: report.project.topic,
+                description,
+                url,
+                publisher: { "@type": "Organization", name: "Reacher AI" },
+              }),
+            },
+          ]
+        : [],
     };
   },
   component: SharedResearchPage,
