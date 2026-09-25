@@ -23,7 +23,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
 
-export function AppSidebar() {
+/**
+ * `rail` is the always-visible desktop column; `drawer` is the same content
+ * rendered inside the mobile sheet, filling whatever the sheet gives it.
+ */
+export function AppSidebar({ variant = "rail" }: { variant?: "rail" | "drawer" }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const matchRoute = useMatchRoute();
@@ -55,7 +59,15 @@ export function AppSidebar() {
   }, [conversations.data, filter]);
 
   return (
-    <aside className="hidden h-screen w-64 shrink-0 flex-col border-r-[4px] border-border bg-sidebar text-sidebar-foreground md:flex">
+    <aside
+      aria-label="Workspace navigation"
+      className={cn(
+        "flex-col bg-sidebar text-sidebar-foreground",
+        variant === "rail"
+          ? "sticky top-0 hidden h-dvh w-64 shrink-0 border-r-[4px] border-border md:flex"
+          : "flex h-full w-full",
+      )}
+    >
       <div className="flex h-14 items-center gap-2.5 border-b-[4px] border-border px-4">
         <div className="flex h-8 w-8 -rotate-12 items-center justify-center border-[3px] border-border bg-primary text-primary-foreground">
           <Zap className="h-4 w-4" strokeWidth={3} />
