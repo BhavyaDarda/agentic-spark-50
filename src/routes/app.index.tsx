@@ -119,7 +119,7 @@ function NewChatWelcome() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
               send();
             }
@@ -148,7 +148,7 @@ function NewChatWelcome() {
               </SelectContent>
             </Select>
             <span className="hidden md:inline">
-              · ⌘⏎ to send
+              · Enter to send · Shift+Enter for a new line
             </span>
           </div>
           <Button
