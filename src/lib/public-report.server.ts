@@ -64,7 +64,10 @@ export function criticNotes(critic: string | null | undefined): string | null {
   return cleaned.length > 0 ? cleaned : null;
 }
 
-export async function loadPublicReport(slug: string): Promise<PublicReport | null> {
+export async function loadPublicReport(
+  slug: string,
+  visitor?: { hash: string | null; isBot: boolean },
+): Promise<PublicReport | null> {
   const sb = publicClient();
 
   const { data: project } = await sb
@@ -118,6 +121,7 @@ export async function loadPublicReport(slug: string): Promise<PublicReport | nul
     `${project.topic} ${project.goal ?? ""}`,
     "report_source_card",
     project.id,
+    visitor,
   );
 
   return {

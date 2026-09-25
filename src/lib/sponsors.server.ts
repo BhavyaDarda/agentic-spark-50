@@ -118,22 +118,53 @@ function toPublic(row: SponsorRow): PublicSponsor {
   };
 }
 
-/** Fire-and-forget event write. Never throws — ad bookkeeping must not break a page. */
+/** Anonymous visitor signal used to count each browser once a day. */
+export interface EventVisitor {
+  hash: string | null;
+  isBot: boolean;
+}
+
+const DEDUPE_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Event write. Never throws — ad bookkeeping must not break a page.
+ * Crawlers are not counted, and the same visitor is counted once per day per
+ * sponsor and event kind, so the numbers sponsors see are real people.
+ */
 export async function recordSponsorEvent(
   sponsorId: string,
   kind: "impression" | "click" | "run_sponsorship",
   surface: SponsorSurface,
   projectId?: string | null,
-): Promise<void> {
+  visitor?: EventVisitor,
+): Promise<boolean> {
+  if (visitor?.isBot) return false;
   try {
-    await serviceClient().from("sponsor_events").insert({
+    const sb = serviceClient();
+    if (visitor?.hash) {
+      const since = new Date(Date.now() - DEDUPE_WINDOW_MS).toISOString();
+      const { data: dupe } = await sb
+        .from("sponsor_events")
+        .select("id")
+        .eq("sponsor_id", sponsorId)
+        .eq("kind", kind)
+        .eq("visitor_hash", visitor.hash)
+        .gte("created_at", since)
+        .limit(1);
+      if (dupe && dupe.length > 0) return false;
+    }
+    const { error } = await sb.from("sponsor_events").insert({
       sponsor_id: sponsorId,
       kind,
       surface,
       project_id: projectId ?? null,
+      visitor_hash: visitor?.hash ?? null,
     });
+    if (error) throw new Error(error.message);
+    return true;
   } catch (e) {
     console.error("[sponsors] event write failed", e);
+    return false;
   }
 }
 
@@ -146,11 +177,18 @@ export async function selectSponsorForTopic(
   topic: string,
   surface: SponsorSurface,
   projectId?: string | null,
+  visitor?: EventVisitor,
 ): Promise<PublicSponsor | null> {
   let rows: SponsorRow[] = [];
   try {
-    // Public client + the "live sponsors" policy: only active, in-window rows.
-    const { data, error } = await publicClient().from("sponsors").select("*");
+    // Explicit live-window filter, on top of the "live sponsors" read policy.
+    const nowIso = new Date().toISOString();
+    const { data, error } = await publicClient()
+      .from("sponsors")
+      .select("*")
+      .eq("is_active", true)
+      .or(`starts_at.is.null,starts_at.lte.${nowIso}`)
+      .or(`ends_at.is.null,ends_at.gt.${nowIso}`);
     if (error) throw new Error(error.message);
     rows = data ?? [];
   } catch (e) {
@@ -167,7 +205,7 @@ export async function selectSponsorForTopic(
   const picked = pickWeighted(tier);
   if (!picked) return null;
 
-  await recordSponsorEvent(picked.id, "impression", surface, projectId);
+  await recordSponsorEvent(picked.id, "impression", surface, projectId, visitor);
   return toPublic(picked);
 }
 
@@ -253,6 +291,8 @@ export async function deleteSponsorById(id: string): Promise<void> {
 export async function resolveSponsorClick(
   sponsorId: string,
   surface: SponsorSurface,
+  visitor?: EventVisitor,
+  projectId?: string | null,
 ): Promise<string | null> {
   try {
     const { data } = await publicClient()
@@ -261,7 +301,9 @@ export async function resolveSponsorClick(
       .eq("id", sponsorId)
       .maybeSingle();
     if (!data) return null;
-    await recordSponsorEvent(sponsorId, "click", surface);
+    // Only ever hand back http(s) destinations that were vetted at save time.
+    if (!/^https?:\/\//i.test(data.destination_url)) return null;
+    await recordSponsorEvent(sponsorId, "click", surface, projectId, visitor);
     return data.destination_url;
   } catch (e) {
     console.error("[sponsors] click resolve failed", e);
