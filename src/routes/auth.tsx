@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-r
 import { useState, type FormEvent, useEffect } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,14 +105,18 @@ function AuthPage() {
   const oauth = async () => {
     setBusy(true);
     try {
-      const redirectTo = next
+      // Google sign-in is brokered by Lovable Cloud's managed OAuth client.
+      // The redirect lands back on this public page, which forwards to `next`
+      // once the session is hydrated (see the effect above).
+      const redirect_uri = next
         ? `${window.location.origin}/auth?next=${encodeURIComponent(next)}`
-        : `${window.location.origin}/app`;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo },
-      });
-      if (error) throw error;
+        : `${window.location.origin}/auth`;
+      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri });
+      if (result.error) throw result.error;
+      if (!result.redirected) {
+        // Popup flow completed in place: the session is already set.
+        afterAuth();
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Google sign-in failed";
       toast.error(msg);
