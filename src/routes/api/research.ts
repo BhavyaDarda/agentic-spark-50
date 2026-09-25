@@ -1,11 +1,31 @@
 // Multi-agent Research Ninja endpoint.
 // POST /api/research with { projectId } -> SSE stream of step events.
+//
+// Pipeline (every step is persisted to `research_steps` so the trace is
+// auditable after the fact):
+//   Orchestrator -> Planner -> Searcher (live web search) -> Reader (SSRF-safe
+//   page fetch) -> Brand memory (workspace vectors) -> Synthesizer -> Critic.
+//
+// Honesty rules:
+//   * Every source in the report came back from a real search executed during
+//     this run. If live search is unavailable the run fails loudly instead of
+//     producing a report "from memory".
+//   * Token usage and wall-clock duration are the real numbers the gateway
+//     reported; they are stored on the run and shown on the public report.
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { generateText, tool, stepCountIs } from "ai";
+import { streamText, Output } from "ai";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
-import { createLovableAiGatewayProvider, getLovableApiKey, embed } from "@/lib/ai-gateway.server";
+import {
+  CHAT_MODEL,
+  createLovableResponsesProvider,
+  getLovableApiKey,
+  embed,
+  responsesOptions,
+  type ReasoningEffort,
+} from "@/lib/ai-gateway.server";
+import { webSearch, readPage, type SearchResult } from "@/lib/web-search.server";
 
 type StepEvent =
   | { type: "step"; agent: string; action?: string; thought?: string; result?: unknown }
@@ -17,63 +37,36 @@ function sse(event: StepEvent) {
   return `data: ${JSON.stringify(event)}\n\n`;
 }
 
-// ---- Web search via DuckDuckGo HTML (no API key) ----
-async function webSearch(query: string, limit = 8) {
-  try {
-    const res = await fetch(
-      `https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`,
-      { headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgentResearch/1.0)" } },
-    );
-    const html = await res.text();
-    const results: { url: string; title: string; snippet: string }[] = [];
-    const re =
-      /<a[^>]+class="result__a"[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>[\s\S]*?<a[^>]+class="result__snippet"[^>]*>([\s\S]*?)<\/a>/g;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(html)) && results.length < limit) {
-      let url = m[1];
-      // DDG wraps with /l/?uddg=...
-      try {
-        const u = new URL(url, "https://duckduckgo.com");
-        const uddg = u.searchParams.get("uddg");
-        if (uddg) url = decodeURIComponent(uddg);
-      } catch {
-        /* ignore */
-      }
-      const title = m[2].replace(/<[^>]+>/g, "").trim();
-      const snippet = m[3].replace(/<[^>]+>/g, "").trim();
-      if (url.startsWith("http")) results.push({ url, title, snippet });
-    }
-    return results;
-  } catch (e) {
-    return [];
+const DEPTH = {
+  quick: { queries: 3, resultsPerQuery: 4, readPerQuery: 2, searchDepth: "basic", effort: "low" },
+  standard: { queries: 5, resultsPerQuery: 5, readPerQuery: 2, searchDepth: "basic", effort: "medium" },
+  deep: { queries: 7, resultsPerQuery: 6, readPerQuery: 3, searchDepth: "advanced", effort: "high" },
+} as const satisfies Record<
+  string,
+  {
+    queries: number;
+    resultsPerQuery: number;
+    readPerQuery: number;
+    searchDepth: "basic" | "advanced";
+    effort: ReasoningEffort;
   }
+>;
+
+type DepthKey = keyof typeof DEPTH;
+
+function depthConfig(depth: string) {
+  return DEPTH[(depth in DEPTH ? depth : "standard") as DepthKey];
 }
 
-async function fetchPage(url: string, maxChars = 12000) {
-  try {
-    const { safeFetch } = await import("@/lib/ssrf.server");
-    const res = await safeFetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgentResearch/1.0)" },
-      signal: AbortSignal.timeout(10000),
-    });
-    if (!res.ok) return { ok: false as const, text: "", title: "" };
+const PlanSchema = z.object({
+  queries: z.array(z.string().min(3).max(200)).min(2).max(8),
+});
 
-    const html = await res.text();
-    const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-    const title = titleMatch?.[1]?.trim() ?? "";
-    // strip scripts/styles/tags
-    const text = html
-      .replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, maxChars);
-    return { ok: true as const, text, title };
-  } catch {
-    return { ok: false as const, text: "", title: "" };
-  }
-}
+const ReviewSchema = z.object({
+  summary: z.string(),
+  critique: z.string(),
+  score: z.number().int().min(0).max(100),
+});
 
 export const Route = createFileRoute("/api/research")({
   staticData: { sitemap: false },
@@ -86,7 +79,9 @@ export const Route = createFileRoute("/api/research")({
 
         const body = (await request.json().catch(() => ({}))) as { projectId?: string };
         const projectId = body.projectId;
-        if (!projectId) return new Response("projectId required", { status: 400 });
+        if (!projectId || !z.string().uuid().safeParse(projectId).success) {
+          return new Response("projectId required", { status: 400 });
+        }
 
         const SUPABASE_URL = process.env.SUPABASE_URL!;
         const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
@@ -96,19 +91,31 @@ export const Route = createFileRoute("/api/research")({
         });
 
         const { data: user } = await sb.auth.getUser(token);
-        if (!user?.user) return new Response("Unauthorized", { status: 401 });
-        void user.user.id;
+        const userId = user?.user?.id;
+        if (!userId) return new Response("Unauthorized", { status: 401 });
 
         const { data: project, error: projErr } = await sb
           .from("research_projects")
-          .select("*")
+          .select("id, workspace_id, topic, goal, depth")
           .eq("id", projectId)
           .maybeSingle();
         if (projErr || !project) return new Response("Project not found", { status: 404 });
 
+        // One run at a time per project — a second click must not double-spend.
+        const { data: inflight } = await sb
+          .from("research_runs")
+          .select("id")
+          .eq("project_id", project.id)
+          .in("status", ["queued", "running"])
+          .gte("created_at", new Date(Date.now() - 15 * 60_000).toISOString())
+          .limit(1);
+        if (inflight && inflight.length > 0) {
+          return new Response("A run is already in progress for this project.", { status: 409 });
+        }
+
         // Enforce plan quota + per-workspace sliding-window limit before spending
         // any AI/gateway budget on the multi-agent pipeline.
-        const { consumeRateLimit } = await import("@/lib/security.server");
+        const { consumeRateLimit, auditLog, clientIp } = await import("@/lib/security.server");
         const { assertQuota, QuotaError } = await import("@/lib/limits.server");
         try {
           await assertQuota(project.workspace_id, "researchRuns");
@@ -124,7 +131,8 @@ export const Route = createFileRoute("/api/research")({
           });
         }
 
-        // Create run
+        const cfg = depthConfig(project.depth);
+        const startedAt = new Date();
 
         const { data: run, error: runErr } = await sb
           .from("research_runs")
@@ -132,16 +140,19 @@ export const Route = createFileRoute("/api/research")({
             project_id: project.id,
             workspace_id: project.workspace_id,
             status: "running",
-            model: "google/gemini-3-flash-preview",
-            started_at: new Date().toISOString(),
+            model: CHAT_MODEL,
+            started_at: startedAt.toISOString(),
           })
           .select()
           .single();
-        if (runErr || !run) return new Response(runErr?.message ?? "Run create failed", { status: 500 });
+        if (runErr || !run) {
+          return new Response(runErr?.message ?? "Run create failed", { status: 500 });
+        }
 
         const encoder = new TextEncoder();
         let stepIndex = 0;
-        const collectedSources: { url: string; title: string; snippet: string }[] = [];
+        const collectedSources = new Map<string, SearchResult>();
+        const tokens = { input: 0, output: 0 };
 
         const stream = new ReadableStream({
           async start(controller) {
@@ -149,7 +160,7 @@ export const Route = createFileRoute("/api/research")({
               try {
                 controller.enqueue(encoder.encode(sse(ev)));
               } catch {
-                /* client disconnected */
+                /* client disconnected; keep persisting so the run stays auditable */
               }
               if (ev.type === "step") {
                 stepIndex++;
@@ -173,31 +184,59 @@ export const Route = createFileRoute("/api/research")({
               }
             };
 
+            const fail = async (message: string) => {
+              await sb
+                .from("research_runs")
+                .update({
+                  status: "failed",
+                  error: message,
+                  completed_at: new Date().toISOString(),
+                  tokens_input: tokens.input || null,
+                  tokens_output: tokens.output || null,
+                })
+                .eq("id", run.id);
+              try {
+                controller.enqueue(encoder.encode(sse({ type: "error", message })));
+              } catch {
+                /* */
+              }
+              controller.close();
+            };
+
             try {
-              const gateway = createLovableAiGatewayProvider(getLovableApiKey());
-              const model = gateway("google/gemini-3-flash-preview");
+              const provider = createLovableResponsesProvider(getLovableApiKey());
+              const model = provider.model();
+              const track = (u: { inputTokens?: number; outputTokens?: number } | undefined) => {
+                tokens.input += u?.inputTokens ?? 0;
+                tokens.output += u?.outputTokens ?? 0;
+              };
 
               await writeStep({
                 type: "step",
                 agent: "Orchestrator",
                 action: "kickoff",
                 thought: `Researching: ${project.topic}`,
+                result: { depth: project.depth, model: CHAT_MODEL },
               });
 
               // ====== PLANNER ======
-              const planner = await generateText({
+              const planner = streamText({
                 model,
-                system:
-                  "You are the Planner. Output a JSON array of 4-7 focused web search queries to investigate the topic comprehensively. Reply with ONLY a JSON array of strings.",
+                system: [
+                  "You are the Planner of a research team.",
+                  `Produce ${cfg.queries} focused web search queries that together cover the topic from different angles: market size and trends, competitors, customer language, risks, and recent news.`,
+                  "Each query is a short search-engine phrase, not a sentence. No duplicates.",
+                ].join(" "),
                 prompt: `Topic: ${project.topic}\nGoal: ${project.goal ?? "Comprehensive deep-dive"}\nDepth: ${project.depth}`,
+                output: Output.object({ schema: PlanSchema }),
+                providerOptions: responsesOptions("low"),
               });
-              let queries: string[] = [];
-              try {
-                queries = JSON.parse(planner.text.match(/\[[\s\S]*\]/)?.[0] ?? "[]");
-              } catch {
-                queries = [project.topic];
-              }
-              queries = queries.slice(0, project.depth === "deep" ? 7 : project.depth === "quick" ? 3 : 5);
+              const plan = await planner.output;
+              track(await planner.usage);
+              const queries = [...new Set(plan.queries.map((q) => q.trim()))]
+                .filter(Boolean)
+                .slice(0, cfg.queries);
+              if (queries.length === 0) queries.push(project.topic);
 
               await writeStep({
                 type: "step",
@@ -209,49 +248,88 @@ export const Route = createFileRoute("/api/research")({
 
               // ====== SEARCHER + READER ======
               const docs: { url: string; title: string; text: string; query: string }[] = [];
+              let searchFailures = 0;
+              let providerUsed: string | null = null;
+
               for (const q of queries) {
+                await writeStep({ type: "step", agent: "Searcher", action: "web_search", thought: q });
+                const outcome = await webSearch(q, {
+                  max: cfg.resultsPerQuery,
+                  depth: cfg.searchDepth,
+                });
+                if (!outcome.ok) {
+                  searchFailures++;
+                  await writeStep({
+                    type: "step",
+                    agent: "Searcher",
+                    action: "web_search_failed",
+                    thought: `Live search failed for "${q}" (${outcome.error})`,
+                    result: { query: q, error: outcome.error },
+                  });
+                  continue;
+                }
+                providerUsed = outcome.provider;
+                const fresh: SearchResult[] = [];
+                for (const r of outcome.results) {
+                  if (collectedSources.has(r.url)) continue;
+                  collectedSources.set(r.url, r);
+                  fresh.push(r);
+                  await writeStep({ type: "source", url: r.url, title: r.title, snippet: r.snippet });
+                }
                 await writeStep({
                   type: "step",
                   agent: "Searcher",
-                  action: "web_search",
-                  thought: q,
+                  action: "web_search_result",
+                  thought: `${outcome.results.length} results (${fresh.length} new) via ${outcome.provider}`,
+                  result: { query: q, provider: outcome.provider, count: outcome.results.length },
                 });
-                const results = await webSearch(q, 4);
-                for (const r of results) {
-                  if (collectedSources.find((s) => s.url === r.url)) continue;
-                  collectedSources.push(r);
-                  await writeStep({ type: "source", url: r.url, title: r.title, snippet: r.snippet });
+
+                // Read the top pages in parallel; each fetch is SSRF-guarded and time-boxed.
+                const toRead = outcome.results.slice(0, cfg.readPerQuery);
+                for (const r of toRead) {
+                  await writeStep({ type: "step", agent: "Reader", action: "fetch_page", thought: r.url });
                 }
-
-                // Fetch top 2 per query
-                for (const r of results.slice(0, 2)) {
-                  await writeStep({
-                    type: "step",
-                    agent: "Reader",
-                    action: "fetch_page",
-                    thought: r.url,
-                  });
-                  const page = await fetchPage(r.url);
-                  if (page.ok && page.text.length > 200) {
-                    docs.push({ url: r.url, title: page.title || r.title, text: page.text, query: q });
-
-                    // Embed and store
-                    try {
-                      const vec = await embed(page.text.slice(0, 6000));
-                      await sb.from("documents").insert({
-                        workspace_id: project.workspace_id,
-                        source_type: "web",
-                        source_url: r.url,
-                        title: page.title || r.title,
-                        content: page.text.slice(0, 6000),
-                        embedding: vec as unknown as string,
-                        metadata: { run_id: run.id, query: q },
-                      });
-                    } catch {
-                      /* embedding failure non-fatal */
-                    }
+                const pages = await Promise.all(toRead.map((r) => readPage(r.url)));
+                const embedJobs: Promise<unknown>[] = [];
+                pages.forEach((page, i) => {
+                  const r = toRead[i]!;
+                  if (!page.ok || page.text.length < 200) {
+                    void writeStep({
+                      type: "step",
+                      agent: "Reader",
+                      action: "fetch_skipped",
+                      thought: `${r.url} — unreadable or blocked`,
+                    });
+                    return;
                   }
-                }
+                  if (docs.some((d) => d.url === r.url)) return;
+                  docs.push({ url: r.url, title: page.title || r.title, text: page.text, query: q });
+                  embedJobs.push(
+                    embed(page.text.slice(0, 6000))
+                      .then((vec) =>
+                        sb.from("documents").insert({
+                          workspace_id: project.workspace_id,
+                          source_type: "web",
+                          source_url: r.url,
+                          title: page.title || r.title,
+                          content: page.text.slice(0, 6000),
+                          embedding: vec as unknown as string,
+                          metadata: { run_id: run.id, query: q, project_id: project.id },
+                        }),
+                      )
+                      .catch(() => undefined),
+                  );
+                });
+                await Promise.allSettled(embedJobs);
+              }
+
+              if (docs.length === 0 && collectedSources.size === 0) {
+                await fail(
+                  searchFailures === queries.length
+                    ? "Live web search is unavailable right now, so this run was stopped rather than writing an unsourced report. Try again in a few minutes."
+                    : "No readable sources were found for this topic. Try a more specific topic or goal.",
+                );
+                return;
               }
 
               // ====== BRAND MEMORY (grounding in the workspace's own documents) ======
@@ -269,9 +347,11 @@ export const Route = createFileRoute("/api/research")({
                   query_embedding: qvec as unknown as string,
                   match_count: 6,
                 });
-                const seen = new Set(docs.map((d) => d.url));
+                const webUrls = new Set(docs.map((d) => d.url));
                 for (const h of hits ?? []) {
-                  if (h.source_url && seen.has(h.source_url)) continue;
+                  // Pages this very run just embedded are web sources, not brand memory.
+                  if (h.source_url && webUrls.has(h.source_url)) continue;
+                  if ((h.similarity ?? 0) < 0.35) continue;
                   brandPassages.push({
                     title: h.title ?? "Brand document",
                     sourceUrl: h.source_url ?? null,
@@ -284,7 +364,7 @@ export const Route = createFileRoute("/api/research")({
                   action: "result",
                   thought: brandPassages.length
                     ? `${brandPassages.length} internal passages grounded the report`
-                    : "No brand documents in this workspace yet",
+                    : "No matching brand documents in this workspace",
                   result: { count: brandPassages.length },
                 });
               } catch {
@@ -296,16 +376,24 @@ export const Route = createFileRoute("/api/research")({
                 type: "step",
                 agent: "Synthesizer",
                 action: "compose",
-                thought: `Synthesizing from ${docs.length} web sources and ${brandPassages.length} brand documents`,
+                thought: `Synthesizing from ${docs.length} read pages, ${collectedSources.size} sources and ${brandPassages.length} brand documents`,
               });
 
+              const numbered = [...collectedSources.values()];
+              const indexOf = new Map(numbered.map((s, i) => [s.url, i + 1]));
               const corpus = docs
                 .map(
-                  (d, i) =>
-                    `### Source [${i + 1}] ${d.title}\nURL: ${d.url}\n\n${d.text.slice(0, 3000)}`,
+                  (d) =>
+                    `### Source [${indexOf.get(d.url)}] ${d.title}\nURL: ${d.url}\n\n${d.text.slice(0, 3200)}`,
                 )
                 .join("\n\n---\n\n");
-
+              const snippetOnly = numbered
+                .filter((s) => !docs.some((d) => d.url === s.url))
+                .map(
+                  (s) =>
+                    `[${indexOf.get(s.url)}] ${s.title || s.url} — ${s.url}${s.snippet ? `\n${s.snippet.slice(0, 400)}` : ""}`,
+                )
+                .join("\n");
               const brandCorpus = brandPassages
                 .map(
                   (b, i) =>
@@ -313,58 +401,90 @@ export const Route = createFileRoute("/api/research")({
                 )
                 .join("\n\n---\n\n");
 
-              const report = await generateText({
+              const synth = streamText({
                 model,
-                system:
-                  "You are the Synthesizer. Write a thorough, well-structured research report in Markdown. Use clear sections (Executive Summary, Key Findings, Detailed Analysis, Implications, Recommendations, References). Cite web sources inline as [1], [2], … matching the provided numbering, and cite the company's own internal brand documents as [B1], [B2], …. Ground every claim about the company itself in the brand documents. End with a numbered References list with URLs, and list internal brand documents separately under 'Internal sources'.",
-                prompt: `Topic: ${project.topic}\nGoal: ${project.goal ?? ""}\n\n### Sources\n${corpus || "(no sources retrieved — answer from general knowledge and flag uncertainty)"}${
-                  brandCorpus ? `\n\n### Internal brand documents\n${brandCorpus}` : ""
-                }`,
+                system: [
+                  "You are the Synthesizer on a research team. Write a research report in Markdown for a marketing lead.",
+                  "Structure: # Title, ## Executive summary (3 sentences), ## Key findings (bullets, each with a citation), ## Detailed analysis (sub-headings), ## Implications for the brand, ## Recommendations (numbered, specific), ## Open questions, ## References.",
+                  "Citations: every factual claim carries an inline citation [n] matching the numbered sources you were given. Internal brand documents are cited as [B1], [B2]. Never cite a number you were not given and never invent a URL.",
+                  "Only state what the sources support. Where sources disagree, say so. Where evidence is thin, say 'limited evidence'.",
+                  "References: list every cited web source as `[n] Title — URL`, then list internal sources under 'Internal sources'.",
+                  "Length: between 700 and 1400 words. No filler, no marketing clichés.",
+                ].join("\n"),
+                prompt: `Topic: ${project.topic}\nGoal: ${project.goal ?? "Comprehensive deep-dive"}\nRun date: ${startedAt.toISOString().slice(0, 10)}\n\n### Read sources\n${corpus || "(none read in full)"}${
+                  snippetOnly ? `\n\n### Additional sources (snippet only)\n${snippetOnly}` : ""
+                }${brandCorpus ? `\n\n### Internal brand documents\n${brandCorpus}` : ""}`,
+                providerOptions: responsesOptions(cfg.effort),
               });
-
+              let reportText = "";
+              for await (const delta of synth.textStream) reportText += delta;
+              track(await synth.usage);
+              if (reportText.trim().length < 200) {
+                await fail("The synthesizer returned an empty report. No tokens were charged beyond this point; try again.");
+                return;
+              }
 
               // ====== CRITIC ======
               await writeStep({
                 type: "step",
                 agent: "Critic",
                 action: "review",
-                thought: "Scoring report for completeness & accuracy",
+                thought: "Scoring the report for evidence, coverage and clarity",
               });
 
-              const critic = await generateText({
+              const review = streamText({
                 model,
-                system:
-                  "You are the Critic. In 2-3 sentences, summarize the strengths and any gaps of the report. Then on a new line write SCORE: <0-100>.",
-                prompt: report.text.slice(0, 6000),
+                system: [
+                  "You are the Critic. You receive a research report and the list of sources it was allowed to cite.",
+                  "Write `summary`: a 3-sentence executive summary for a busy marketing lead.",
+                  "Write `critique`: 2-3 sentences on evidence quality, coverage gaps and any claims that outrun the sources.",
+                  "Set `score` 0-100: 90+ only when every claim is cited and the coverage is complete; below 50 when key claims are unsupported.",
+                ].join("\n"),
+                prompt: `Allowed sources: ${numbered.length} web, ${brandPassages.length} internal.\n\n${reportText.slice(0, 14_000)}`,
+                output: Output.object({ schema: ReviewSchema }),
+                providerOptions: responsesOptions("low"),
               });
+              const verdict = await review.output;
+              track(await review.usage);
 
-              // ====== WRITER (executive summary) ======
-              const summary = await generateText({
-                model,
-                system:
-                  "Distill the report into a 3-sentence executive summary suitable for a busy executive.",
-                prompt: report.text.slice(0, 8000),
-              });
-
+              const completedAt = new Date();
               await sb
                 .from("research_runs")
                 .update({
                   status: "succeeded",
-                  report_markdown: report.text,
-                  summary: summary.text,
-                  completed_at: new Date().toISOString(),
-                  plan: { queries, critic: critic.text },
+                  report_markdown: reportText,
+                  summary: verdict.summary,
+                  completed_at: completedAt.toISOString(),
+                  tokens_input: tokens.input,
+                  tokens_output: tokens.output,
+                  plan: {
+                    queries,
+                    critic: `${verdict.critique.trim()}\nSCORE: ${verdict.score}`,
+                    search_provider: providerUsed,
+                    pages_read: docs.length,
+                    sources: numbered.length,
+                    brand_passages: brandPassages.length,
+                    duration_seconds: Math.round((completedAt.getTime() - startedAt.getTime()) / 1000),
+                  },
                 })
                 .eq("id", run.id);
 
-              // Increment usage
+              await writeStep({
+                type: "step",
+                agent: "Critic",
+                action: "score",
+                thought: `Score ${verdict.score}/100`,
+                result: { score: verdict.score, critique: verdict.critique },
+              });
+
+              // Usage counters: runs + real token totals for the month.
               const periodMonth = new Date();
               periodMonth.setUTCDate(1);
               periodMonth.setUTCHours(0, 0, 0, 0);
               const periodIso = periodMonth.toISOString().slice(0, 10);
               const { data: usage } = await sb
                 .from("usage_counters")
-                .select("research_runs")
+                .select("research_runs, tokens_input, tokens_output")
                 .eq("workspace_id", project.workspace_id)
                 .eq("period_month", periodIso)
                 .maybeSingle();
@@ -373,24 +493,36 @@ export const Route = createFileRoute("/api/research")({
                   workspace_id: project.workspace_id,
                   period_month: periodIso,
                   research_runs: (usage?.research_runs ?? 0) + 1,
+                  tokens_input: Number(usage?.tokens_input ?? 0) + tokens.input,
+                  tokens_output: Number(usage?.tokens_output ?? 0) + tokens.output,
                 },
                 { onConflict: "workspace_id,period_month" },
               );
 
-              await writeStep({ type: "done", report: report.text, summary: summary.text });
+              await auditLog({
+                workspaceId: project.workspace_id,
+                actorId: userId,
+                event: "research.run.completed",
+                targetTable: "research_runs",
+                targetId: run.id,
+                metadata: {
+                  model: CHAT_MODEL,
+                  score: verdict.score,
+                  sources: numbered.length,
+                  pages_read: docs.length,
+                  tokens_input: tokens.input,
+                  tokens_output: tokens.output,
+                  search_provider: providerUsed,
+                },
+                ipAddress: clientIp(request),
+                userAgent: request.headers.get("user-agent"),
+              });
+
+              await writeStep({ type: "done", report: reportText, summary: verdict.summary });
               controller.close();
             } catch (e) {
               const message = e instanceof Error ? e.message : String(e);
-              await sb
-                .from("research_runs")
-                .update({ status: "failed", error: message, completed_at: new Date().toISOString() })
-                .eq("id", run.id);
-              try {
-                controller.enqueue(encoder.encode(sse({ type: "error", message })));
-              } catch {
-                /* */
-              }
-              controller.close();
+              await fail(message);
             }
           },
         });
@@ -400,15 +532,10 @@ export const Route = createFileRoute("/api/research")({
             "Content-Type": "text/event-stream",
             "Cache-Control": "no-cache, no-transform",
             Connection: "keep-alive",
+            "X-Accel-Buffering": "no",
           },
         });
       },
     },
   },
 });
-
-// Suppress unused warnings for imports we may need later when wiring AI SDK tools.
-void tool;
-void stepCountIs;
-void z;
-

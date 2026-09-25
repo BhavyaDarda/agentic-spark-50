@@ -22,9 +22,10 @@
 //   * All DB reads/writes use a JWT-scoped client → RLS enforces workspace isolation.
 //   * Per-workspace rate limits: `chat.message` and `chat.deep_research`.
 //   * No API keys ever leave the server; the client never sees LOVABLE_API_KEY,
-//     TAVILY_API_KEY, or the service-role key.
-//   * The Tavily key falls back to `null` — if unset, the tool degrades to a
-//     graceful "web search unavailable" rather than erroring.
+//     the search key, or the service-role key.
+//   * Web search is always live (see web-search.server.ts). When every search
+//     provider is down the tool reports that plainly and the model must say so
+//     instead of inventing sources.
 //
 // Note: this file intentionally does NOT depend on the AI SDK client. We drive
 // `streamText` server-side and re-emit our own SSE frames, insulating the UI
@@ -35,7 +36,15 @@ import { createClient } from "@supabase/supabase-js";
 import { streamText, tool, stepCountIs, convertToModelMessages, type UIMessage } from "ai";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
-import { createLovableAiGatewayProvider, getLovableApiKey, embed } from "@/lib/ai-gateway.server";
+import {
+  CHAT_MODEL,
+  createLovableResponsesProvider,
+  getLovableApiKey,
+  embed,
+  responsesOptions,
+  type ReasoningEffort,
+} from "@/lib/ai-gateway.server";
+import { webSearch, readPage } from "@/lib/web-search.server";
 import { consumeRateLimit, auditLog, clientIp } from "@/lib/security.server";
 import { loadMcpToolsForWorkspace } from "@/lib/mcp.functions";
 
@@ -79,78 +88,19 @@ const inputSchema = z.object({
     .default({ model: "balanced", allowWeb: true }),
 });
 
-function pickModel(preference: "fast" | "balanced" | "deep"): string {
+/**
+ * One model, three thinking budgets. "fast" answers quickly with light
+ * reasoning; "deep" spends more reasoning and more tool steps.
+ */
+function effortFor(preference: "fast" | "balanced" | "deep"): ReasoningEffort {
   switch (preference) {
     case "fast":
-      return "google/gemini-3-flash-preview";
+      return "low";
     case "deep":
-      return "google/gemini-3-pro-preview";
+      return "high";
     case "balanced":
     default:
-      return "google/gemini-3-flash-preview";
-  }
-}
-
-// ---------------------------- Web tools --------------------------------
-
-async function tavilySearch(query: string, opts: { max?: number; depth?: "basic" | "advanced" } = {}) {
-  const key = process.env.TAVILY_API_KEY;
-  if (!key) return { ok: false as const, error: "web_search_unavailable", results: [] };
-  try {
-    const res = await fetch("https://api.tavily.com/search", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: key,
-        query,
-        max_results: opts.max ?? 6,
-        search_depth: opts.depth ?? "basic",
-        include_answer: false,
-      }),
-      signal: AbortSignal.timeout(15_000),
-    });
-    if (!res.ok) return { ok: false as const, error: `tavily_${res.status}`, results: [] };
-    const json = (await res.json()) as {
-      results?: { url: string; title?: string; content?: string }[];
-    };
-    return {
-      ok: true as const,
-      results: (json.results ?? []).map((r) => ({
-        url: r.url,
-        title: r.title ?? "",
-        snippet: r.content ?? "",
-      })),
-    };
-  } catch (e) {
-    return {
-      ok: false as const,
-      error: e instanceof Error ? e.message : "search_failed",
-      results: [],
-    };
-  }
-}
-
-async function fetchReadable(url: string, maxChars = 12_000) {
-  try {
-    const { safeFetch } = await import("@/lib/ssrf.server");
-    const res = await safeFetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; MarketingAgent/2.0)" },
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!res.ok) return { ok: false as const, text: "", title: "" };
-
-    const html = await res.text();
-    const title = html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]?.trim() ?? "";
-    const text = html
-      .replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, maxChars);
-    return { ok: true as const, text, title };
-  } catch {
-    return { ok: false as const, text: "", title: "" };
+      return "medium";
   }
 }
 
@@ -272,8 +222,11 @@ export const Route = createFileRoute("/api/chat")({
               const assistantMsgId = crypto.randomUUID();
               write({ type: "message_start", id: assistantMsgId });
 
-              const gateway = createLovableAiGatewayProvider(getLovableApiKey());
-              const model = gateway(pickModel(options.model));
+              const provider = createLovableResponsesProvider(
+                getLovableApiKey(),
+                request.headers.get("X-Lovable-AIG-Run-ID") ?? undefined,
+              );
+              const model = provider.model();
 
               const systemPrompt = [
                 "You are Marketing Agent, an enterprise marketing operator.",
@@ -308,18 +261,22 @@ export const Route = createFileRoute("/api/chat")({
               const tools = {
                 web_search: tool({
                   description:
-                    "Search the live web via Tavily. Use for competitor research, market stats, news, product info, or anything not in your training data. Returns titles + URLs + snippets you MUST cite as [n].",
+                    "Search the live web. Use for competitor research, market stats, news, product info, or anything not in your training data. Returns titles + URLs + snippets you MUST cite as [n]. If it returns an error, tell the user live search is unavailable — never invent sources.",
                   inputSchema: z.object({
-                    query: z.string().min(2).max(300),
-                    depth: z.enum(["basic", "advanced"]).default("basic"),
+                    query: z.string().min(2).max(300).describe("Search-engine style query"),
+                    depth: z
+                      .enum(["basic", "advanced"])
+                      .nullable()
+                      .describe("advanced digs deeper but is slower; null means basic"),
                   }),
                   execute: async ({ query, depth }) => {
-                    write({ type: "tool_call", tool: "web_search", input: { query, depth } });
+                    const searchDepth = depth ?? "basic";
+                    write({ type: "tool_call", tool: "web_search", input: { query, depth: searchDepth } });
                     write({ type: "agent", name: "Researcher", status: "start", note: query });
-                    const r = await tavilySearch(query, { depth, max: 6 });
+                    const r = await webSearch(query, { depth: searchDepth, max: 6 });
                     for (const item of r.results) {
                       if (!emitted.citations.find((c) => c.url === item.url)) {
-                        emitted.citations.push(item);
+                        emitted.citations.push({ url: item.url, title: item.title, snippet: item.snippet });
                         write({
                           type: "citation",
                           url: item.url,
@@ -332,19 +289,26 @@ export const Route = createFileRoute("/api/chat")({
                       type: "tool_result",
                       tool: "web_search",
                       ok: r.ok,
-                      summary: r.ok ? `${r.results.length} results` : r.error,
+                      summary: r.ok ? `${r.results.length} results via ${r.provider}` : r.error,
                     });
                     write({ type: "agent", name: "Researcher", status: "end" });
                     return r.ok
                       ? {
+                          provider: r.provider,
                           results: r.results.map((x, i) => ({
                             index: i + 1,
                             url: x.url,
                             title: x.title,
                             snippet: x.snippet,
+                            publishedAt: x.publishedAt,
                           })),
                         }
-                      : { error: r.error };
+                      : {
+                          error: "web_search_unavailable",
+                          detail: r.error,
+                          instruction:
+                            "Live web search failed. Tell the user plainly and do not cite any source.",
+                        };
                   },
                 }),
                 fetch_page: tool({
@@ -353,7 +317,7 @@ export const Route = createFileRoute("/api/chat")({
                   inputSchema: z.object({ url: z.string().url() }),
                   execute: async ({ url }) => {
                     write({ type: "tool_call", tool: "fetch_page", input: { url } });
-                    const page = await fetchReadable(url);
+                    const page = await readPage(url);
                     write({
                       type: "tool_result",
                       tool: "fetch_page",
@@ -502,7 +466,9 @@ export const Route = createFileRoute("/api/chat")({
                 system: systemPrompt,
                 messages: modelMessages,
                 tools,
-                stopWhen: stepCountIs(options.model === "deep" ? 10 : 6),
+                stopWhen: stepCountIs(options.model === "deep" ? 12 : 8),
+                providerOptions: responsesOptions(effortFor(options.model)),
+                abortSignal: request.signal,
                 onError({ error }) {
                   const msg = error instanceof Error ? error.message : String(error);
                   write({ type: "error", message: msg });
@@ -531,7 +497,7 @@ export const Route = createFileRoute("/api/chat")({
                 conversation_id: conversationId,
                 workspace_id: workspaceId,
                 role: "assistant",
-                model: pickModel(options.model),
+                model: CHAT_MODEL,
                 input_tokens: usage?.inputTokens ?? null,
                 output_tokens: usage?.outputTokens ?? null,
                 parts: [
@@ -552,7 +518,8 @@ export const Route = createFileRoute("/api/chat")({
                 targetTable: "conversations",
                 targetId: conversationId,
                 metadata: {
-                  model: pickModel(options.model),
+                  model: CHAT_MODEL,
+                  effort: effortFor(options.model),
                   input_tokens: usage?.inputTokens ?? null,
                   output_tokens: usage?.outputTokens ?? null,
                   artifacts: emitted.artifacts.length,
