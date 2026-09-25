@@ -226,6 +226,7 @@ export async function webSearch(query: string, opts: SearchOptions = {}): Promis
 
   const first = await tavilySearch(q, opts);
   if (first.ok && first.results.length > 0) return first;
+  const firstError = first.ok ? "tavily_no_results" : first.error;
 
   const second = await claudeSearch(q, opts);
   if (second.ok) return second;
@@ -234,7 +235,7 @@ export async function webSearch(query: string, opts: SearchOptions = {}): Promis
     ok: false,
     provider: null,
     results: [],
-    error: `${first.error ?? "tavily_failed"} / ${second.error}`,
+    error: `${firstError} / ${second.error}`,
   };
 }
 

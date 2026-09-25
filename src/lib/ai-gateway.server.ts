@@ -28,9 +28,9 @@ export function responsesOptions(effort: ReasoningEffort = "low") {
       reasoningEffort: effort,
       reasoningSummary: "auto",
       store: false,
-      include: ["reasoning.encrypted_content"],
+      include: ["reasoning.encrypted_content"] as string[],
     },
-  } as const;
+  };
 }
 
 /** Resends a known gateway run id and captures the one the gateway mints. */
