@@ -196,11 +196,7 @@ export const submitSponsorInquiry = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { currentVisitor } = await import("@/lib/visitor.server");
     const visitor = currentVisitor();
-    const { createClient } = await import("@supabase/supabase-js");
-    const url = process.env["SUPABASE_URL"];
-    const key = process.env["SUPABASE_SERVICE_ROLE_KEY"];
-    if (!url || !key) throw new Error("Server is not configured for inquiries.");
-    const sb = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { supabaseAdmin: sb } = await import("@/integrations/supabase/client.server");
 
     if (visitor.hash) {
       const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
