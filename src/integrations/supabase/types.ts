@@ -150,7 +150,7 @@ export type Database = {
           brand_voice: string | null
           channels: string[] | null
           created_at: string
-          created_by: string
+          created_by: string | null
           goals: string | null
           id: string
           name: string
@@ -165,7 +165,7 @@ export type Database = {
           brand_voice?: string | null
           channels?: string[] | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           goals?: string | null
           id?: string
           name: string
@@ -180,7 +180,7 @@ export type Database = {
           brand_voice?: string | null
           channels?: string[] | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           goals?: string | null
           id?: string
           name?: string
@@ -207,7 +207,7 @@ export type Database = {
           calendar: Json | null
           channels: string[] | null
           created_at: string
-          created_by: string
+          created_by: string | null
           end_date: string | null
           id: string
           name: string
@@ -224,7 +224,7 @@ export type Database = {
           calendar?: Json | null
           channels?: string[] | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           end_date?: string | null
           id?: string
           name: string
@@ -241,7 +241,7 @@ export type Database = {
           calendar?: Json | null
           channels?: string[] | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           end_date?: string | null
           id?: string
           name?: string
@@ -269,13 +269,49 @@ export type Database = {
           },
         ]
       }
+      contact_messages: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          kind: string
+          message: string
+          name: string
+          status: string
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          kind?: string
+          message: string
+          name: string
+          status?: string
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          kind?: string
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
+        }
+        Relationships: []
+      }
       content_runs: {
         Row: {
           asset_url: string | null
           brand_id: string | null
           campaign_id: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           error: string | null
           eval_feedback: string | null
           eval_score: number | null
@@ -298,7 +334,7 @@ export type Database = {
           brand_id?: string | null
           campaign_id?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           error?: string | null
           eval_feedback?: string | null
           eval_score?: number | null
@@ -321,7 +357,7 @@ export type Database = {
           brand_id?: string | null
           campaign_id?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           error?: string | null
           eval_feedback?: string | null
           eval_score?: number | null
@@ -698,7 +734,7 @@ export type Database = {
           brand_id: string | null
           citations_checked_at: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           depth: string
           goal: string | null
           id: string
@@ -712,7 +748,7 @@ export type Database = {
           brand_id?: string | null
           citations_checked_at?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           depth?: string
           goal?: string | null
           id?: string
@@ -726,7 +762,7 @@ export type Database = {
           brand_id?: string | null
           citations_checked_at?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           depth?: string
           goal?: string | null
           id?: string
@@ -929,6 +965,7 @@ export type Database = {
           project_id: string | null
           sponsor_id: string
           surface: string
+          visitor_hash: string | null
         }
         Insert: {
           created_at?: string
@@ -937,6 +974,7 @@ export type Database = {
           project_id?: string | null
           sponsor_id: string
           surface: string
+          visitor_hash?: string | null
         }
         Update: {
           created_at?: string
@@ -945,6 +983,7 @@ export type Database = {
           project_id?: string | null
           sponsor_id?: string
           surface?: string
+          visitor_hash?: string | null
         }
         Relationships: [
           {
@@ -962,6 +1001,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sponsor_inquiries: {
+        Row: {
+          budget_range: string | null
+          company: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          ip_hash: string | null
+          message: string
+          status: string
+          topics: string[]
+          website: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          company: string
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          ip_hash?: string | null
+          message: string
+          status?: string
+          topics?: string[]
+          website?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          company?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          ip_hash?: string | null
+          message?: string
+          status?: string
+          topics?: string[]
+          website?: string | null
+        }
+        Relationships: []
       }
       sponsors: {
         Row: {
@@ -1211,7 +1292,7 @@ export type Database = {
       workspaces: {
         Row: {
           created_at: string
-          created_by: string
+          created_by: string | null
           id: string
           name: string
           plan: Database["public"]["Enums"]["plan_tier"]
@@ -1222,7 +1303,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by: string
+          created_by?: string | null
           id?: string
           name: string
           plan?: Database["public"]["Enums"]["plan_tier"]
@@ -1233,7 +1314,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           id?: string
           name?: string
           plan?: Database["public"]["Enums"]["plan_tier"]
@@ -1293,10 +1374,6 @@ export type Database = {
           workspace_id: string
           workspace_name: string
         }[]
-      }
-      seed_starter_content: {
-        Args: { _user: string; _ws: string }
-        Returns: undefined
       }
       workspace_role_of: {
         Args: { _user_id: string; _workspace_id: string }
