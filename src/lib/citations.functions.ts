@@ -50,3 +50,64 @@ export const citationCounts = createServerFn({ method: "GET" })
     for (const row of rows ?? []) counts[row.project_id] = (counts[row.project_id] ?? 0) + 1;
     return counts;
   });
+
+/** Minimum gap between manual checks of the same report. */
+const REFRESH_COOLDOWN_MS = 60 * 60 * 1000;
+
+export interface RefreshResult {
+  ok: boolean;
+  found: number;
+  engineHit: boolean;
+  webMentions: number;
+  checkedAt: string;
+  /** Set when the check was skipped because it ran recently. */
+  nextAllowedAt?: string;
+  errors: string[];
+}
+
+/**
+ * Run the citation check for one published report right now. Workspace
+ * members only (RLS on the project read); throttled to once an hour per
+ * report because each check performs live web searches.
+ */
+export const refreshCitations = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ projectId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }): Promise<RefreshResult> => {
+    const { data: project, error } = await context.supabase
+      .from("research_projects")
+      .select("id, workspace_id, topic, goal, share_slug, is_public, citations_checked_at")
+      .eq("id", data.projectId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!project) throw new Error("Project not found.");
+    if (!project.is_public || !project.share_slug) {
+      throw new Error("Publish the report first — only public reports can be cited.");
+    }
+
+    const last = project.citations_checked_at ? Date.parse(project.citations_checked_at) : 0;
+    if (last && Date.now() - last < REFRESH_COOLDOWN_MS) {
+      return {
+        ok: true,
+        found: 0,
+        engineHit: false,
+        webMentions: 0,
+        checkedAt: project.citations_checked_at!,
+        nextAllowedAt: new Date(last + REFRESH_COOLDOWN_MS).toISOString(),
+        errors: [],
+      };
+    }
+
+    const { checkProjectCitations } = await import("@/lib/citations.server");
+    const { SITE } = await import("@/lib/site");
+    const origin = process.env["PUBLIC_SITE_ORIGIN"] || SITE.origin;
+    const check = await checkProjectCitations(project, origin);
+    return {
+      ok: check.errors.length === 0,
+      found: check.found,
+      engineHit: check.engineHit,
+      webMentions: check.webMentions,
+      checkedAt: new Date().toISOString(),
+      errors: check.errors,
+    };
+  });
