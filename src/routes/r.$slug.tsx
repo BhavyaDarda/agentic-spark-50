@@ -8,6 +8,7 @@ import type { PublicReport } from "@/lib/public-report.server";
 import { SponsorUnit } from "@/components/sponsor-unit";
 
 export const Route = createFileRoute("/r/$slug")({
+  staticData: { sitemap: true },
   head: ({ params, loaderData }) => {
     const report = (loaderData as { report: PublicReport | null } | undefined)?.report ?? null;
     const title = report

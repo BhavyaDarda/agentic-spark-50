@@ -15,6 +15,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Sign in — Marketing Agent" },

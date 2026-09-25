@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "New chat · Marketing Agent" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: NewChatWelcome,

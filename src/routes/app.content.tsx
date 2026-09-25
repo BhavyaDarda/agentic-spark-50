@@ -25,6 +25,7 @@ import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 const search = z.object({ brand: z.string().uuid().optional() });
 
 export const Route = createFileRoute("/app/content")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Content Studio · Marketing Agent" }] }),
   validateSearch: search,
   errorComponent: ({ error }) => <RouteError error={error as Error} />,

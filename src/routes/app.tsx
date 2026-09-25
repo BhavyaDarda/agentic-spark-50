@@ -15,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCurrentWorkspace } from "@/lib/workspace.functions";
 
 export const Route = createFileRoute("/app")({
+  staticData: { sitemap: "exclude-subtree" },
   ssr: false,
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();

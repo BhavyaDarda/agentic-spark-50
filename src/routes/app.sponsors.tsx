@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/sponsors")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Sponsors · Marketing Agent" },

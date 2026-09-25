@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Marketing Agent — the AI marketing operator" },

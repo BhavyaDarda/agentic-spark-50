@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/knowledge")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Brand Memory · Marketing Agent" },
