@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { getProject, getRunDetail, toggleSharing } from "@/lib/research.functions";
-import { listCitations } from "@/lib/citations.functions";
+import { listCitations, refreshCitations } from "@/lib/citations.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import {
   Copy,
   Globe,
   EyeOff,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { RouteError } from "@/components/route-error";
@@ -426,27 +427,99 @@ function ResearchDetail() {
         </Card>
       </div>
 
-      <CitationPanel projectId={projectId} isPublic={!!p.is_public} />
+      <CitationPanel
+        projectId={projectId}
+        isPublic={!!p.is_public}
+        checkedAt={p.citations_checked_at ?? null}
+      />
     </div>
   );
 }
 
-function CitationPanel({ projectId, isPublic }: { projectId: string; isPublic: boolean }) {
+function relativeTime(iso: string): string {
+  const diff = Date.now() - Date.parse(iso);
+  const mins = Math.round(diff / 60_000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const hours = Math.round(mins / 60);
+  if (hours < 48) return `${hours} h ago`;
+  return `${Math.round(hours / 24)} d ago`;
+}
+
+function CitationPanel({
+  projectId,
+  isPublic,
+  checkedAt,
+}: {
+  projectId: string;
+  isPublic: boolean;
+  checkedAt: string | null;
+}) {
+  const qc = useQueryClient();
   const cites = useQuery({
     queryKey: ["citations", projectId],
     queryFn: () => listCitations({ data: { projectId } }),
   });
   const rows = cites.data?.citations ?? [];
 
+  const refresh = useMutation({
+    mutationFn: () => refreshCitations({ data: { projectId } }),
+    onSuccess: (r) => {
+      qc.invalidateQueries({ queryKey: ["citations", projectId] });
+      qc.invalidateQueries({ queryKey: ["research-project", projectId] });
+      if (r.nextAllowedAt) {
+        toast.message("Checked recently", {
+          description: `Next check available ${relativeTime(r.nextAllowedAt).replace(" ago", " from now")}.`,
+        });
+        return;
+      }
+      if (r.errors.length > 0) {
+        toast.warning("Check finished with gaps", { description: r.errors[0] });
+      } else if (r.found === 0) {
+        toast.message("No citations yet", {
+          description: "Answer engines were asked and the open web was searched. Nothing points here so far.",
+        });
+      } else {
+        toast.success(`${r.found} citation${r.found === 1 ? "" : "s"} on record`, {
+          description: r.engineHit
+            ? "An answer engine used this report in its answer."
+            : `${r.webMentions} web page${r.webMentions === 1 ? "" : "s"} link to it.`,
+        });
+      }
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not check citations."),
+  });
+
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 space-y-0">
         <CardTitle className="text-base">Who cites this report</CardTitle>
+        {isPublic && (
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              {checkedAt ? `checked ${relativeTime(checkedAt)}` : "never checked"}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refresh.mutate()}
+              disabled={refresh.isPending}
+              aria-busy={refresh.isPending}
+            >
+              {refresh.isPending ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="mr-1 h-4 w-4" />
+              )}
+              {refresh.isPending ? "Asking the engines…" : "Check now"}
+            </Button>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         {cites.isLoading ? (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Checking…
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading…
           </div>
         ) : !isPublic ? (
           <p className="text-sm text-muted-foreground">
@@ -454,7 +527,9 @@ function CitationPanel({ projectId, isPublic }: { projectId: string; isPublic: b
           </p>
         ) : rows.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            No citations picked up yet. We keep checking answer engines and the open web.
+            {checkedAt
+              ? "No citations found so far. Each check asks a live answer engine about your topic and searches the web for pages that link to this report."
+              : "Not checked yet. Press “Check now” to ask a live answer engine about your topic and search the web for links to this report. Checks run at most once an hour."}
           </p>
         ) : (
           <ul className="divide-y-[3px] divide-border border-[3px] border-border">
