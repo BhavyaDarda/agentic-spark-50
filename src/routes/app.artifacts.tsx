@@ -15,6 +15,7 @@ import { FileText, Search, Star } from "lucide-react";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/artifacts")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Artifact Library · Marketing Agent" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ArtifactLibrary,

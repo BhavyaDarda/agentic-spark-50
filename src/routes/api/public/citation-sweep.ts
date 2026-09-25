@@ -22,6 +22,7 @@ function authorized(request: Request): boolean {
 }
 
 export const Route = createFileRoute("/api/public/citation-sweep")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

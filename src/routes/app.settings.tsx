@@ -61,6 +61,7 @@ import { RouteError } from "@/components/route-error";
 import { AccountPanel } from "@/components/account-panel";
 
 export const Route = createFileRoute("/app/settings")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Settings · Marketing Agent" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: SettingsPage,

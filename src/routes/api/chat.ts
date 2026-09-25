@@ -157,6 +157,7 @@ async function fetchReadable(url: string, maxChars = 12_000) {
 // ------------------------------- Route ---------------------------------
 
 export const Route = createFileRoute("/api/chat")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

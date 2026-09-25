@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/brands")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Brands · Marketing Agent" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: BrandsPage,

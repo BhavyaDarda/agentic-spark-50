@@ -26,6 +26,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "New chat · Marketing Agent" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: NewChatWelcome,
@@ -118,7 +119,7 @@ function NewChatWelcome() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
               e.preventDefault();
               send();
             }
@@ -147,7 +148,7 @@ function NewChatWelcome() {
               </SelectContent>
             </Select>
             <span className="hidden md:inline">
-              · ⌘⏎ to send
+              · Enter to send · Shift+Enter for a new line
             </span>
           </div>
           <Button

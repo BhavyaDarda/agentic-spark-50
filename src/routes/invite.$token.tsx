@@ -14,6 +14,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/invite/$token")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Accept invitation · Marketing Agent" }] }),
   validateSearch: searchSchema,
   component: InvitePage,

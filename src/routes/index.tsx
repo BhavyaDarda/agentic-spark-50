@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Marketing Agent — the AI marketing operator" },
@@ -30,9 +31,30 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://reacher-ai.lovable.app/" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://reacher-ai.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            { "@type": "Organization", name: "Reacher AI", url: "https://reacher-ai.lovable.app/" },
+            {
+              "@type": "SoftwareApplication",
+              name: "Marketing Agent",
+              applicationCategory: "BusinessApplication",
+              operatingSystem: "Web",
+              url: "https://reacher-ai.lovable.app/",
+              description:
+                "AI marketing agent with a multi-agent research engine that cites sources, scores its own work and shows the cost of every run.",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: Landing,
 });

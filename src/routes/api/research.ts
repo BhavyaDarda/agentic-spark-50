@@ -76,6 +76,7 @@ async function fetchPage(url: string, maxChars = 12000) {
 }
 
 export const Route = createFileRoute("/api/research")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

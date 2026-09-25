@@ -8,6 +8,7 @@ import { Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Set a new password — Marketing Agent" },

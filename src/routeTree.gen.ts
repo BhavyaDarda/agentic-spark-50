@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
@@ -30,6 +31,11 @@ import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.
 import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
 import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/artifacts': typeof AppArtifactsRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/artifacts': typeof AppArtifactsRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/api/research': typeof ApiResearchRoute
   '/app/artifacts': typeof AppArtifactsRoute
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/research'
     | '/app/artifacts'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/research'
     | '/app/artifacts'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/api/chat'
     | '/api/research'
     | '/app/artifacts'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiResearchRoute: typeof ApiResearchRoute
   InviteTokenRoute: typeof InviteTokenRoute
@@ -279,6 +292,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -457,6 +477,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
   ApiResearchRoute: ApiResearchRoute,
   InviteTokenRoute: InviteTokenRoute,
