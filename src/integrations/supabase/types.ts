@@ -1294,6 +1294,10 @@ export type Database = {
           workspace_name: string
         }[]
       }
+      seed_starter_content: {
+        Args: { _user: string; _ws: string }
+        Returns: undefined
+      }
       workspace_role_of: {
         Args: { _user_id: string; _workspace_id: string }
         Returns: Database["public"]["Enums"]["workspace_role"]
