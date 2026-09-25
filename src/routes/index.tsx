@@ -477,14 +477,14 @@ const CAPS = [
   {
     icon: Microscope,
     title: "Research Ninja",
-    body: "Six-agent research runs with planner, searcher, reader, synthesizer, critic and writer. Every claim carries a source.",
+    body: "Planner, searcher, reader, synthesizer and critic run in sequence on the live web. Every claim in the report points at a page the agents actually read.",
     tone: "bg-primary text-primary-foreground",
     wide: true,
   },
   {
     icon: Building2,
-    title: "Brand memory",
-    body: "Voice, audience, do/don't rules and knowledge base — applied to every output automatically.",
+    title: "Brand profiles",
+    body: "Product, audience, tone, goals and channels — picked per chat and applied to every draft.",
     tone: "bg-secondary text-secondary-foreground",
   },
   {
@@ -495,8 +495,8 @@ const CAPS = [
   },
   {
     icon: Database,
-    title: "Knowledge base",
-    body: "Drop in docs and URLs. Retrieval grounds the agents in your own material.",
+    title: "Brand Memory",
+    body: "Paste text or add public pages. They are chunked, embedded and searched by meaning whenever an answer needs your own material.",
     tone: "bg-card text-card-foreground",
   },
   {
@@ -542,7 +542,7 @@ function AgentLineup() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionLabel n="03">The crew</SectionLabel>
         <h2 className="max-w-2xl font-display text-[clamp(1.8rem,4vw,3rem)] font-black uppercase leading-[0.95] tracking-[-0.03em]">
-          Five specialists, one window.
+          Six specialists, one window.
         </h2>
         <div className="mt-10 divide-y-[4px] divide-border border-[4px] border-border">
           {AGENTS.map((a) => (
