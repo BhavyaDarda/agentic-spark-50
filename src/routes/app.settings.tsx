@@ -58,6 +58,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { RouteError } from "@/components/route-error";
+import { AccountPanel } from "@/components/account-panel";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({ meta: [{ title: "Settings · Marketing Agent" }] }),
@@ -85,6 +86,7 @@ function SettingsPage() {
           <TabsTrigger value="usage">Usage</TabsTrigger>
           <TabsTrigger value="billing">Cost</TabsTrigger>
           <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
 
         <TabsContent value="workspace">
@@ -101,6 +103,9 @@ function SettingsPage() {
         </TabsContent>
         <TabsContent value="integrations">
           <McpTab workspaceId={workspaceId} />
+        </TabsContent>
+        <TabsContent value="account">
+          <AccountPanel />
         </TabsContent>
       </Tabs>
     </div>
