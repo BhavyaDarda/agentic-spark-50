@@ -6,6 +6,8 @@ import { ArrowLeft, ExternalLink, Lock, Quote, ShieldCheck } from "lucide-react"
 import { getPublicReport } from "@/lib/public-report.functions";
 import type { PublicReport } from "@/lib/public-report.server";
 import { SponsorUnit } from "@/components/sponsor-unit";
+import { BrandMark } from "@/components/brand-mark";
+import { SITE } from "@/lib/site";
 
 export const Route = createFileRoute("/r/$slug")({
   staticData: { sitemap: true },
@@ -13,12 +15,12 @@ export const Route = createFileRoute("/r/$slug")({
     const report = (loaderData as { report: PublicReport | null } | undefined)?.report ?? null;
     const title = report
       ? `${report.project.topic} · Research report`
-      : "Shared research · REACHER AI";
+       : `Shared research · ${SITE.name}`;
     const description =
       report?.run?.summary?.slice(0, 155) ??
       report?.project.goal?.slice(0, 155) ??
-      "A cited, multi-agent research report shared from REACHER AI.";
-    const url = `https://reacher-ai.lovable.app/r/${params.slug}`;
+       `A cited, multi-agent research report shared from ${SITE.name}.`;
+     const url = `${SITE.origin}/r/${params.slug}`;
     return {
       meta: [
         { title },
@@ -41,7 +43,7 @@ export const Route = createFileRoute("/r/$slug")({
                 headline: report.project.topic,
                 description,
                 url,
-                publisher: { "@type": "Organization", name: "REACHER AI" },
+                 publisher: { "@type": "Organization", name: SITE.operator },
               }),
             },
           ]
@@ -102,8 +104,8 @@ function SharedResearchPage() {
       <header className="sticky top-0 z-10 border-b-[3px] border-border bg-background">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            REACHER AI
+            <BrandMark className="h-7 w-7" />
+            <span className="font-display text-xs font-black">{SITE.name}</span>
           </Link>
           <Button variant="outline" size="sm" asChild>
             <Link to="/auth">Sign in</Link>

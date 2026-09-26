@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   Database,
   TrendingUp,
-  Zap,
   Check,
   ArrowUpRight,
 } from "lucide-react";
@@ -17,18 +16,19 @@ import { SiteFooter } from "@/components/site-footer";
 import { SITE } from "@/lib/site";
 import demoVideo from "@/assets/marketing-agent-demo.mp4.asset.json";
 import demoPoster from "@/assets/demo-poster.jpg";
+import { BrandMark } from "@/components/brand-mark";
 
 export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "REACHER AI — the AI marketing team that shows its work" },
+      { title: "REACHER AI — AI marketing research with receipts" },
       {
         name: "description",
         content:
           "One prompt window. Six coordinated AI agents research the live web, write on-brand, and publish citable reports with every source, the critic score and the cost of the run on the record. Free to use.",
       },
-      { property: "og:title", content: "REACHER AI — the AI marketing team that shows its work" },
+      { property: "og:title", content: "REACHER AI — AI marketing research with receipts" },
       {
         property: "og:description",
         content: "One prompt. Six specialist agents. Cited research, on-brand content, public reports with a critic score.",
@@ -130,15 +130,7 @@ function Landing() {
 /* ────────────────────────────── shared ────────────────────────────── */
 
 function Glyph({ className = "" }: { className?: string }) {
-  return (
-    <div
-      className={
-        "brut flex h-11 w-11 -rotate-12 items-center justify-center bg-primary" + className
-      }
-    >
-      <Zap className="h-6 w-6 text-primary-foreground" strokeWidth={3} />
-    </div>
-  );
+  return <BrandMark className={`h-11 w-11 ${className}`} />;
 }
 
 function Chip({
@@ -186,7 +178,7 @@ function Nav() {
         <Link to="/" className="flex items-center gap-3">
           <Glyph />
           <span className="font-display text-base font-black uppercase tracking-tighter sm:text-lg">
-            REACHER AI
+            {SITE.name}
           </span>
         </Link>
         <nav className="hidden items-center gap-6 lg:flex">
@@ -678,7 +670,7 @@ function CtaFooter() {
           </Link>
         </div>
         <p className="mt-12 border-t-[4px] border-border pt-6 font-mono text-[11px] font-bold uppercase tracking-[0.2em]">
-          REACHER AI · free to use · funded by one labelled sponsor card per public report
+          {SITE.name} · free to use · funded by one labelled sponsor card per public report
         </p>
       </div>
     </section>

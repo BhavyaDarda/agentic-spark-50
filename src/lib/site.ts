@@ -13,7 +13,7 @@ export const SITE = {
   origin: "https://reacher-ai.lovable.app",
   tagline: "Auditable marketing research and content, run by a team of AI agents.",
   description:
-    "REACHER AI plans, researches with live web search, writes on-brand content and publishes citable research reports with the evidence, critic score and cost of every run shown in the open.",
+    "REACHER AI plans, researches the live web, writes on-brand content, and publishes citable reports with sources, critic scores, and run costs shown openly.",
   /** Registered legal entity. Empty until the operator provides it. */
   legalEntity: "",
   /** Registered address. Empty until the operator provides it. */

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Zap } from "lucide-react";
 import { SITE } from "@/lib/site";
+import { BrandMark } from "@/components/brand-mark";
 
 const COLUMNS: { heading: string; links: { to: string; label: string }[] }[] = [
   {
@@ -44,9 +44,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_repeat(4,1fr)]">
         <div>
           <Link to="/" className="inline-flex items-center gap-3">
-            <span className="brut flex h-9 w-9 -rotate-12 items-center justify-center bg-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={3} aria-hidden="true" />
-            </span>
+            <BrandMark className="h-9 w-9" />
             <span className="font-display text-sm font-black uppercase tracking-tighter">
               {SITE.name}
             </span>
