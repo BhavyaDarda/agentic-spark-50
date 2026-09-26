@@ -28,13 +28,13 @@ export const Route = createFileRoute("/app/knowledge")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Brand Memory · Marketing Agent" },
+      { title: "Brand Memory · REACHER AI" },
       {
         name: "description",
         content:
           "Paste notes or import pages once. Every agent run grounds its answers in your own brand knowledge.",
       },
-      { property: "og:title", content: "Brand Memory · Marketing Agent" },
+      { property: "og:title", content: "Brand Memory · REACHER AI" },
       {
         property: "og:description",
         content: "Ground every agent output in your own documents, notes and site pages.",

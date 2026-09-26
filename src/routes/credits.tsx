@@ -6,7 +6,7 @@ export const Route = createFileRoute("/credits")({
   head: () =>
     legalHead(
       "Credits and licences",
-      "The open-source software, typefaces, icons and AI providers Marketing Agent is built on, with their licences and data terms.",
+      "The open-source software, typefaces, icons and AI providers REACHER AI is built on, with their licences and data terms.",
       "/credits",
     ),
   component: CreditsPage,
@@ -74,7 +74,7 @@ function CreditsPage() {
     <LegalPage
       eyebrow="credits"
       title="Built on other people's good work."
-      intro="Marketing Agent stands on open-source software, open-licensed typefaces, and commercial AI and search providers. This page names them and links to the terms that apply. Licence texts are shipped inside the application bundle as required."
+      intro="REACHER AI stands on open-source software, open-licensed typefaces, and commercial AI and search providers. This page names them and links to the terms that apply. Licence texts are shipped inside the application bundle as required."
       sections={[
         {
           id: "software",
@@ -116,7 +116,7 @@ function CreditsPage() {
             <p>
               Product and company names mentioned in reports or sponsor cards are trademarks of their
               respective owners and are used for identification only. Their appearance does not imply
-              endorsement of, or by, Marketing Agent.
+              endorsement of, or by, REACHER AI.
             </p>
           ),
         },

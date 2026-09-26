@@ -1,7 +1,6 @@
 import { Link, useNavigate, useMatchRoute } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import {
-  Zap,
   Plus,
   Library,
   Building2,
@@ -22,6 +21,8 @@ import { listConversations, createConversation } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMemo, useState } from "react";
+import { BrandMark } from "@/components/brand-mark";
+import { SITE } from "@/lib/site";
 
 /**
  * `rail` is the always-visible desktop column; `drawer` is the same content
@@ -69,11 +70,9 @@ export function AppSidebar({ variant = "rail" }: { variant?: "rail" | "drawer" }
       )}
     >
       <div className="flex h-14 items-center gap-2.5 border-b-[4px] border-border px-4">
-        <div className="flex h-8 w-8 -rotate-12 items-center justify-center border-[3px] border-border bg-primary text-primary-foreground">
-          <Zap className="h-4 w-4" strokeWidth={3} />
-        </div>
+        <BrandMark className="h-8 w-8" />
         <span className="font-display text-xs font-black uppercase tracking-tighter">
-          Marketing Agent
+          {SITE.name}
         </span>
       </div>
 

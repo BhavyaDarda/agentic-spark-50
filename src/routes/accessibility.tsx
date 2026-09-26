@@ -6,7 +6,7 @@ export const Route = createFileRoute("/accessibility")({
   head: () =>
     legalHead(
       "Accessibility statement",
-      "How Marketing Agent supports keyboard, screen-reader and reduced-motion users, what still falls short, and how to tell us.",
+      "How REACHER AI supports keyboard, screen-reader and reduced-motion users, what still falls short, and how to tell us.",
       "/accessibility",
     ),
   component: AccessibilityPage,
@@ -17,7 +17,7 @@ function AccessibilityPage() {
     <LegalPage
       eyebrow="accessibility"
       title="Accessibility statement"
-      intro="We want Marketing Agent to work for people who use keyboards, screen readers, magnification, or who need less motion. Our target is WCAG 2.2 level AA. This page says what is in place, what we know is not there yet, and how to reach us."
+      intro="We want REACHER AI to work for people who use keyboards, screen readers, magnification, or who need less motion. Our target is WCAG 2.2 level AA. This page says what is in place, what we know is not there yet, and how to reach us."
       sections={[
         {
           id: "measures",

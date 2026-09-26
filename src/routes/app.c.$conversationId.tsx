@@ -33,7 +33,7 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/c/$conversationId")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Chat · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Chat · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ChatPage,
 });

@@ -27,7 +27,7 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "New chat · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "New chat · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: NewChatWelcome,
 });

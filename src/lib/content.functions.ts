@@ -29,7 +29,7 @@ const RunInput = z.object({
 
 function systemFor(kind: (typeof CONTENT_KINDS)[number]) {
   const base =
-    "You are Marketing Agent, a senior brand strategist & copywriter. Produce sharp, on-brand, channel-aware output. Use Markdown. No fluff.";
+    "You are REACHER AI, a senior brand strategist & copywriter. Produce sharp, on-brand, channel-aware output. Use Markdown. No fluff.";
   switch (kind) {
     case "blog":
       return `${base} Write an SEO-friendly blog post with H1, intro hook, scannable sections (H2/H3), a TL;DR callout, and a closing CTA.`;

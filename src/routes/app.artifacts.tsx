@@ -16,7 +16,7 @@ import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/artifacts")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Artifact Library · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Artifact Library · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ArtifactLibrary,
 });

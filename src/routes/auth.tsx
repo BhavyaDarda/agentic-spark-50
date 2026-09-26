@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Zap } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
+import { SITE } from "@/lib/site";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).optional(),
@@ -19,11 +20,11 @@ export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Sign in — Marketing Agent" },
+      { title: "Sign in — REACHER AI" },
       {
         name: "description",
         content:
-          "Sign in or create your Marketing Agent workspace. One prompt, five specialist agents.",
+          "Sign in or create your REACHER AI workspace. One prompt, five specialist agents.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -34,11 +35,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function Glyph() {
-  return (
-    <div className="brut-sm flex h-10 w-10 -rotate-12 items-center justify-center bg-primary">
-      <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={3} />
-    </div>
-  );
+  return <BrandMark className="h-10 w-10" />;
 }
 
 
@@ -140,7 +137,7 @@ function AuthPage() {
 
           <div className="max-w-lg">
             <span className="border-[3px] border-border bg-secondary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-secondary-foreground">
-              Marketing Agent
+              {SITE.name}
             </span>
             <h1 className="mt-6 font-display text-[clamp(2.2rem,4.5vw,3.6rem)] font-black uppercase leading-[0.92] tracking-[-0.04em]">
               The marketing
@@ -176,7 +173,7 @@ function AuthPage() {
           <div className="mb-8 flex items-center gap-3 lg:hidden">
             <Glyph />
             <span className="font-display text-base font-black uppercase tracking-tighter">
-              Marketing Agent
+              {SITE.name}
             </span>
           </div>
 

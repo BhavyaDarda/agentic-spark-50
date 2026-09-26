@@ -15,7 +15,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/invite/$token")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Accept invitation · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Accept invitation · REACHER AI" }] }),
   validateSearch: searchSchema,
   component: InvitePage,
   // The invite acceptance requires an authenticated Supabase session.
@@ -99,7 +99,7 @@ function InvitePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate({ to: "/app" })}>Go to Marketing Agent</Button>
+            <Button onClick={() => navigate({ to: "/app" })}>Go to REACHER AI</Button>
           </CardContent>
         </Card>
       </div>

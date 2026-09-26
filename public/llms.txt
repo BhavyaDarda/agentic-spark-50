@@ -1,6 +1,6 @@
-# Reacher AI
+# REACHER AI
 
-> Reacher AI is a marketing agent with a built-in multi-agent research engine (Research Ninja). It plans, searches, reads and critiques sources, then writes on-brand content, campaigns and publishable research reports. Every public report shows its sources, a critic score and what the run cost.
+> REACHER AI is a marketing agent with a built-in multi-agent research engine (Research Ninja). It plans, searches, reads and critiques sources, then writes on-brand content, campaigns and publishable research reports. Every public report shows its sources, a critic score and what the run cost.
 
 ## Key pages
 - [Home](https://reacher-ai.lovable.app/): product overview

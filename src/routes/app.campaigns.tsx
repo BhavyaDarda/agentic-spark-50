@@ -38,13 +38,13 @@ export const Route = createFileRoute("/app/campaigns")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Campaigns · Marketing Agent" },
+      { title: "Campaigns · REACHER AI" },
       {
         name: "description",
         content:
           "Plan multi-channel campaigns with strategy, channel mix, KPIs and a week-by-week calendar, then generate every asset.",
       },
-      { property: "og:title", content: "Campaigns · Marketing Agent" },
+      { property: "og:title", content: "Campaigns · REACHER AI" },
       {
         property: "og:description",
         content: "Strategy, channel mix, KPIs and a production calendar for every campaign.",

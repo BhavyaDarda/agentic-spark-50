@@ -7,7 +7,7 @@ export const Route = createFileRoute("/terms")({
   head: () =>
     legalHead(
       "Terms of service",
-      "The agreement that governs your use of Marketing Agent: accounts, AI-generated output, published reports, sponsors, acceptable use, and liability.",
+      "The agreement that governs your use of REACHER AI: accounts, AI-generated output, published reports, sponsors, acceptable use, and liability.",
       "/terms",
     ),
   component: TermsPage,

@@ -26,7 +26,7 @@ const search = z.object({ brand: z.string().uuid().optional() });
 
 export const Route = createFileRoute("/app/content")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Content Studio · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Content Studio · REACHER AI" }] }),
   validateSearch: search,
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ContentPage,
