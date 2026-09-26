@@ -11,10 +11,10 @@ export const Route = createFileRoute("/reset-password")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Set a new password — Marketing Agent" },
+      { title: "Set a new password — REACHER AI" },
       {
         name: "description",
-        content: "Choose a new password for your Marketing Agent account.",
+        content: "Choose a new password for your REACHER AI account.",
       },
       { name: "robots", content: "noindex" },
     ],

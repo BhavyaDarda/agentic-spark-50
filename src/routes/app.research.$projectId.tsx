@@ -39,7 +39,7 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/research/$projectId")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Research · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Research · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchDetail,
 });

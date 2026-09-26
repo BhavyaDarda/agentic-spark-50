@@ -1,6 +1,6 @@
 # Marketing AI Suite
 
-So the main project here is the Marketing Agent and Research Ninja is a integrated part of it, but because both of them have been idle and outdated for a while so i want an entire overhaul of this big project that is the Marketing Agent into a beautiful SAAS Application that is enterprise grade, fully secure, intuitive, feature and functioning rich, does all the tasks and features implemented to the fullest capability, accuracy, generates great output, also the research ninja inside this agent should both get a complete multi agentic power overhaul to rebuild this whole project and upgrade it.
+So the main project here is the REACHER AI and Research Ninja is a integrated part of it, but because both of them have been idle and outdated for a while so i want an entire overhaul of this big project that is the REACHER AI into a beautiful SAAS Application that is enterprise grade, fully secure, intuitive, feature and functioning rich, does all the tasks and features implemented to the fullest capability, accuracy, generates great output, also the research ninja inside this agent should both get a complete multi agentic power overhaul to rebuild this whole project and upgrade it.
 
 Architecture:
 

@@ -32,7 +32,7 @@ export const Route = createFileRoute("/app/sponsors")({
   staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Sponsors · Marketing Agent" },
+      { title: "Sponsors · REACHER AI" },
       {
         name: "description",
         content:

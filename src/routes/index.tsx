@@ -22,13 +22,13 @@ export const Route = createFileRoute("/")({
   staticData: { sitemap: true },
   head: () => ({
     meta: [
-      { title: "Marketing Agent — the AI marketing team that shows its work" },
+      { title: "REACHER AI — the AI marketing team that shows its work" },
       {
         name: "description",
         content:
           "One prompt window. Six coordinated AI agents research the live web, write on-brand, and publish citable reports with every source, the critic score and the cost of the run on the record. Free to use.",
       },
-      { property: "og:title", content: "Marketing Agent — the AI marketing team that shows its work" },
+      { property: "og:title", content: "REACHER AI — the AI marketing team that shows its work" },
       {
         property: "og:description",
         content: "One prompt. Six specialist agents. Cited research, on-brand content, public reports with a critic score.",
@@ -62,7 +62,7 @@ export const Route = createFileRoute("/")({
             },
             {
               "@type": "VideoObject",
-              name: "Marketing Agent product walkthrough",
+              name: "REACHER AI product walkthrough",
               description:
                 "A 23-second silent walkthrough: sign in, the agent chat, Brand Memory, a Research Ninja run, and a published report with its trust panel.",
               thumbnailUrl: `${SITE.origin}${demoPoster}`,
@@ -186,7 +186,7 @@ function Nav() {
         <Link to="/" className="flex items-center gap-3">
           <Glyph />
           <span className="font-display text-base font-black uppercase tracking-tighter sm:text-lg">
-            Marketing Agent
+            REACHER AI
           </span>
         </Link>
         <nav className="hidden items-center gap-6 lg:flex">
@@ -678,7 +678,7 @@ function CtaFooter() {
           </Link>
         </div>
         <p className="mt-12 border-t-[4px] border-border pt-6 font-mono text-[11px] font-bold uppercase tracking-[0.2em]">
-          Marketing Agent · free to use · funded by one labelled sponsor card per public report
+          REACHER AI · free to use · funded by one labelled sponsor card per public report
         </p>
       </div>
     </section>

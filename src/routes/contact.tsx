@@ -14,7 +14,7 @@ export const Route = createFileRoute("/contact")({
   head: () =>
     legalHead(
       "Contact",
-      "Reach the Marketing Agent team for support, privacy requests, security reports, legal notices, or press.",
+      "Reach the REACHER AI team for support, privacy requests, security reports, legal notices, or press.",
       "/contact",
     ),
   component: ContactPage,

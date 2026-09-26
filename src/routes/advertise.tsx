@@ -172,7 +172,7 @@ function AdvertisePage() {
     <LegalPage
       eyebrow="sponsors"
       title="Put your name beside research people actually cite."
-      intro="Marketing Agent is free for the teams who use it. Sponsors fund that by taking the one labelled card on public research reports: pages with real sources, a critic score, and the cost of the run printed on them. This page is both the pitch and the full disclosure."
+      intro="REACHER AI is free for the teams who use it. Sponsors fund that by taking the one labelled card on public research reports: pages with real sources, a critic score, and the cost of the run printed on them. This page is both the pitch and the full disclosure."
       sections={[
         {
           id: "placement",

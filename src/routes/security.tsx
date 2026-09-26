@@ -6,7 +6,7 @@ export const Route = createFileRoute("/security")({
   head: () =>
     legalHead(
       "Security",
-      "How Marketing Agent isolates workspaces, keeps provider keys on the server, limits abuse, and logs sensitive actions. Plus how to report a vulnerability.",
+      "How REACHER AI isolates workspaces, keeps provider keys on the server, limits abuse, and logs sensitive actions. Plus how to report a vulnerability.",
       "/security",
     ),
   component: SecurityPage,

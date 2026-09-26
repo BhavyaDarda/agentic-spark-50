@@ -7,7 +7,7 @@ export const Route = createFileRoute("/privacy")({
   head: () =>
     legalHead(
       "Privacy policy",
-      "What Marketing Agent collects, why, who processes it, how long it is kept, and how to access or delete it. No tracking cookies, no ad pixels.",
+      "What REACHER AI collects, why, who processes it, how long it is kept, and how to access or delete it. No tracking cookies, no ad pixels.",
       "/privacy",
     ),
   component: PrivacyPage,

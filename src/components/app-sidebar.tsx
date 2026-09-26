@@ -73,7 +73,7 @@ export function AppSidebar({ variant = "rail" }: { variant?: "rail" | "drawer" }
           <Zap className="h-4 w-4" strokeWidth={3} />
         </div>
         <span className="font-display text-xs font-black uppercase tracking-tighter">
-          Marketing Agent
+          REACHER AI
         </span>
       </div>
 

@@ -23,7 +23,7 @@ import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/brands")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Brands · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Brands · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: BrandsPage,
 });

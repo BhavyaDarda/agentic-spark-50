@@ -6,7 +6,7 @@ export const Route = createFileRoute("/acceptable-use")({
   head: () =>
     legalHead(
       "Acceptable use policy",
-      "What you may and may not do with Marketing Agent's research agents, content tools, and public report pages.",
+      "What you may and may not do with REACHER AI's research agents, content tools, and public report pages.",
       "/acceptable-use",
     ),
   component: AcceptableUsePage,
@@ -17,7 +17,7 @@ function AcceptableUsePage() {
     <LegalPage
       eyebrow="legal"
       title="Acceptable use policy"
-      intro="Marketing Agent runs real web searches, fetches real pages, and publishes real public pages on your behalf. That reach comes with rules. This policy is part of the terms of service."
+      intro="REACHER AI runs real web searches, fetches real pages, and publishes real public pages on your behalf. That reach comes with rules. This policy is part of the terms of service."
       sections={[
         {
           id: "prohibited-content",

@@ -62,7 +62,7 @@ import { AccountPanel } from "@/components/account-panel";
 
 export const Route = createFileRoute("/app/settings")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Settings · Marketing Agent" }] }),
+  head: () => ({ meta: [{ title: "Settings · REACHER AI" }] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: SettingsPage,
 });

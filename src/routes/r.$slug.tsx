@@ -13,11 +13,11 @@ export const Route = createFileRoute("/r/$slug")({
     const report = (loaderData as { report: PublicReport | null } | undefined)?.report ?? null;
     const title = report
       ? `${report.project.topic} · Research report`
-      : "Shared research · Marketing Agent";
+      : "Shared research · REACHER AI";
     const description =
       report?.run?.summary?.slice(0, 155) ??
       report?.project.goal?.slice(0, 155) ??
-      "A cited, multi-agent research report shared from Marketing Agent.";
+      "A cited, multi-agent research report shared from REACHER AI.";
     const url = `https://reacher-ai.lovable.app/r/${params.slug}`;
     return {
       meta: [
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/r/$slug")({
                 headline: report.project.topic,
                 description,
                 url,
-                publisher: { "@type": "Organization", name: "Reacher AI" },
+                publisher: { "@type": "Organization", name: "REACHER AI" },
               }),
             },
           ]
@@ -103,7 +103,7 @@ function SharedResearchPage() {
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
           <Link to="/" className="flex items-center gap-2 text-sm font-medium text-foreground">
             <ArrowLeft className="h-4 w-4" />
-            Marketing Agent
+            REACHER AI
           </Link>
           <Button variant="outline" size="sm" asChild>
             <Link to="/auth">Sign in</Link>
