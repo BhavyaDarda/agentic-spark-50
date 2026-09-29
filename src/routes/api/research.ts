@@ -347,10 +347,14 @@ export const Route = createFileRoute("/api/research")({
                   query_embedding: qvec as unknown as string,
                   match_count: 6,
                 });
-                const webUrls = new Set(docs.map((d) => d.url));
+                const norm = (u: string) =>
+                  u.trim().toLowerCase().replace(/#.*$/, "").replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
+                const webUrls = new Set(docs.map((d) => norm(d.url)));
                 for (const h of hits ?? []) {
-                  // Pages this very run just embedded are web sources, not brand memory.
-                  if (h.source_url && webUrls.has(h.source_url)) continue;
+                  // Web pages (from this or earlier runs) are web sources, not brand memory.
+                  // Only documents added through Brand Memory count as internal [B] sources.
+                  if (h.source_url && webUrls.has(norm(h.source_url))) continue;
+                  if (h.source_url && h.metadata && (h.metadata as { origin?: string }).origin === "research") continue;
                   if ((h.similarity ?? 0) < 0.35) continue;
                   brandPassages.push({
                     title: h.title ?? "Brand document",
