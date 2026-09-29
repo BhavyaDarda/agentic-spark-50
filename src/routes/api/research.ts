@@ -350,11 +350,16 @@ export const Route = createFileRoute("/api/research")({
                 const norm = (u: string) =>
                   u.trim().toLowerCase().replace(/#.*$/, "").replace(/^https?:\/\/(www\.)?/, "").replace(/\/+$/, "");
                 const webUrls = new Set(docs.map((d) => norm(d.url)));
+                // Pages research runs embedded (source_type "web") are web sources, not
+                // brand memory; only documents added through Brand Memory count as [B].
+                const hitIds = (hits ?? []).map((h) => h.id);
+                const { data: webRows } = hitIds.length
+                  ? await sb.from("documents").select("id").in("id", hitIds).eq("source_type", "web")
+                  : { data: [] as { id: string }[] };
+                const webIds = new Set((webRows ?? []).map((r) => r.id));
                 for (const h of hits ?? []) {
-                  // Web pages (from this or earlier runs) are web sources, not brand memory.
-                  // Only documents added through Brand Memory count as internal [B] sources.
+                  if (webIds.has(h.id)) continue;
                   if (h.source_url && webUrls.has(norm(h.source_url))) continue;
-                  if (h.source_url && h.metadata && (h.metadata as { origin?: string }).origin === "research") continue;
                   if ((h.similarity ?? 0) < 0.35) continue;
                   brandPassages.push({
                     title: h.title ?? "Brand document",
