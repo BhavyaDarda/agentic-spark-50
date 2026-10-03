@@ -292,6 +292,16 @@ function ResearchDetail() {
 
       </div>
 
+      {!streaming && persistedRun?.status === "failed" && (
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 border-4 border-foreground bg-destructive p-4 text-destructive-foreground shadow-brutal-sm">
+          <div>
+            <p className="font-display text-sm uppercase">This run failed</p>
+            <p className="text-sm">{persistedRun.error ?? "The run stopped before it finished."}</p>
+          </div>
+          <Button variant="secondary" onClick={start}>Retry run</Button>
+        </div>
+      )}
+
       {/* Past runs */}
       {(proj.data.runs?.length ?? 0) > 0 && !streaming && (
         <div className="flex flex-wrap gap-2">
