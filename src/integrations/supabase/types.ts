@@ -1294,6 +1294,9 @@ export type Database = {
       }
       workspaces: {
         Row: {
+          brand_accent: string | null
+          brand_logo_url: string | null
+          brand_prepared_by: string | null
           created_at: string
           created_by: string | null
           id: string
@@ -1305,6 +1308,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          brand_accent?: string | null
+          brand_logo_url?: string | null
+          brand_prepared_by?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -1316,6 +1322,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          brand_accent?: string | null
+          brand_logo_url?: string | null
+          brand_prepared_by?: string | null
           created_at?: string
           created_by?: string | null
           id?: string
@@ -1376,6 +1385,14 @@ export type Database = {
           role: Database["public"]["Enums"]["workspace_role"]
           workspace_id: string
           workspace_name: string
+        }[]
+      }
+      public_report_branding: {
+        Args: { _slug: string }
+        Returns: {
+          accent: string
+          logo_url: string
+          prepared_by: string
         }[]
       }
       workspace_role_of: {
