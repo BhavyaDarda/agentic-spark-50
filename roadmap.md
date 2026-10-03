@@ -1,12 +1,13 @@
-# Roadmap — REACHER AI publish readiness
+# Roadmap — REACHER AI action plan (2026-10-03)
 
 ## Open
-- [ ] Signed-in walkthrough: research run → publish → public report → citation check (needs a test account session)
-- [ ] Settings account tab exercised in browser (password change, delete account)
-- [ ] Final design polish pass from uploaded design skill files
+- [ ] Stage 2: PDF export + white-label branding
+- [ ] Stage 3: topic-targeted sponsors + per-category stats
+- [ ] Stage 4: Radar recurring monitors (needs scheduler enabled; email optional)
+- [ ] Stage 5: webhook / Notion publishing
+- [ ] Stage 6: reasoning map on public reports
+- [ ] Legal entity, address, jurisdiction (blocked: needs user input)
 
 ## Done
-- [x] Rebrand to REACHER AI, logo and favicon
-- [x] Fake starter content and placeholder sponsors removed; live search (Tavily + fallback)
-- [x] Legal pages, accessibility pass, demo video, head metadata
-- [x] Typecheck clean, pages load, no browser errors, security scan clean
+- [x] Stage 1: saved critic score, failed-run banner + retry, stuck runs marked failed, 8-char passwords, long-document chunking (already in place)
+- [x] Rebrand, live search, legal pages, accessibility, demo video, demo walkthrough
