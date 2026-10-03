@@ -793,6 +793,7 @@ export type Database = {
         Row: {
           completed_at: string | null
           created_at: string
+          critic_score: number | null
           error: string | null
           id: string
           model: string | null
@@ -809,6 +810,7 @@ export type Database = {
         Insert: {
           completed_at?: string | null
           created_at?: string
+          critic_score?: number | null
           error?: string | null
           id?: string
           model?: string | null
@@ -825,6 +827,7 @@ export type Database = {
         Update: {
           completed_at?: string | null
           created_at?: string
+          critic_score?: number | null
           error?: string | null
           id?: string
           model?: string | null
