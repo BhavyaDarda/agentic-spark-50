@@ -81,7 +81,7 @@ export async function loadPublicReport(
   const { data: run } = await sb
     .from("research_runs")
     .select(
-      "id, report_markdown, summary, model, created_at, plan, tokens_input, tokens_output, started_at, completed_at",
+      "id, report_markdown, summary, model, created_at, plan, tokens_input, tokens_output, started_at, completed_at, critic_score",
     )
     .eq("project_id", project.id)
     .eq("status", "succeeded")
@@ -135,7 +135,7 @@ export async function loadPublicReport(
       : null,
     sources,
     trust: {
-      criticScore: parseCriticScore(plan?.critic),
+      criticScore: run?.critic_score ?? parseCriticScore(plan?.critic),
       criticNotes: criticNotes(plan?.critic),
       sourceCount: sources.length,
       queryCount: plan?.queries?.length ?? 0,
