@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useMemo } from "react";
-import { getCurrentWorkspace, renameWorkspace, getUsage } from "@/lib/workspace.functions";
+import { getCurrentWorkspace, renameWorkspace, getUsage, getBranding, updateBranding } from "@/lib/workspace.functions";
 import {
   listTeam,
   inviteMember,
@@ -92,6 +92,7 @@ function SettingsPage() {
 
         <TabsContent value="workspace">
           <WorkspaceTab workspaceId={workspaceId} />
+          <BrandingCard />
         </TabsContent>
         <TabsContent value="team">
           <TeamTab workspaceId={workspaceId} />
@@ -767,6 +768,69 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             ))}
           </div>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function BrandingCard() {
+  const ws = useQuery({ queryKey: ["current-workspace"], queryFn: () => getCurrentWorkspace() });
+  const id = ws.data?.workspace?.id;
+  const b = useQuery({ queryKey: ["branding", id], queryFn: () => getBranding({ data: { workspaceId: id! } }), enabled: !!id });
+  const qc = useQueryClient();
+  const [preparedBy, setPreparedBy] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [accent, setAccent] = useState("");
+  useEffect(() => {
+    if (b.data) {
+      setPreparedBy(b.data.preparedBy ?? "");
+      setLogoUrl(b.data.logoUrl ?? "");
+      setAccent(b.data.accent ?? "");
+    }
+  }, [b.data]);
+  const save = useMutation({
+    mutationFn: () =>
+      updateBranding({
+        data: {
+          workspaceId: id!,
+          preparedBy: preparedBy.trim() || null,
+          logoUrl: logoUrl.trim() || null,
+          accent: accent.trim() || null,
+        },
+      }),
+    onSuccess: () => {
+      toast.success("Branding saved");
+      qc.invalidateQueries({ queryKey: ["branding", id] });
+    },
+    onError: (e: Error) => toast.error(e.message.includes("[") ? "Check the logo link (https) and colour (#rrggbb)." : e.message),
+  });
+  return (
+    <Card className="mt-6">
+      <CardHeader>
+        <CardTitle className="text-base">Report branding</CardTitle>
+        <CardDescription>Shown on your published reports and their PDF. Leave blank to use REACHER AI only.</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="br-by">Prepared by</Label>
+          <Input id="br-by" maxLength={80} placeholder="Your agency or company name" value={preparedBy} onChange={(e) => setPreparedBy(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="br-logo">Logo link (https)</Label>
+          <Input id="br-logo" type="url" placeholder="https://…/logo.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="br-accent">Accent colour</Label>
+          <div className="flex gap-2">
+            <input aria-label="Pick accent colour" type="color" value={/^#[0-9a-fA-F]{6}$/.test(accent) ? accent : "#000000"} onChange={(e) => setAccent(e.target.value)} className="h-10 w-12 border-[3px] border-foreground" />
+            <Input id="br-accent" placeholder="#ff00aa" value={accent} onChange={(e) => setAccent(e.target.value)} />
+          </div>
+        </div>
+        <Button onClick={() => save.mutate()} disabled={!id || save.isPending}>
+          {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          <Save className="mr-2 h-4 w-4" />
+          Save branding
+        </Button>
       </CardContent>
     </Card>
   );
