@@ -37,6 +37,8 @@ export interface PublicReport {
   sponsor: PublicSponsor | null;
   /** Answer engines and web pages observed citing this report. */
   citations: ReportCitation[];
+  /** White-label branding chosen by the publishing workspace. */
+  branding: { preparedBy: string | null; logoUrl: string | null; accent: string | null } | null;
 }
 
 function publicClient() {
@@ -124,7 +126,20 @@ export async function loadPublicReport(
     visitor,
   );
 
+  let branding: PublicReport["branding"] = null;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: b } = await supabaseAdmin.rpc("public_report_branding", { _slug: slug });
+    const row = Array.isArray(b) ? b[0] : null;
+    if (row && (row.prepared_by || row.logo_url)) {
+      branding = { preparedBy: row.prepared_by, logoUrl: row.logo_url, accent: row.accent };
+    }
+  } catch (e) {
+    console.error("branding lookup failed", e);
+  }
+
   return {
+    branding,
     project: { topic: project.topic, goal: project.goal, depth: project.depth },
     run: run
       ? {

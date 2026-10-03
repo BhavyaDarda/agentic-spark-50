@@ -482,3 +482,10 @@
     box-shadow: 6px 6px 0 var(--brut-ink);
   }
 }
+
+@media print {
+  header, nav, footer, .print\:hidden { display: none !important; }
+  body { background: #fff !important; }
+  a { text-decoration: underline; }
+  pre, blockquote, table, img { break-inside: avoid; }
+}

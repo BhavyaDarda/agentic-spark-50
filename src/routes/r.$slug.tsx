@@ -97,7 +97,7 @@ function SharedResearchPage() {
 
   if (!report) return <ReportUnavailable />;
 
-  const { project, run, sources, trust, sponsor, citations } = report;
+  const { project, run, sources, trust, sponsor, citations, branding } = report;
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,13 +107,32 @@ function SharedResearchPage() {
             <BrandMark className="h-7 w-7" />
             <span className="font-display text-xs font-black">{SITE.name}</span>
           </Link>
-          <Button variant="outline" size="sm" asChild>
-            <Link to="/auth">Sign in</Link>
-          </Button>
+          <div className="flex items-center gap-2 print:hidden">
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              Download PDF
+            </Button>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/auth">Sign in</Link>
+            </Button>
+          </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-4 py-10">
+        {branding && (
+          <div
+            className="mb-6 flex items-center gap-3 border-[3px] border-foreground p-3"
+            style={branding.accent ? { borderLeftColor: branding.accent, borderLeftWidth: 12 } : undefined}
+          >
+            {branding.logoUrl && (
+              <img src={branding.logoUrl} alt={branding.preparedBy ?? "Publisher logo"} className="h-10 w-auto max-w-[160px] object-contain" />
+            )}
+            <div className="text-sm">
+              {branding.preparedBy && <p className="font-display text-xs uppercase">Prepared by {branding.preparedBy}</p>}
+              <p className="text-xs text-muted-foreground">Made with {SITE.name}</p>
+            </div>
+          </div>
+        )}
         <div className="mb-8 space-y-2">
           <h1 className="text-3xl font-semibold tracking-tight">{project.topic}</h1>
           {project.goal && <p className="text-muted-foreground">{project.goal}</p>}
@@ -262,7 +281,7 @@ function SharedResearchPage() {
 
         {/* Sponsor slot — public report pages only. Never inside the report
             body, never inside the signed-in app, no third-party scripts. */}
-        {sponsor && <SponsorUnit sponsor={sponsor} />}
+        {sponsor && <div className="print:hidden"><SponsorUnit sponsor={sponsor} /></div>}
 
         <div className="mt-8 flex justify-center">
           <Button variant="outline" asChild>
