@@ -55,3 +55,42 @@ export const getUsage = createServerFn({ method: "GET" })
     return { ...snap, resetsAt: periodResetsAt() };
   });
 
+
+const brandingSchema = z.object({
+  workspaceId: z.string().uuid(),
+  preparedBy: z.string().trim().max(80).nullable(),
+  logoUrl: z.string().trim().url().max(500).refine((u) => u.startsWith("https://"), "Logo must use https").nullable(),
+  accent: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #ff00aa").nullable(),
+});
+
+/** Report branding shown on published reports and their PDF. Admins/owners only (RLS). */
+export const updateBranding = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => brandingSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await context.supabase
+      .from("workspaces")
+      .update({ brand_prepared_by: data.preparedBy, brand_logo_url: data.logoUrl, brand_accent: data.accent })
+      .eq("id", data.workspaceId)
+      .select("id");
+    if (error) throw new Error(error.message);
+    if (!rows?.length) throw new Error("Only workspace owners and admins can change branding.");
+    return { ok: true };
+  });
+
+export const getBranding = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ workspaceId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: row, error } = await context.supabase
+      .from("workspaces")
+      .select("brand_prepared_by, brand_logo_url, brand_accent")
+      .eq("id", data.workspaceId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return {
+      preparedBy: row?.brand_prepared_by ?? null,
+      logoUrl: row?.brand_logo_url ?? null,
+      accent: row?.brand_accent ?? null,
+    };
+  });
