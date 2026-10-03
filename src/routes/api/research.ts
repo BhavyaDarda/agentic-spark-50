@@ -463,6 +463,7 @@ export const Route = createFileRoute("/api/research")({
                   status: "succeeded",
                   report_markdown: reportText,
                   summary: verdict.summary,
+                  critic_score: Math.max(0, Math.min(100, Math.round(verdict.score))),
                   completed_at: completedAt.toISOString(),
                   tokens_input: tokens.input,
                   tokens_output: tokens.output,
