@@ -1062,6 +1062,7 @@ export type Database = {
           name: string
           starts_at: string | null
           tagline: string
+          target_mode: string
           topic_keywords: string[]
           updated_at: string
           weight: number
@@ -1080,6 +1081,7 @@ export type Database = {
           name: string
           starts_at?: string | null
           tagline: string
+          target_mode?: string
           topic_keywords?: string[]
           updated_at?: string
           weight?: number
@@ -1098,6 +1100,7 @@ export type Database = {
           name?: string
           starts_at?: string | null
           tagline?: string
+          target_mode?: string
           topic_keywords?: string[]
           updated_at?: string
           weight?: number
