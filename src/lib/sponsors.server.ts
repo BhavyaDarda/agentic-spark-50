@@ -27,6 +27,9 @@ export interface SponsorAdminRow extends PublicSponsor {
   creditLines: string[];
   weight: number;
   isActive: boolean;
+  targetMode: "any" | "match_only";
+  /** Per-keyword performance: events on reports whose topic matched that keyword. */
+  keywordStats: { keyword: string; impressions: number; clicks: number }[];
   startsAt: string | null;
   endsAt: string | null;
   impressions: number;
@@ -198,7 +201,11 @@ export async function selectSponsorForTopic(
   if (rows.length === 0) return null;
 
   const topicTokens = new Set(tokenize(topic));
-  const scored = rows.map((r) => ({ row: r, score: relevance(r, topicTokens) }));
+  const scored = rows
+    .map((r) => ({ row: r, score: relevance(r, topicTokens) }))
+    // Sponsors set to "matching reports only" sit out when no keyword matches.
+    .filter((s) => !(s.row.target_mode === "match_only" && s.score === 0));
+  if (scored.length === 0) return null;
   const best = Math.max(...scored.map((s) => s.score));
   const tier = scored.filter((s) => s.score === best).map((s) => s.row);
 
@@ -214,9 +221,37 @@ export async function listSponsorsWithStats(): Promise<SponsorAdminRow[]> {
   const sb = serviceClient();
   const [{ data: rows, error }, { data: events }] = await Promise.all([
     sb.from("sponsors").select("*").order("created_at", { ascending: false }),
-    sb.from("sponsor_events").select("sponsor_id, kind"),
+    sb.from("sponsor_events").select("sponsor_id, kind, project_id"),
   ]);
   if (error) throw new Error(error.message);
+
+  const projectIds = [...new Set((events ?? []).map((e) => e.project_id).filter((x): x is string => !!x))];
+  const topics = new Map<string, Set<string>>();
+  if (projectIds.length > 0) {
+    const { data: projects } = await sb.from("research_projects").select("id, topic").in("id", projectIds);
+    for (const p of projects ?? []) topics.set(p.id, new Set(tokenize(p.topic)));
+  }
+  const kwTally = new Map<string, Map<string, { impressions: number; clicks: number }>>();
+  const keywordsById = new Map((rows ?? []).map((r) => [r.id, r.topic_keywords ?? []]));
+  for (const ev of events ?? []) {
+    const tokens = ev.project_id ? topics.get(ev.project_id) : undefined;
+    const kws = keywordsById.get(ev.sponsor_id) ?? [];
+    const matched = tokens
+      ? kws.filter((kw) => {
+          const parts = tokenize(kw);
+          return parts.length > 0 && parts.every((p) => tokens.has(p));
+        })
+      : [];
+    const buckets = matched.length > 0 ? matched : ["(no keyword match)"];
+    const perSponsor = kwTally.get(ev.sponsor_id) ?? new Map();
+    for (const b of buckets) {
+      const e = perSponsor.get(b) ?? { impressions: 0, clicks: 0 };
+      if (ev.kind === "click") e.clicks++;
+      else if (ev.kind === "impression") e.impressions++;
+      perSponsor.set(b, e);
+    }
+    kwTally.set(ev.sponsor_id, perSponsor);
+  }
 
   const tally = new Map<string, { impressions: number; clicks: number }>();
   for (const ev of events ?? []) {
@@ -232,6 +267,10 @@ export async function listSponsorsWithStats(): Promise<SponsorAdminRow[]> {
     creditLines: row.credit_lines ?? [],
     weight: row.weight,
     isActive: row.is_active,
+    targetMode: row.target_mode === "match_only" ? "match_only" : "any",
+    keywordStats: [...(kwTally.get(row.id) ?? new Map()).entries()]
+      .map(([keyword, v]) => ({ keyword, ...v }))
+      .sort((a, b) => b.impressions - a.impressions),
     startsAt: row.starts_at,
     endsAt: row.ends_at,
     impressions: tally.get(row.id)?.impressions ?? 0,
@@ -251,6 +290,7 @@ export interface SponsorInput {
   creditLines: string[];
   weight: number;
   isActive: boolean;
+  targetMode?: "any" | "match_only";
 }
 
 /** Create or update a sponsor. Requires an already-authorized admin caller. */
@@ -267,6 +307,7 @@ export async function saveSponsor(input: SponsorInput, actorId: string): Promise
     credit_lines: input.creditLines,
     weight: input.weight,
     is_active: input.isActive,
+    target_mode: input.targetMode ?? "any",
   };
   if (input.id) {
     const { error } = await sb.from("sponsors").update(payload).eq("id", input.id);
