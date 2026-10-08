@@ -74,6 +74,7 @@ function SponsorsAdmin() {
           creditLines: d.creditLines.map((l) => l.trim()).filter((l) => l.length >= 4),
           weight: d.weight,
           isActive: d.isActive,
+          targetMode: d.topicKeywords.length > 0 ? d.targetMode : "any",
         },
       }),
     onSuccess: () => {

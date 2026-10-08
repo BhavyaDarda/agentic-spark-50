@@ -23,6 +23,7 @@ const sponsorInput = z.object({
   creditLines: z.array(z.string().trim().min(4).max(240)).max(10),
   weight: z.number().int().min(1).max(100),
   isActive: z.boolean(),
+  targetMode: z.enum(["any", "match_only"]).default("any"),
 });
 
 /** Public: record a sponsor click and hand back the vetted destination. */

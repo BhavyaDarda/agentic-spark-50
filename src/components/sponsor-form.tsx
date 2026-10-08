@@ -21,6 +21,7 @@ export interface SponsorDraft {
   creditLines: string[];
   weight: number;
   isActive: boolean;
+  targetMode: "any" | "match_only";
 }
 
 export function emptyDraft(): SponsorDraft {
@@ -35,6 +36,7 @@ export function emptyDraft(): SponsorDraft {
     creditLines: [],
     weight: 10,
     isActive: true,
+    targetMode: "any",
   };
 }
 
@@ -51,6 +53,7 @@ export function draftFrom(row: SponsorAdminRow): SponsorDraft {
     creditLines: row.creditLines,
     weight: row.weight,
     isActive: row.isActive,
+    targetMode: row.targetMode,
   };
 }
 
@@ -240,6 +243,25 @@ export function SponsorForm({
             <span className="pb-1 font-mono text-xs uppercase tracking-widest">
               {draft.isActive ? "live" : "paused"}
             </span>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <Switch
+            checked={draft.targetMode === "match_only"}
+            onCheckedChange={(v) => set("targetMode", v ? "match_only" : "any")}
+            disabled={draft.topicKeywords.length === 0}
+            aria-label="Only show on matching reports"
+          />
+          <div>
+            <p className="font-mono text-xs font-bold uppercase tracking-widest">
+              Only show on matching reports
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {draft.topicKeywords.length === 0
+                ? "Add at least one keyword to use this."
+                : "When on, this sponsor never appears on reports whose topic misses every keyword."}
+            </p>
           </div>
         </div>
 
