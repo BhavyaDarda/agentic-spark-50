@@ -729,6 +729,66 @@ export type Database = {
           },
         ]
       }
+      research_monitors: {
+        Row: {
+          cadence: string
+          consecutive_failures: number
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          last_error: string | null
+          last_run_at: string | null
+          next_run_at: string
+          project_id: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          cadence: string
+          consecutive_failures?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_error?: string | null
+          last_run_at?: string | null
+          next_run_at: string
+          project_id: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          cadence?: string
+          consecutive_failures?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          last_error?: string | null
+          last_run_at?: string | null
+          next_run_at?: string
+          project_id?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_monitors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "research_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "research_monitors_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       research_projects: {
         Row: {
           brand_id: string | null
@@ -782,6 +842,65 @@ export type Database = {
           },
           {
             foreignKeyName: "research_projects_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_run_diffs: {
+        Row: {
+          brief: string
+          created_at: string
+          id: string
+          previous_run_id: string | null
+          project_id: string
+          run_id: string
+          workspace_id: string
+        }
+        Insert: {
+          brief: string
+          created_at?: string
+          id?: string
+          previous_run_id?: string | null
+          project_id: string
+          run_id: string
+          workspace_id: string
+        }
+        Update: {
+          brief?: string
+          created_at?: string
+          id?: string
+          previous_run_id?: string | null
+          project_id?: string
+          run_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_run_diffs_previous_run_id_fkey"
+            columns: ["previous_run_id"]
+            isOneToOne: false
+            referencedRelation: "research_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "research_run_diffs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "research_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "research_run_diffs_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "research_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "research_run_diffs_workspace_id_fkey"
             columns: ["workspace_id"]
             isOneToOne: false
             referencedRelation: "workspaces"
