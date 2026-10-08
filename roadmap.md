@@ -2,7 +2,7 @@
 
 ## Open
 - [ ] Stage 2 follow-up: logo file upload (link only today)
-- [ ] Stage 3: topic-targeted sponsors + per-category stats
+- [x] Stage 3: topic-targeted sponsors + per-keyword stats
 - [ ] Stage 4: Radar recurring monitors (needs scheduler enabled; email optional)
 - [ ] Stage 5: webhook / Notion publishing
 - [ ] Stage 6: reasoning map on public reports

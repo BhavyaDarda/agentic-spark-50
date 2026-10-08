@@ -74,6 +74,7 @@ function SponsorsAdmin() {
           creditLines: d.creditLines.map((l) => l.trim()).filter((l) => l.length >= 4),
           weight: d.weight,
           isActive: d.isActive,
+          targetMode: d.topicKeywords.length > 0 ? d.targetMode : "any",
         },
       }),
     onSuccess: () => {
@@ -194,6 +195,36 @@ function SponsorsAdmin() {
                             </span>
                           )}
                         </div>
+                      )}
+                      {row.targetMode === "match_only" && (
+                        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                          matching reports only
+                        </p>
+                      )}
+                      {row.keywordStats.length > 0 && (
+                        <table className="mt-2 text-xs">
+                          <caption className="sr-only">Results by keyword for {row.name}</caption>
+                          <thead>
+                            <tr className="font-mono text-[10px] uppercase text-muted-foreground">
+                              <th className="pr-3 text-left font-normal">Keyword</th>
+                              <th className="pr-3 text-right font-normal">Impr.</th>
+                              <th className="pr-3 text-right font-normal">Clicks</th>
+                              <th className="text-right font-normal">CTR</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {row.keywordStats.map((k) => (
+                              <tr key={k.keyword}>
+                                <td className="pr-3">{k.keyword}</td>
+                                <td className="pr-3 text-right font-mono">{k.impressions}</td>
+                                <td className="pr-3 text-right font-mono">{k.clicks}</td>
+                                <td className="text-right font-mono">
+                                  {k.impressions > 0 ? ((k.clicks / k.impressions) * 100).toFixed(1) : "0.0"}%
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       )}
                     </td>
                     <td className="px-3 py-2.5">

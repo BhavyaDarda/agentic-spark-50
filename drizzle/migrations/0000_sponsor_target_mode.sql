@@ -1,0 +1,2 @@
+ALTER TABLE public.sponsors ADD COLUMN IF NOT EXISTS target_mode text NOT NULL DEFAULT 'any';
+ALTER TABLE public.sponsors ADD CONSTRAINT sponsors_target_mode_check CHECK (target_mode IN ('any','match_only'));

@@ -9,89 +9,39 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TermsRouteImport } from './routes/terms'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SecurityRouteImport } from './routes/security'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as CreditsRouteImport } from './routes/credits'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AdvertiseRouteImport } from './routes/advertise'
-import { Route as AccessibilityRouteImport } from './routes/accessibility'
-import { Route as AcceptableUseRouteImport } from './routes/acceptable-use'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as RSlugRouteImport } from './routes/r.$slug'
-import { Route as InviteTokenRouteImport } from './routes/invite.$token'
-import { Route as AppSponsorsRouteImport } from './routes/app.sponsors'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
-import { Route as AppContentRouteImport } from './routes/app.content'
-import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
-import { Route as AppBrandsRouteImport } from './routes/app.brands'
-import { Route as AppArtifactsRouteImport } from './routes/app.artifacts'
-import { Route as ApiResearchRouteImport } from './routes/api/research'
+import { Route as AcceptableUseRouteImport } from './routes/acceptable-use'
+import { Route as AccessibilityRouteImport } from './routes/accessibility'
+import { Route as AdvertiseRouteImport } from './routes/advertise'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CreditsRouteImport } from './routes/credits'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SecurityRouteImport } from './routes/security'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiResearchRouteImport } from './routes/api/research'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppArtifactsRouteImport } from './routes/app.artifacts'
+import { Route as AppBrandsRouteImport } from './routes/app.brands'
+import { Route as AppCampaignsRouteImport } from './routes/app.campaigns'
+import { Route as AppContentRouteImport } from './routes/app.content'
+import { Route as AppKnowledgeRouteImport } from './routes/app.knowledge'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppSponsorsRouteImport } from './routes/app.sponsors'
+import { Route as InviteTokenRouteImport } from './routes/invite.$token'
+import { Route as RSlugRouteImport } from './routes/r.$slug'
+import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
+import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
-import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
-import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
 
-const TermsRoute = TermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SecurityRoute = SecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CreditsRoute = CreditsRouteImport.update({
-  id: '/credits',
-  path: '/credits',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdvertiseRoute = AdvertiseRouteImport.update({
-  id: '/advertise',
-  path: '/advertise',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccessibilityRoute = AccessibilityRouteImport.update({
-  id: '/accessibility',
-  path: '/accessibility',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcceptableUseRoute = AcceptableUseRouteImport.update({
@@ -99,9 +49,69 @@ const AcceptableUseRoute = AcceptableUseRouteImport.update({
   path: '/acceptable-use',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AccessibilityRoute = AccessibilityRouteImport.update({
+  id: '/accessibility',
+  path: '/accessibility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdvertiseRoute = AdvertiseRouteImport.update({
+  id: '/advertise',
+  path: '/advertise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreditsRoute = CreditsRouteImport.update({
+  id: '/credits',
+  path: '/credits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SecurityRoute = SecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiResearchRoute = ApiResearchRouteImport.update({
+  id: '/api/research',
+  path: '/api/research',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -109,39 +119,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const RSlugRoute = RSlugRouteImport.update({
-  id: '/r/$slug',
-  path: '/r/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InviteTokenRoute = InviteTokenRouteImport.update({
-  id: '/invite/$token',
-  path: '/invite/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppSponsorsRoute = AppSponsorsRouteImport.update({
-  id: '/sponsors',
-  path: '/sponsors',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppKnowledgeRoute = AppKnowledgeRouteImport.update({
-  id: '/knowledge',
-  path: '/knowledge',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppContentRoute = AppContentRouteImport.update({
-  id: '/content',
-  path: '/content',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCampaignsRoute = AppCampaignsRouteImport.update({
-  id: '/campaigns',
-  path: '/campaigns',
+const AppArtifactsRoute = AppArtifactsRouteImport.update({
+  id: '/artifacts',
+  path: '/artifacts',
   getParentRoute: () => AppRoute,
 } as any)
 const AppBrandsRoute = AppBrandsRouteImport.update({
@@ -149,20 +129,50 @@ const AppBrandsRoute = AppBrandsRouteImport.update({
   path: '/brands',
   getParentRoute: () => AppRoute,
 } as any)
-const AppArtifactsRoute = AppArtifactsRouteImport.update({
-  id: '/artifacts',
-  path: '/artifacts',
+const AppCampaignsRoute = AppCampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
   getParentRoute: () => AppRoute,
 } as any)
-const ApiResearchRoute = ApiResearchRouteImport.update({
-  id: '/api/research',
-  path: '/api/research',
+const AppContentRoute = AppContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKnowledgeRoute = AppKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSponsorsRoute = AppSponsorsRouteImport.update({
+  id: '/sponsors',
+  path: '/sponsors',
+  getParentRoute: () => AppRoute,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
+const RSlugRoute = RSlugRouteImport.update({
+  id: '/r/$slug',
+  path: '/r/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
+  id: '/api/public/citation-sweep',
+  path: '/api/public/citation-sweep',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
+  id: '/c/$conversationId',
+  path: '/c/$conversationId',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppResearchIndexRoute = AppResearchIndexRouteImport.update({
   id: '/research/',
@@ -173,16 +183,6 @@ const AppResearchProjectIdRoute = AppResearchProjectIdRouteImport.update({
   id: '/research/$projectId',
   path: '/research/$projectId',
   getParentRoute: () => AppRoute,
-} as any)
-const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
-  id: '/c/$conversationId',
-  path: '/c/$conversationId',
-  getParentRoute: () => AppRoute,
-} as any)
-const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
-  id: '/api/public/citation-sweep',
-  path: '/api/public/citation-sweep',
-  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -396,81 +396,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/terms': {
-      id: '/terms'
-      path: '/terms'
-      fullPath: '/terms'
-      preLoaderRoute: typeof TermsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/security': {
-      id: '/security'
-      path: '/security'
-      fullPath: '/security'
-      preLoaderRoute: typeof SecurityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/credits': {
-      id: '/credits'
-      path: '/credits'
-      fullPath: '/credits'
-      preLoaderRoute: typeof CreditsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/advertise': {
-      id: '/advertise'
-      path: '/advertise'
-      fullPath: '/advertise'
-      preLoaderRoute: typeof AdvertiseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/accessibility': {
-      id: '/accessibility'
-      path: '/accessibility'
-      fullPath: '/accessibility'
-      preLoaderRoute: typeof AccessibilityRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acceptable-use': {
@@ -480,11 +410,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcceptableUseRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/accessibility': {
+      id: '/accessibility'
+      path: '/accessibility'
+      fullPath: '/accessibility'
+      preLoaderRoute: typeof AccessibilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/advertise': {
+      id: '/advertise'
+      path: '/advertise'
+      fullPath: '/advertise'
+      preLoaderRoute: typeof AdvertiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/credits': {
+      id: '/credits'
+      path: '/credits'
+      fullPath: '/credits'
+      preLoaderRoute: typeof CreditsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/security': {
+      id: '/security'
+      path: '/security'
+      fullPath: '/security'
+      preLoaderRoute: typeof SecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/research': {
+      id: '/api/research'
+      path: '/api/research'
+      fullPath: '/api/research'
+      preLoaderRoute: typeof ApiResearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -494,53 +508,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/r/$slug': {
-      id: '/r/$slug'
-      path: '/r/$slug'
-      fullPath: '/r/$slug'
-      preLoaderRoute: typeof RSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/invite/$token': {
-      id: '/invite/$token'
-      path: '/invite/$token'
-      fullPath: '/invite/$token'
-      preLoaderRoute: typeof InviteTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app/sponsors': {
-      id: '/app/sponsors'
-      path: '/sponsors'
-      fullPath: '/app/sponsors'
-      preLoaderRoute: typeof AppSponsorsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/knowledge': {
-      id: '/app/knowledge'
-      path: '/knowledge'
-      fullPath: '/app/knowledge'
-      preLoaderRoute: typeof AppKnowledgeRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/content': {
-      id: '/app/content'
-      path: '/content'
-      fullPath: '/app/content'
-      preLoaderRoute: typeof AppContentRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/campaigns': {
-      id: '/app/campaigns'
-      path: '/campaigns'
-      fullPath: '/app/campaigns'
-      preLoaderRoute: typeof AppCampaignsRouteImport
+    '/app/artifacts': {
+      id: '/app/artifacts'
+      path: '/artifacts'
+      fullPath: '/app/artifacts'
+      preLoaderRoute: typeof AppArtifactsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/brands': {
@@ -550,26 +522,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBrandsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/artifacts': {
-      id: '/app/artifacts'
-      path: '/artifacts'
-      fullPath: '/app/artifacts'
-      preLoaderRoute: typeof AppArtifactsRouteImport
+    '/app/campaigns': {
+      id: '/app/campaigns'
+      path: '/campaigns'
+      fullPath: '/app/campaigns'
+      preLoaderRoute: typeof AppCampaignsRouteImport
       parentRoute: typeof AppRoute
     }
-    '/api/research': {
-      id: '/api/research'
-      path: '/api/research'
-      fullPath: '/api/research'
-      preLoaderRoute: typeof ApiResearchRouteImport
+    '/app/content': {
+      id: '/app/content'
+      path: '/content'
+      fullPath: '/app/content'
+      preLoaderRoute: typeof AppContentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/knowledge': {
+      id: '/app/knowledge'
+      path: '/knowledge'
+      fullPath: '/app/knowledge'
+      preLoaderRoute: typeof AppKnowledgeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/sponsors': {
+      id: '/app/sponsors'
+      path: '/sponsors'
+      fullPath: '/app/sponsors'
+      preLoaderRoute: typeof AppSponsorsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
+    '/r/$slug': {
+      id: '/r/$slug'
+      path: '/r/$slug'
+      fullPath: '/r/$slug'
+      preLoaderRoute: typeof RSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/public/citation-sweep': {
+      id: '/api/public/citation-sweep'
+      path: '/api/public/citation-sweep'
+      fullPath: '/api/public/citation-sweep'
+      preLoaderRoute: typeof ApiPublicCitationSweepRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/c/$conversationId': {
+      id: '/app/c/$conversationId'
+      path: '/c/$conversationId'
+      fullPath: '/app/c/$conversationId'
+      preLoaderRoute: typeof AppCConversationIdRouteImport
+      parentRoute: typeof AppRoute
     }
     '/app/research/': {
       id: '/app/research/'
@@ -584,20 +598,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/research/$projectId'
       preLoaderRoute: typeof AppResearchProjectIdRouteImport
       parentRoute: typeof AppRoute
-    }
-    '/app/c/$conversationId': {
-      id: '/app/c/$conversationId'
-      path: '/c/$conversationId'
-      fullPath: '/app/c/$conversationId'
-      preLoaderRoute: typeof AppCConversationIdRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/api/public/citation-sweep': {
-      id: '/api/public/citation-sweep'
-      path: '/api/public/citation-sweep'
-      fullPath: '/api/public/citation-sweep'
-      preLoaderRoute: typeof ApiPublicCitationSweepRouteImport
-      parentRoute: typeof rootRouteImport
     }
   }
 }
