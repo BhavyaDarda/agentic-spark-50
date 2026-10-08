@@ -73,10 +73,6 @@ export const Route = createFileRoute("/api/research")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const authHeader = request.headers.get("authorization") ?? "";
-        const token = authHeader.replace(/^Bearer\s+/i, "");
-        if (!token) return new Response("Unauthorized", { status: 401 });
-
         const body = (await request.json().catch(() => ({}))) as { projectId?: string };
         const projectId = body.projectId;
         if (!projectId || !z.string().uuid().safeParse(projectId).success) {
@@ -85,14 +81,37 @@ export const Route = createFileRoute("/api/research")({
 
         const SUPABASE_URL = process.env.SUPABASE_URL!;
         const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
-        const sb = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-          global: { headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_PUBLISHABLE_KEY } },
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
 
-        const { data: user } = await sb.auth.getUser(token);
-        const userId = user?.user?.id;
-        if (!userId) return new Response("Unauthorized", { status: 401 });
+        // Two callers: a signed-in user (bearer token, RLS as that user), or the
+        // Radar scheduler (shared secret, service client, only for a project that
+        // has an active monitor).
+        const { radarAuthorized } = await import("@/lib/radar.server");
+        const isRadar = radarAuthorized(request);
+        let sb: ReturnType<typeof createClient<Database>>;
+        let userId: string | undefined;
+        if (isRadar) {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          sb = supabaseAdmin;
+          const { data: mon } = await sb
+            .from("research_monitors")
+            .select("created_by")
+            .eq("project_id", projectId)
+            .eq("is_active", true)
+            .maybeSingle();
+          if (!mon) return new Response("No active monitor", { status: 404 });
+          userId = mon.created_by ?? undefined;
+        } else {
+          const authHeader = request.headers.get("authorization") ?? "";
+          const token = authHeader.replace(/^Bearer\s+/i, "");
+          if (!token) return new Response("Unauthorized", { status: 401 });
+          sb = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+            global: { headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_PUBLISHABLE_KEY } },
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+          const { data: user } = await sb.auth.getUser(token);
+          userId = user?.user?.id;
+          if (!userId) return new Response("Unauthorized", { status: 401 });
+        }
 
         const { data: project, error: projErr } = await sb
           .from("research_projects")

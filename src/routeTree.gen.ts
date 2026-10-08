@@ -35,6 +35,7 @@ import { Route as AppSponsorsRouteImport } from './routes/app.sponsors'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
+import { Route as ApiPublicRadarTickRouteImport } from './routes/api/public/radar-tick'
 import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
 import { Route as AppResearchProjectIdRouteImport } from './routes/app.research.$projectId'
@@ -169,6 +170,11 @@ const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
   path: '/api/public/citation-sweep',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRadarTickRoute = ApiPublicRadarTickRouteImport.update({
+  id: '/api/public/radar-tick',
+  path: '/api/public/radar-tick',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppCConversationIdRoute = AppCConversationIdRouteImport.update({
   id: '/c/$conversationId',
   path: '/c/$conversationId',
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/r/$slug': typeof RSlugRoute
   '/app': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research': typeof AppResearchIndexRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
   '/app/research/': typeof AppResearchIndexRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app/'
     | '/api/public/citation-sweep'
+    | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -337,6 +347,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app'
     | '/api/public/citation-sweep'
+    | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app/'
     | '/api/public/citation-sweep'
+    | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
     | '/app/research/'
@@ -392,6 +404,7 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   RSlugRoute: typeof RSlugRoute
   ApiPublicCitationSweepRoute: typeof ApiPublicCitationSweepRoute
+  ApiPublicRadarTickRoute: typeof ApiPublicRadarTickRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -578,6 +591,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCitationSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/radar-tick': {
+      id: '/api/public/radar-tick'
+      path: '/api/public/radar-tick'
+      fullPath: '/api/public/radar-tick'
+      preLoaderRoute: typeof ApiPublicRadarTickRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/c/$conversationId': {
       id: '/app/c/$conversationId'
       path: '/c/$conversationId'
@@ -651,6 +671,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   RSlugRoute: RSlugRoute,
   ApiPublicCitationSweepRoute: ApiPublicCitationSweepRoute,
+  ApiPublicRadarTickRoute: ApiPublicRadarTickRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
