@@ -530,7 +530,7 @@ export const Route = createFileRoute("/api/research")({
 
               await auditLog({
                 workspaceId: project.workspace_id,
-                actorId: userId,
+                actorId: userId ?? null,
                 event: "research.run.completed",
                 targetTable: "research_runs",
                 targetId: run.id,
