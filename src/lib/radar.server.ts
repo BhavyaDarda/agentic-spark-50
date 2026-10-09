@@ -124,10 +124,10 @@ export async function radarTick(origin: string) {
     const out = await generateText({
       model: provider("google/gemini-2.5-flash"),
       system:
-        "You compare two versions of a research report on the same topic. Write a short markdown brief titled nothing, with sections 'New', 'Changed', 'Gone'. Only list differences actually present in the text. If nothing material changed, say so in one sentence.",
+        "You compare two versions of a research report on the same topic. Write a short markdown brief with no title, using only the sections 'New', 'Changed', 'Gone'. Only list differences actually present in the text. If nothing material changed, say so in one sentence.",
       prompt: `PREVIOUS REPORT:\n${prev.report_markdown.slice(0, 12000)}\n\nNEW REPORT:\n${(latest!.report_markdown ?? "").slice(0, 12000)}`,
     });
-    brief = out.text.trim() || "No material changes.";
+    brief = out.text.trim().replace(/^nothing\s*/i, "") || "No material changes.";
   }
 
   await sb.from("research_run_diffs").insert({
