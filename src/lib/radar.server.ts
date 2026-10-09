@@ -10,11 +10,24 @@ import { generateText } from "ai";
 
 const MAX_FAILURES = 3;
 
-export function radarAuthorized(request: Request): boolean {
-  const secret = process.env["RADAR_SECRET"];
-  if (!secret) return false;
+let cachedSecret: string | null = null;
+export async function radarSecret(): Promise<string | null> {
+  if (cachedSecret) return cachedSecret;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("scheduler_tokens")
+    .select("token")
+    .eq("name", "radar")
+    .maybeSingle();
+  cachedSecret = data?.token ?? null;
+  return cachedSecret;
+}
+
+export async function radarAuthorized(request: Request): Promise<boolean> {
   const provided = request.headers.get("x-radar-secret") ?? "";
   if (!provided) return false;
+  const secret = await radarSecret();
+  if (!secret) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(secret);
   return a.length === b.length && timingSafeEqual(a, b);
@@ -61,7 +74,7 @@ export async function radarTick(origin: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-radar-secret": process.env["RADAR_SECRET"] ?? "",
+        "x-radar-secret": (await radarSecret()) ?? "",
       },
       body: JSON.stringify({ projectId: mon.project_id }),
     });
