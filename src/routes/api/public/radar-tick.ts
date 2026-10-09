@@ -8,7 +8,7 @@ export const Route = createFileRoute("/api/public/radar-tick")({
     handlers: {
       POST: async ({ request }) => {
         const { radarAuthorized, radarTick } = await import("@/lib/radar.server");
-        if (!radarAuthorized(request)) return new Response("Unauthorized", { status: 401 });
+        if (!(await radarAuthorized(request))) return new Response("Unauthorized", { status: 401 });
         const origin = process.env["PUBLIC_SITE_ORIGIN"] || new URL(request.url).origin;
         try {
           return Response.json(await radarTick(origin));

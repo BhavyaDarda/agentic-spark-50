@@ -15,6 +15,13 @@
       "when": 1791458623946,
       "tag": "0001_radar_monitors",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791526890452,
+      "tag": "0002_radar_scheduler",
+      "breakpoints": true
     }
   ]
 }

@@ -10,11 +10,24 @@ import { generateText } from "ai";
 
 const MAX_FAILURES = 3;
 
-export function radarAuthorized(request: Request): boolean {
-  const secret = process.env["RADAR_SECRET"];
-  if (!secret) return false;
+let cachedSecret: string | null = null;
+export async function radarSecret(): Promise<string | null> {
+  if (cachedSecret) return cachedSecret;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("scheduler_tokens")
+    .select("token")
+    .eq("name", "radar")
+    .maybeSingle();
+  cachedSecret = data?.token ?? null;
+  return cachedSecret;
+}
+
+export async function radarAuthorized(request: Request): Promise<boolean> {
   const provided = request.headers.get("x-radar-secret") ?? "";
   if (!provided) return false;
+  const secret = await radarSecret();
+  if (!secret) return false;
   const a = Buffer.from(provided);
   const b = Buffer.from(secret);
   return a.length === b.length && timingSafeEqual(a, b);
@@ -61,7 +74,7 @@ export async function radarTick(origin: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-radar-secret": process.env["RADAR_SECRET"] ?? "",
+        "x-radar-secret": (await radarSecret()) ?? "",
       },
       body: JSON.stringify({ projectId: mon.project_id }),
     });
@@ -111,10 +124,10 @@ export async function radarTick(origin: string) {
     const out = await generateText({
       model: provider("google/gemini-2.5-flash"),
       system:
-        "You compare two versions of a research report on the same topic. Write a short markdown brief titled nothing, with sections 'New', 'Changed', 'Gone'. Only list differences actually present in the text. If nothing material changed, say so in one sentence.",
+        "You compare two versions of a research report on the same topic. Write a short markdown brief with no title, using only the sections 'New', 'Changed', 'Gone'. Only list differences actually present in the text. If nothing material changed, say so in one sentence.",
       prompt: `PREVIOUS REPORT:\n${prev.report_markdown.slice(0, 12000)}\n\nNEW REPORT:\n${(latest!.report_markdown ?? "").slice(0, 12000)}`,
     });
-    brief = out.text.trim() || "No material changes.";
+    brief = out.text.trim().replace(/^nothing\s*/i, "") || "No material changes.";
   }
 
   await sb.from("research_run_diffs").insert({

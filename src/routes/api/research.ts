@@ -86,7 +86,7 @@ export const Route = createFileRoute("/api/research")({
         // Radar scheduler (shared secret, service client, only for a project that
         // has an active monitor).
         const { radarAuthorized } = await import("@/lib/radar.server");
-        const isRadar = radarAuthorized(request);
+        const isRadar = await radarAuthorized(request);
         let sb: ReturnType<typeof createClient<Database>>;
         let userId: string | undefined;
         if (isRadar) {
