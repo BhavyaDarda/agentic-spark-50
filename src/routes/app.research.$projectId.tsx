@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { RouteError } from "@/components/route-error";
+import { RadarPanel } from "@/components/radar-panel";
 
 
 export const Route = createFileRoute("/app/research/$projectId")({
@@ -436,6 +437,8 @@ function ResearchDetail() {
           </CardContent>
         </Card>
       </div>
+
+      <RadarPanel projectId={projectId} />
 
       <CitationPanel
         projectId={projectId}
