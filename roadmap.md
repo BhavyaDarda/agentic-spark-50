@@ -3,7 +3,7 @@
 ## Open
 - [ ] Stage 2 follow-up: logo file upload (link only today)
 - [x] Stage 3: topic-targeted sponsors + per-keyword stats
-- [ ] Stage 4: Radar recurring monitors (needs scheduler enabled; email optional)
+- [ ] Stage 4: Radar — monitor controls + "What changed" panel done & browser-tested; automatic timer not yet switched on (email optional)
 - [ ] Stage 5: webhook / Notion publishing
 - [ ] Stage 6: reasoning map on public reports
 - [ ] Legal entity, address, jurisdiction (blocked: needs user input)
