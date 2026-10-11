@@ -104,7 +104,26 @@ const MARQUEE = [
   "FREE TO USE",
 ];
 
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    const io = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            (e.target as HTMLElement).dataset.shown = "true";
+            io.unobserve(e.target);
+          }
+        }),
+      { threshold: 0.15 },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
 function Landing() {
+  useReveal();
   return (
     <div className="relative min-h-screen overflow-x-clip bg-background text-foreground">
       <a href="#main" className="skip-link">
@@ -228,14 +247,17 @@ function Hero() {
           </div>
 
           <h1 className="mt-6 font-display text-[clamp(2.4rem,7vw,4.6rem)] font-black uppercase leading-[0.92] tracking-[-0.04em]">
-            The marketing
+            Research
             <br />
-            team that
+            <span className="text-outline">that shows</span>
             <br />
             <span className="inline-block bg-primary px-2 text-primary-foreground">
-              actually ships.
+              its receipts.
             </span>
           </h1>
+          <span className="brut-stamp mt-5 px-3 py-1 font-display text-sm font-black uppercase">
+            Every claim cited
+          </span>
 
           <p className="mt-6 max-w-lg text-base leading-relaxed">
             Type what you need. A coordinated crew of specialists plans, researches the live web,
@@ -509,7 +531,8 @@ function Capabilities() {
           {CAPS.map((c) => (
             <article
               key={c.title}
-              className={`brut brut-press ${c.tone} p-6 ${c.wide ? "lg:col-span-2" : ""}`}
+              data-reveal
+              className={`reveal brut brut-tilt ${c.tone} p-6 ${c.wide ? "lg:col-span-2" : ""}`}
             >
               <div className="brut-sm inline-flex bg-background p-2 text-foreground">
                 <c.icon className="h-5 w-5" strokeWidth={2.5} />
