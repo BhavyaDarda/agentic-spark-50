@@ -520,7 +520,7 @@ const CAPS = [
     title: "Public reports",
     body: "Publish a run at /r/your-slug with the full trust surface: sources, searches, critic score, cost.",
     tone: "bg-card text-card-foreground",
-    wide: true,
+    
   },
 ];
 
