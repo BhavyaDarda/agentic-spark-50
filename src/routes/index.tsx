@@ -472,7 +472,9 @@ function Loop() {
           {LOOP.map((s, i) => (
             <div
               key={s.t}
-              className="border-[3px] border-border bg-card p-5 [&:not(:first-child)]:lg:border-l-0"
+              data-reveal
+              style={{ transitionDelay: `${i * 80}ms` }}
+              className="reveal border-[3px] border-border bg-card p-5 [&:not(:first-child)]:lg:border-l-0"
             >
               <span className="font-mono text-[11px] font-bold tracking-widest">0{i + 1}</span>
               <h3 className="mt-2 font-display text-lg font-black uppercase">{s.t}</h3>
