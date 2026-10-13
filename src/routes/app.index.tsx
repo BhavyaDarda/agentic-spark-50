@@ -103,7 +103,7 @@ function NewChatWelcome() {
         <h1 className="text-4xl leading-[0.95] md:text-6xl">
           What are we
           <br />
-          <span className="text-outline">researching</span>{" "}
+          <span className="bg-secondary px-1 text-secondary-foreground">researching</span>{" "}
           <span className="inline-block border-[4px] border-border bg-primary px-2 text-primary-foreground">
             today?
           </span>
