@@ -22,7 +22,6 @@ import {
   Building2,
 } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/app/")({
@@ -97,24 +96,25 @@ function NewChatWelcome() {
     start.mutate(prompt);
   };
 
-  const email = supabase.auth ? undefined : undefined; // reserved
-
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] w-full max-w-3xl flex-col justify-center gap-8 px-4 py-10">
-      <div className="space-y-2 text-center">
-        <div className="mx-auto inline-flex h-11 w-11 items-center justify-center bg-primary/10 text-primary-dark ring-1 ring-primary/20">
-          <Sparkles className="h-5 w-5" />
-        </div>
-        <h1 className="text-3xl font-semibold tracking-tight">
-          What are we shipping today?
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 py-6 md:py-10">
+      <div className="space-y-4">
+        <span className="brut-chip">New chat</span>
+        <h1 className="text-4xl leading-[0.95] md:text-6xl">
+          What are we
+          <br />
+          <span className="bg-secondary px-1 text-secondary-foreground">researching</span>{" "}
+          <span className="inline-block border-[4px] border-border bg-primary px-2 text-primary-foreground">
+            today?
+          </span>
         </h1>
-        <p className="text-sm text-muted-foreground">
-          Ask, brief, or paste — the agent will research, write, and save
-          artifacts to your library.
+        <p className="max-w-xl text-base text-muted-foreground">
+          Ask, brief or paste. The agent searches the live web, checks your Brand
+          Memory, cites every source and saves the result to your library.
         </p>
       </div>
 
-      <div className="border-[3px] border-border bg-card p-3 brutal-shadow">
+      <div className="brut bg-card">
         <Textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -124,18 +124,19 @@ function NewChatWelcome() {
               send();
             }
           }}
-          rows={3}
-          placeholder="Research the AI marketing landscape, draft a launch email, build me a campaign…"
-          className="resize-none border-0 bg-transparent p-2 text-base leading-relaxed shadow-none focus-visible:ring-0"
+          rows={4}
+          aria-label="Message"
+          placeholder="Map our top competitor's pricing, draft a launch email, plan a 30-day campaign…"
+          className="resize-none border-0 bg-transparent p-4 text-base leading-relaxed shadow-none focus-visible:ring-0"
         />
-        <div className="flex items-center justify-between gap-2 border-t border-border/50 pt-2">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Building2 className="h-3.5 w-3.5" />
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t-[4px] border-border bg-muted px-3 py-2">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4" />
             <Select
               value={brandId ?? "none"}
               onValueChange={(v) => setBrandId(v === "none" ? undefined : v)}
             >
-              <SelectTrigger className="h-7 w-[180px] border-border/60 bg-transparent text-xs">
+              <SelectTrigger className="h-8 w-[180px] bg-card font-mono text-xs uppercase" aria-label="Brand">
                 <SelectValue placeholder="No brand" />
               </SelectTrigger>
               <SelectContent>
@@ -147,49 +148,51 @@ function NewChatWelcome() {
                 ))}
               </SelectContent>
             </Select>
-            <span className="hidden md:inline">
-              · Enter to send · Shift+Enter for a new line
+            <span className="hidden font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground md:inline">
+              Enter = send · Shift+Enter = new line
             </span>
           </div>
           <Button
-            size="sm"
             className="gap-1.5"
             onClick={send}
             disabled={!prompt.trim() || !workspaceId || start.isPending}
           >
             {start.isPending ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <ArrowUp className="h-3.5 w-3.5" />
+              <ArrowUp className="h-4 w-4" strokeWidth={3} />
             )}
             Send
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-2">
-        {STARTERS.map((s) => {
-          const Icon = s.icon;
-          return (
-            <button
-              key={s.title}
-              onClick={() => {
-                setPrompt(s.prompt);
-              }}
-              className="group flex items-start gap-3 border-[3px] border-border bg-card p-3 text-left transition-colors hover:border-primary/40 hover:bg-card"
-            >
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark">
-                <Icon className="h-3.5 w-3.5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-sm font-medium">{s.title}</div>
-                <div className="line-clamp-2 text-xs text-muted-foreground">
-                  {s.prompt}
+      <div>
+        <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          Or start from a brief
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {STARTERS.map((s, i) => {
+            const Icon = s.icon;
+            const tile = ["bg-secondary text-secondary-foreground", "bg-primary text-primary-foreground", "bg-accent text-accent-foreground", "bg-card text-foreground"][i % 4];
+            return (
+              <button
+                key={s.title}
+                type="button"
+                onClick={() => setPrompt(s.prompt)}
+                className="brut-sm brut-press flex items-start gap-3 bg-card p-4 text-left"
+              >
+                <div className={`flex h-10 w-10 shrink-0 items-center justify-center border-[3px] border-border ${tile}`}>
+                  <Icon className="h-5 w-5" />
                 </div>
-              </div>
-            </button>
-          );
-        })}
+                <div className="min-w-0">
+                  <div className="font-display text-sm font-black uppercase">{s.title}</div>
+                  <div className="mt-1 line-clamp-2 text-xs text-muted-foreground">{s.prompt}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
