@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import { createFileRoute, useParams, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -25,7 +26,6 @@ import {
   FileText,
   X,
   Building2,
-  Sparkles,
   ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -327,7 +327,7 @@ function ChatPage() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 [scrollbar-width:thin]">
           <div className="mx-auto max-w-3xl space-y-6">
             {messages.length === 0 && !conv.isLoading && (
-              <div className="border-[3px] border-dashed border-border p-8 text-center text-sm text-muted-foreground">
+              <div className="brut-sm bg-muted p-8 text-center font-mono text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 Start the conversation below.
               </div>
             )}
@@ -337,9 +337,9 @@ function ChatPage() {
           </div>
         </div>
 
-        <div className="border-t-[3px] border-border bg-background px-4 py-3">
+        <div className="border-t-[4px] border-border bg-background px-4 py-4">
           <div className="mx-auto max-w-3xl">
-            <div className="border-[3px] border-border bg-card p-2 brutal-shadow">
+            <div className="brut bg-card">
               <Textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -353,17 +353,17 @@ function ChatPage() {
                 rows={2}
                 aria-label="Message the agent"
                 placeholder="Reply, refine, or ask for a new artifact… (Shift+Enter for a new line)"
-                className="resize-none border-0 bg-transparent p-2 text-sm shadow-none focus-visible:ring-0"
+                className="resize-none border-0 bg-transparent p-3 text-sm shadow-none focus-visible:ring-0"
                 disabled={sending}
               />
-              <div className="flex items-center justify-between gap-2 border-t-[3px] border-border pt-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t-[4px] border-border bg-muted px-2 py-2">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Building2 className="h-3.5 w-3.5" />
                   <Select
                     value={activeBrand ?? "none"}
                     onValueChange={(v) => setActiveBrand(v === "none" ? undefined : v)}
                   >
-                    <SelectTrigger className="h-7 w-[150px] border-border/60 bg-transparent text-xs">
+                    <SelectTrigger aria-label="Brand" className="h-8 w-[150px] bg-card font-mono text-xs uppercase">
                       <SelectValue placeholder="No brand" />
                     </SelectTrigger>
                     <SelectContent>
@@ -376,7 +376,7 @@ function ChatPage() {
                     </SelectContent>
                   </Select>
                   <Select value={model} onValueChange={(v) => setModel(v as typeof model)}>
-                    <SelectTrigger className="h-7 w-[120px] border-border/60 bg-transparent text-xs">
+                    <SelectTrigger aria-label="Thinking depth" className="h-8 w-[120px] bg-card font-mono text-xs uppercase">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -432,7 +432,7 @@ function MessageRow({
   if (m.role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[85%] bg-primary/15 px-4 py-2.5 text-sm text-foreground ring-1 ring-primary/20">
+        <div className="max-w-[85%] whitespace-pre-wrap border-[3px] border-border bg-secondary px-4 py-2.5 text-sm text-secondary-foreground shadow-[4px_4px_0_var(--brut-ink)]">
           {m.text}
         </div>
       </div>
@@ -440,8 +440,8 @@ function MessageRow({
   }
   return (
     <div className="flex gap-3">
-      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark ring-1 ring-primary/20">
-        <Sparkles className="h-3.5 w-3.5" />
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border-[3px] border-border bg-card">
+        <BrandMark className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1 space-y-3">
         {m.tools.length > 0 && (
@@ -458,8 +458,8 @@ function MessageRow({
           </div>
         )}
         {m.citations.length > 0 && (
-          <div className="border-[3px] border-border bg-card p-3">
-            <div className="mb-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="brut-sm bg-card p-3">
+            <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               Sources · {m.citations.length}
             </div>
             <ul className="space-y-1.5">
@@ -486,11 +486,11 @@ function MessageRow({
               <button
                 key={a.id}
                 onClick={() => onOpenArtifact(a)}
-                className="group flex items-center gap-2 border-[3px] border-primary bg-primary/5 px-3 py-2 text-xs transition-colors hover:border-primary/60 hover:bg-primary/10"
+                className="brut-sm brut-press flex items-center gap-2 bg-primary px-3 py-2 text-xs text-primary-foreground"
               >
-                <FileText className="h-3.5 w-3.5 text-primary-dark" />
-                <span className="font-medium">{a.title}</span>
-                <span className="rounded bg-background/50 px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
+                <FileText className="h-3.5 w-3.5" />
+                <span className="font-bold">{a.title}</span>
+                <span className="border-[2px] border-border bg-card px-1.5 py-0.5 font-mono text-[9px] uppercase text-foreground">
                   {a.kind.replace("_", "")}
                 </span>
               </button>
@@ -513,8 +513,8 @@ function ToolCard({ t }: { t: ToolEvent }) {
     <div
       className={cn(
         "flex items-center gap-2 border-[3px] border-border bg-card px-2.5 py-1.5 text-xs",
-        isRunning && "border-primary/40 bg-primary/5",
-        t.status === "error" && "border-destructive/40 bg-destructive/5",
+        isRunning && "bg-secondary text-secondary-foreground",
+        t.status === "error" && "bg-destructive text-destructive-foreground",
       )}
     >
       {isRunning ? (
@@ -573,12 +573,12 @@ function ArtifactPanel({
   }, [artifact.id]);
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-30 flex w-full flex-col border-l-[3px] border-border bg-background brutal-shadow lg:w-[min(48%,640px)]">
-      <div className="flex h-12 items-center justify-between border-b-[3px] border-border px-3">
+    <aside className="fixed inset-y-0 right-0 z-30 flex w-full flex-col border-l-[4px] border-border bg-background lg:w-[min(48%,640px)]">
+      <div className="flex h-12 items-center justify-between border-b-[4px] border-border bg-muted px-3">
         <div className="flex min-w-0 items-center gap-2">
           <FileText className="h-4 w-4 shrink-0 text-primary-dark" />
           <span className="truncate text-sm font-medium">{artifact.title}</span>
-          <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
+          <span className="border-[2px] border-border bg-secondary px-1.5 py-0.5 font-mono text-[9px] uppercase text-secondary-foreground">
             {artifact.kind.replace("_", "")}
           </span>
         </div>

@@ -249,7 +249,7 @@ function Hero() {
           <h1 className="mt-6 font-display text-[clamp(2.4rem,7vw,4.6rem)] font-black uppercase leading-[0.92] tracking-[-0.04em]">
             Research
             <br />
-            <span className="text-outline">that shows</span>
+            <span className="inline-block bg-secondary px-2 text-secondary-foreground">that shows</span>
             <br />
             <span className="inline-block bg-primary px-2 text-primary-foreground">
               its receipts.
