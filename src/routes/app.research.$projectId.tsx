@@ -232,7 +232,7 @@ function ResearchDetail() {
 
           {p.is_public && p.share_slug ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs text-emerald-400">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase text-foreground">
                 <Globe className="h-3.5 w-3.5" /> Live at the link below
               </div>
               <div className="flex gap-2">
@@ -339,7 +339,7 @@ function ResearchDetail() {
                   const Icon = AGENT_ICON[s.agent] ?? Sparkles;
                   return (
                     <li key={i} className="flex gap-3">
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center border-[3px] border-foreground bg-primary text-primary-foreground">
                         <Icon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0">
@@ -366,7 +366,7 @@ function ResearchDetail() {
                   </li>
                 )}
                 {doneEv && (
-                  <li className="flex items-center gap-2 text-xs text-emerald-400">
+                  <li className="flex items-center gap-2 text-xs font-bold uppercase text-foreground">
                     <CheckCircle2 className="h-3 w-3" /> Completed
                   </li>
                 )}
