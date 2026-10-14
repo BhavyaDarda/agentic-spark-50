@@ -71,12 +71,17 @@ function ResearchListPage() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-6xl space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b-4 border-foreground pb-5">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Research Ninja</h1>
-          <p className="text-sm text-muted-foreground">
-            Multi-agent web research with live streaming and cited reports.
+          <p className="mb-2 inline-block border-2 border-foreground bg-secondary px-2 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-secondary-foreground">
+            7 agents · live web · cited
+          </p>
+          <h1 className="font-display text-3xl font-black uppercase leading-none tracking-tight md:text-4xl">
+            Research <span className="bg-primary px-2 text-primary-foreground">Ninja</span>
+          </h1>
+          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+            Plan, search, read, synthesize and critique — every report keeps its sources, score and cost.
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -145,29 +150,29 @@ function ResearchListPage() {
           {projects.data!.map((p) => (
             <div key={p.id} className="relative">
               <Link to="/app/research/$projectId" params={{ projectId: p.id }}>
-                <Card className="h-full border-border/60 transition-colors hover:border-primary/40">
+                <Card className="brutal-hover h-full border-4 border-foreground shadow-[6px_6px_0_0_var(--foreground)]">
                   <CardHeader>
-                    <CardTitle className="line-clamp-2 pr-16 text-base">{p.topic}</CardTitle>
+                    <CardTitle className="line-clamp-2 pr-20 font-display text-base font-black uppercase leading-tight">{p.topic}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm text-muted-foreground">
                     {p.goal && <p className="line-clamp-2">{p.goal}</p>}
-                    <div className="flex items-center justify-between pt-2 font-mono text-xs">
-                      <span>
-                        {p.depth}
+                    <div className="flex items-center justify-between border-t-2 border-foreground pt-3 font-mono text-xs">
+                      <span className="flex items-center gap-2 uppercase text-foreground">
+                        <span className="border-2 border-foreground px-1.5 py-0.5 font-bold">{p.depth}</span>
                         {(counts.data?.[p.id] ?? 0) > 0 && (
-                          <span className="ml-2 bg-primary/10 px-1.5 py-0.5 uppercase text-primary-dark">
+                          <span className="border-2 border-foreground bg-primary px-1.5 py-0.5 font-bold text-primary-foreground">
                             {counts.data![p.id]} cited
                           </span>
                         )}
                       </span>
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4 text-foreground" strokeWidth={3} />
                     </div>
                   </CardContent>
                 </Card>
               </Link>
               {p.is_public && p.share_slug && (
                 <div className="absolute right-3 top-3 flex items-center gap-1">
-                  <span className="bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-emerald-400">
+                  <span className="border-2 border-foreground bg-secondary px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider text-secondary-foreground">
                     public
                   </span>
                   <button
