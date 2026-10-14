@@ -189,12 +189,12 @@ function ResearchDetail() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{p.topic}</h1>
-          {p.goal && <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{p.goal}</p>}
-          <div className="mt-2 flex items-center gap-2 text-xs">
-            <span className="bg-muted px-2 py-0.5 font-mono">{p.depth}</span>
+          <h1 className="font-display text-2xl font-black uppercase leading-tight tracking-tighter md:text-3xl">{p.topic}</h1>
+          {p.goal && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{p.goal}</p>}
+          <div className="mt-3 flex items-center gap-2 text-xs">
+            <span className="border-[3px] border-foreground bg-secondary px-2 py-0.5 font-mono font-bold uppercase text-secondary-foreground">{p.depth}</span>
             {p.is_public && (
-              <span className="bg-emerald-500/10 px-2 py-0.5 text-emerald-400">
+              <span className="border-[3px] border-foreground bg-primary px-2 py-0.5 font-mono font-bold uppercase text-primary-foreground">
                 public
               </span>
             )}
@@ -232,7 +232,7 @@ function ResearchDetail() {
 
           {p.is_public && p.share_slug ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-xs text-emerald-400">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase text-foreground">
                 <Globe className="h-3.5 w-3.5" /> Live at the link below
               </div>
               <div className="flex gap-2">
@@ -310,10 +310,10 @@ function ResearchDetail() {
             <button
               key={r.id}
               onClick={() => setActiveRunId(r.id)}
-              className={` border px-2 py-1 text-xs ${
+              className={`border-[3px] border-foreground px-2 py-1 font-mono text-xs font-bold uppercase ${
                 activeRunId === r.id
-                  ? "border-primary bg-primary/10 text-primary-dark"
-                  : "border-border/60 text-muted-foreground hover:text-foreground"
+                  ? "bg-secondary text-secondary-foreground brutal-sm"
+                  : "bg-background text-muted-foreground hover:text-foreground"
               }`}
             >
               {new Date(r.created_at).toLocaleString()} · {r.status}
@@ -339,7 +339,7 @@ function ResearchDetail() {
                   const Icon = AGENT_ICON[s.agent] ?? Sparkles;
                   return (
                     <li key={i} className="flex gap-3">
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-primary/10 text-primary-dark">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center border-[3px] border-foreground bg-primary text-primary-foreground">
                         <Icon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0">
@@ -366,7 +366,7 @@ function ResearchDetail() {
                   </li>
                 )}
                 {doneEv && (
-                  <li className="flex items-center gap-2 text-xs text-emerald-400">
+                  <li className="flex items-center gap-2 text-xs font-bold uppercase text-foreground">
                     <CheckCircle2 className="h-3 w-3" /> Completed
                   </li>
                 )}
