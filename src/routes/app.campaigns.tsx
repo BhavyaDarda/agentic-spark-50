@@ -273,10 +273,14 @@ function CampaignsPage() {
                 {c.objective && (
                   <p className="line-clamp-2 text-sm text-muted-foreground">{c.objective}</p>
                 )}
-                <div className="text-xs text-muted-foreground">
-                  {c.start_date ?? "—"} → {c.end_date ?? "—"}
-                  {c.budget ? ` · budget ${c.budget}` : ""}
-                </div>
+                {(c.start_date || c.end_date || c.budget) && (
+                  <div className="font-mono text-xs text-muted-foreground">
+                    {c.start_date || c.end_date
+                      ? `${c.start_date ?? "—"} → ${c.end_date ?? "—"}`
+                      : ""}
+                    {c.budget ? `${c.start_date || c.end_date ? " · " : ""}budget ${c.budget}` : ""}
+                  </div>
+                )}
                 <Button size="sm" variant="secondary" onClick={() => setOpenId(c.id)}>
                   Open plan
                 </Button>
