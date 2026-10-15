@@ -125,8 +125,10 @@ function CampaignsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Campaigns</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="font-display text-3xl font-black uppercase tracking-tighter md:text-4xl">
+            <span className="border-[4px] border-border bg-secondary px-2 text-secondary-foreground">Campaigns</span>
+          </h1>
+          <p className="mt-3 text-sm font-semibold text-muted-foreground">
             One brief in — strategy, channel mix, KPIs, calendar and every asset out.
           </p>
         </div>
@@ -241,12 +243,12 @@ function CampaignsPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {campaigns.data!.map((c) => (
-            <Card key={c.id} className="border-border/60">
+            <Card key={c.id} className="brutal-hover border-[4px] border-border shadow-[8px_8px_0_0_var(--border)]">
               <CardHeader className="flex flex-row items-start justify-between gap-2">
                 <div>
-                  <CardTitle className="text-base">{c.name}</CardTitle>
+                  <CardTitle className="font-display text-base font-black uppercase tracking-tight">{c.name}</CardTitle>
                   <div className="mt-1 flex items-center gap-2">
-                    <Badge variant="secondary" className="font-mono text-[10px] uppercase">
+                    <Badge className="border-[3px] border-border bg-primary font-mono text-[10px] font-bold uppercase text-primary-foreground">
                       {c.status ?? "draft"}
                     </Badge>
                     {(c.channels ?? []).slice(0, 3).map((ch) => (
