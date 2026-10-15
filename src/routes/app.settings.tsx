@@ -74,7 +74,9 @@ function SettingsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <h1 className="mb-3 font-display text-3xl font-black uppercase tracking-tighter md:text-4xl">
+          <span className="border-[4px] border-border bg-primary px-2 text-primary-foreground">Settings</span>
+        </h1>
         <p className="text-sm text-muted-foreground">
           Workspace, team, usage, and what this costs you.
         </p>
