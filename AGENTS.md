@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Public report evidence
+- Build evidence-map links only from explicit saved report citations; expose search strings but never private documents or inferred query-to-source relationships, so public evidence remains auditable without leaking workspace material.

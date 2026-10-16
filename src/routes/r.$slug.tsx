@@ -8,6 +8,7 @@ import type { PublicReport } from "@/lib/public-report.server";
 import { SponsorUnit } from "@/components/sponsor-unit";
 import { BrandMark } from "@/components/brand-mark";
 import { SITE } from "@/lib/site";
+import { ReportEvidenceMap } from "@/components/report-evidence-map";
 
 export const Route = createFileRoute("/r/$slug")({
   staticData: { sitemap: true },
@@ -97,7 +98,7 @@ function SharedResearchPage() {
 
   if (!report) return <ReportUnavailable />;
 
-  const { project, run, sources, trust, sponsor, citations, branding } = report;
+  const { project, run, sources, trust, sponsor, citations, branding, queries } = report;
 
   return (
     <div className="min-h-screen bg-background">
@@ -194,6 +195,8 @@ function SharedResearchPage() {
             <p className="text-base leading-relaxed">{run.summary}</p>
           </section>
         )}
+
+        {run?.reportMarkdown && <ReportEvidenceMap topic={project.topic} queries={queries} markdown={run.reportMarkdown} sources={sources} />}
 
         <section aria-labelledby="report-body" className="min-w-0 border-t-4 border-border py-6 [overflow-wrap:anywhere]">
           <h2 id="report-body" className="mb-6 text-base font-black">Report</h2>
