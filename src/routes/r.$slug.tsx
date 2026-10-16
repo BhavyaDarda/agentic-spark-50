@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Markdown } from "@/components/markdown";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ExternalLink, Lock, Quote, ShieldCheck } from "lucide-react";
+import { Download, ExternalLink, Lock, Quote, ShieldCheck } from "lucide-react";
 import { getPublicReport } from "@/lib/public-report.functions";
 import type { PublicReport } from "@/lib/public-report.server";
 import { SponsorUnit } from "@/components/sponsor-unit";
@@ -83,11 +83,11 @@ function ReportUnavailable() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className=" border border-border/50 bg-muted/20 px-3 py-2">
-      <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+    <div className="min-w-0 border-l-[3px] border-border px-3 py-2">
+      <p className="font-mono text-[10px] font-bold uppercase text-muted-foreground">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-medium text-foreground">{value}</p>
+      <p className="mt-1 break-words font-mono text-lg font-bold text-foreground">{value}</p>
     </div>
   );
 }
@@ -102,14 +102,16 @@ function SharedResearchPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-10 border-b-[3px] border-border bg-background">
-        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
+        <div className="mx-auto flex min-h-16 max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="flex items-center gap-2 text-sm font-medium text-foreground">
             <BrandMark className="h-7 w-7" />
             <span className="font-display text-xs font-black">{SITE.name}</span>
           </Link>
           <div className="flex items-center gap-2 print:hidden">
             <Button variant="outline" size="sm" onClick={() => window.print()}>
-              Download PDF
+              <Download aria-hidden="true" />
+              <span className="hidden sm:inline">Download PDF</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
             <Button variant="outline" size="sm" asChild>
               <Link to="/auth">Sign in</Link>
@@ -118,7 +120,7 @@ function SharedResearchPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-10">
+      <main id="main-content" className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
         {branding && (
           <div
             className="mb-6 flex items-center gap-3 border-[3px] border-foreground p-3"
@@ -133,11 +135,12 @@ function SharedResearchPage() {
             </div>
           </div>
         )}
-        <div className="mb-8 space-y-2">
-          <h1 className="text-3xl font-semibold tracking-tight">{project.topic}</h1>
-          {project.goal && <p className="text-muted-foreground">{project.goal}</p>}
+        <div className="mb-8 space-y-4">
+          <p className="font-mono text-xs font-bold uppercase">Published research / {SITE.name}</p>
+          <h1 className="break-words font-display text-2xl font-black uppercase leading-tight tracking-normal sm:text-4xl">{project.topic}</h1>
+          {project.goal && <p className="max-w-3xl text-base text-muted-foreground">{project.goal}</p>}
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <span className=" bg-muted px-2 py-0.5 font-mono uppercase">
+            <span className="brut-chip">
               {project.depth}
             </span>
             {run?.createdAt && (
@@ -147,10 +150,10 @@ function SharedResearchPage() {
         </div>
 
         {/* Trust surface: what the run actually did, in the open. */}
-        <section className="mb-6 border-[3px] border-border bg-card/50 p-4">
+        <section aria-labelledby="report-method" className="mb-8 border-y-4 border-border py-5">
           <div className="mb-3 flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-primary-dark" />
-            <h2 className="text-sm font-semibold">How this report was made</h2>
+            <ShieldCheck className="h-5 w-5 text-foreground" />
+            <h2 id="report-method" className="text-sm font-black">How this report was made</h2>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
             <Stat label="Sources cited" value={String(trust.sourceCount)} />
@@ -186,21 +189,15 @@ function SharedResearchPage() {
         </section>
 
         {run?.summary && (
-          <Card className="mb-6 border-primary/20 bg-primary/5">
-            <CardHeader>
-              <CardTitle className="text-base text-primary-dark">Executive summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm">{run.summary}</p>
-            </CardContent>
-          </Card>
+          <section aria-labelledby="report-summary" className="mb-8 border-l-4 border-primary pl-4 sm:pl-6">
+            <h2 id="report-summary" className="mb-4 text-base font-black">Executive summary</h2>
+            <p className="text-base leading-relaxed">{run.summary}</p>
+          </section>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Report</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <section aria-labelledby="report-body" className="min-w-0 border-t-4 border-border py-6 [overflow-wrap:anywhere]">
+          <h2 id="report-body" className="mb-6 text-base font-black">Report</h2>
+          <div>
             {run?.reportMarkdown ? (
               <Markdown>{run.reportMarkdown}</Markdown>
             ) : (
@@ -208,25 +205,23 @@ function SharedResearchPage() {
                 No completed report has been shared yet.
               </p>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </section>
 
         {sources.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="text-base">Sources ({sources.length})</CardTitle>
-              <CardDescription>Every claim above traces back to this list.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          <section aria-labelledby="report-sources" className="mt-6 border-t-4 border-border py-6">
+            <h2 id="report-sources" className="mb-5 text-base font-black">Sources ({sources.length})</h2>
+            <div className="grid gap-3 sm:grid-cols-2">
               {sources.map((source, i) => (
                 <a
                   key={`${source.url}-${i}`}
                   href={source.url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="block border border-border/50 p-3 transition-colors hover:border-primary/40 hover:bg-muted/30"
+                   className="min-w-0 border-[3px] border-border p-4 transition-colors hover:bg-secondary hover:text-secondary-foreground"
                 >
-                  <p className="text-sm font-medium text-foreground">
+                  <span className="mb-3 inline-block bg-secondary px-2 py-1 font-mono text-xs font-bold text-secondary-foreground">{String(i + 1).padStart(2, "0")}</span>
+                  <p className="break-words text-sm font-bold">
                     {source.title ?? source.url}
                   </p>
                   <p className="truncate font-mono text-[11px] text-muted-foreground">
@@ -239,23 +234,21 @@ function SharedResearchPage() {
                   )}
                 </a>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* Cited by — the loop closes here: published, then measured. */}
         {citations.length > 0 && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
+          <section aria-labelledby="report-citations" className="mt-6 border-t-4 border-border py-6">
+              <h2 id="report-citations" className="mb-3 flex items-center gap-2 text-base">
                 <Quote className="h-4 w-4 text-primary-dark" />
                 Cited by ({citations.length})
-              </CardTitle>
-              <CardDescription>
+              </h2>
+              <p className="mb-5 text-sm text-muted-foreground">
                 Answer engines and pages observed pointing at this report.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
+              </p>
+            <div className="space-y-2">
               {citations.map((c, i) => (
                 <a
                   key={`${c.engine}-${c.citingUrl}-${i}`}
@@ -275,8 +268,8 @@ function SharedResearchPage() {
                   </span>
                 </a>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         )}
 
         {/* Sponsor slot — public report pages only. Never inside the report
