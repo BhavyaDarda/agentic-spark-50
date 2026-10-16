@@ -33,6 +33,8 @@ export interface PublicReport {
     createdAt: string;
   } | null;
   sources: { url: string; title: string | null; snippet: string | null }[];
+  /** Saved search strings only; never serialize workspace documents or the full plan. */
+  queries: string[];
   trust: TrustSurface;
   sponsor: PublicSponsor | null;
   /** Answer engines and web pages observed citing this report. */
@@ -149,6 +151,7 @@ export async function loadPublicReport(
         }
       : null,
     sources,
+    queries: Array.isArray(plan?.queries) ? plan.queries.filter((query): query is string => typeof query === "string") : [],
     trust: {
       criticScore: run?.critic_score ?? parseCriticScore(plan?.critic),
       criticNotes: criticNotes(plan?.critic),
