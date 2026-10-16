@@ -7,7 +7,7 @@
 - [x] Stage 4: Radar monitors, hourly timer on, manual rerun verified
 - [ ] Radar email briefs (deferred by user; needs an email domain)
 - [ ] Stage 5: webhook / Notion publishing
-- [ ] Stage 6: evidence map implemented; verify saved queries and citation selection on a real public report
+- [x] Stage 6: public evidence map — 5 saved searches, 27 cited passages, source selection verified on a real report; desktop/mobile checked, 4 citation tests pass. Per-search source relationships and private brand documents intentionally omitted rather than inferred.
 - [ ] Legal entity, address, jurisdiction (blocked: needs user input)
 
 ## Done
