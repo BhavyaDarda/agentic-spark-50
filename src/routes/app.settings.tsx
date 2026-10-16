@@ -823,9 +823,13 @@ function BrandingCard() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="br-accent">Accent colour</Label>
-          <div className="flex gap-2">
-            <input aria-label="Pick accent colour" type="color" value={/^#[0-9a-fA-F]{6}$/.test(accent) ? accent : "#000000"} onChange={(e) => setAccent(e.target.value)} className="h-10 w-12 border-[3px] border-foreground" />
-            <Input id="br-accent" placeholder="#ff00aa" value={accent} onChange={(e) => setAccent(e.target.value)} />
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative h-11 w-14 shrink-0 border-[3px] border-border bg-muted">
+              <input aria-label="Pick accent colour" type="color" value={/^#[0-9a-fA-F]{6}$/.test(accent) ? accent : "#000000"} onChange={(e) => setAccent(e.target.value)} className={`absolute inset-0 h-full w-full cursor-pointer ${/^#[0-9a-fA-F]{6}$/.test(accent) ? "" : "opacity-0"}`} />
+              {!/^#[0-9a-fA-F]{6}$/.test(accent) && <span aria-hidden="true" className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[10px]">None</span>}
+            </div>
+            <Input id="br-accent" className="min-w-0 flex-1" placeholder="No custom colour" value={accent} onChange={(e) => setAccent(e.target.value)} />
+            {accent && <Button variant="ghost" size="sm" onClick={() => setAccent("")}>Clear</Button>}
           </div>
         </div>
         <Button onClick={() => save.mutate()} disabled={!id || save.isPending}>
