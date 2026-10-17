@@ -4,7 +4,11 @@ import { WebhookInput, allowedWebhookUrl, exportPayload } from "./publishing";
 
 export const sendOutputWebhook = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => WebhookInput.parse(input))
+  .inputValidator((input: unknown) => {
+    const parsed = WebhookInput.safeParse(input);
+    if (!parsed.success) throw new Error(parsed.error.issues[0]?.message ?? "Check the export details.");
+    return parsed.data;
+  })
   .handler(async ({ data, context }) => {
     let workspaceId: string;
     let document: { id: string; title: string; markdown: string; summary?: string | null };
