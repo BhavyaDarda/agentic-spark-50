@@ -21,12 +21,20 @@ import { Sparkles, Loader2, ThumbsUp, ThumbsDown, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Markdown } from "@/components/markdown";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
+import { ExportOutput } from "@/components/export-output";
 
 const search = z.object({ brand: z.string().uuid().optional() });
 
 export const Route = createFileRoute("/app/content")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Content Studio · REACHER AI" }] }),
+  head: () => ({ meta: [
+    { title: "Content Studio · REACHER AI" },
+    { name: "description", content: "Create, review, and export your saved brand content with REACHER AI." },
+    { property: "og:title", content: "Content Studio · REACHER AI" },
+    { property: "og:description", content: "Create, review, and export saved brand content." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: search,
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ContentPage,
@@ -198,17 +206,19 @@ function ContentPage() {
 
       <div className="space-y-4">
         <Card className="min-h-[400px]">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
             <CardTitle className="text-base">
               {selectedRun?.title || selectedRun?.kind?.replace("_", "") || "Output"}
             </CardTitle>
             {selectedRun?.output_text && (
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
+                <ExportOutput source="content" id={selectedRun.id} disabled={selectedRun.status !== "succeeded" || gen.isPending} />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    navigator.clipboard.writeText(selectedRun.output_text!);
+                    if (!selectedRun.output_text) return;
+                    navigator.clipboard.writeText(selectedRun.output_text);
                     toast.success("Copied");
                   }}
                 >
