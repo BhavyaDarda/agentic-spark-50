@@ -36,11 +36,19 @@ import {
 import { toast } from "sonner";
 import { RouteError } from "@/components/route-error";
 import { RadarPanel } from "@/components/radar-panel";
+import { ExportOutput } from "@/components/export-output";
 
 
 export const Route = createFileRoute("/app/research/$projectId")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Research · REACHER AI" }] }),
+  head: () => ({ meta: [
+    { title: "Research project · REACHER AI" },
+    { name: "description", content: "Run cited research, review saved reports, and share or export your findings with REACHER AI." },
+    { property: "og:title", content: "Research project · REACHER AI" },
+    { property: "og:description", content: "Review, share, and export your saved research findings." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchDetail,
 });
@@ -200,7 +208,8 @@ function ResearchDetail() {
             )}
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <ExportOutput source="research" id={projectId} disabled={streaming || !proj.data.runs.some(r => r.status === "succeeded" && r.report_markdown)} />
           <Button variant="outline" onClick={() => setShareOpen(true)}>
             <Share2 className="mr-1 h-4 w-4" />
             Share
