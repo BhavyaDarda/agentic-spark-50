@@ -1,7 +1,9 @@
 # Roadmap — REACHER AI action plan (2026-10-03)
 
 ## Open
-- [ ] Remaining product verification: campaign plan, account actions, security review
+- [x] Campaign plan: fixed "response did not match schema" failure; real plan built in browser
+- [x] Security scan clean; 8 safety tests pass (run with `bun test`)
+- [ ] Remaining product verification: account actions
 - [ ] Stage 2 follow-up: logo file upload (link only today)
 - [x] Stage 3: topic-targeted sponsors + per-keyword stats
 - [x] Stage 4: Radar monitors, hourly timer on, manual rerun verified
