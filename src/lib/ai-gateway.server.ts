@@ -88,6 +88,8 @@ export function createLovableAiGatewayProvider(lovableApiKey: string, initialRun
   const provider = createOpenAICompatible({
     name: "lovable",
     baseURL: "https://ai.gateway.lovable.dev/v1",
+    // Send the JSON schema so Output.object() calls get schema-shaped replies.
+    supportsStructuredOutputs: true,
     headers: {
       "Lovable-API-Key": lovableApiKey,
       "X-Lovable-AIG-SDK": "vercel-ai-sdk",
