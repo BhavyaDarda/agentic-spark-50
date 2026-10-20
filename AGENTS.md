@@ -17,3 +17,7 @@
 - Webhook exports accept only HTTPS Zapier, Make, and Webhook.site receivers and refuse redirects; arbitrary hosts require DNS-pinned egress before being supported.
 - Webhook URLs and optional signing secrets are request-only and must not be persisted or logged; delivery audit entries store only the host, receipt ID, and outcome.
 - Webhook delivery is synchronous without automatic retries; receiver acceptance must not be presented as confirmed downstream publication.
+
+## External capabilities
+- Extend the runtime assistant through the app's MCP connection registry when an appropriate remote MCP service exists; Lovable chat connectors are build-time tools, not runtime integrations, so they cannot substitute for app connections.
+- Use per-user authorization for private external accounts and the supported App User Connector path for existing non-agent provider integrations; never substitute shared workspace credentials for a user's account.
