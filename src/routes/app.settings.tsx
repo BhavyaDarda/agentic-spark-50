@@ -57,6 +57,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { RouteError } from "@/components/route-error";
 import { AccountPanel } from "@/components/account-panel";
 
