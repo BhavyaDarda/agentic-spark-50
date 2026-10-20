@@ -1,6 +1,7 @@
 # Roadmap — REACHER AI action plan (2026-10-03)
 
 ## Open
+- [x] External-capability direction: use runtime MCP and linked apps for missing native features; checked the existing Settings connection registry and available per-user services. No additional account was connected or new service action enabled by this review.
 - [x] Campaign plan: fixed "response did not match schema" failure; real plan built in browser
 - [x] Security scan clean; 8 safety tests pass (run with `bun test`)
 - [ ] Remaining product verification: account actions
