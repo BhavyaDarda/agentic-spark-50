@@ -56,12 +56,21 @@ export const getUsage = createServerFn({ method: "GET" })
   });
 
 
-const brandingSchema = z.object({
-  workspaceId: z.string().uuid(),
-  preparedBy: z.string().trim().max(80).nullable(),
-  logoUrl: z.string().trim().url().max(500).refine((u) => u.startsWith("https://"), "Logo must use https").nullable(),
-  accent: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #ff00aa").nullable(),
-});
+const LOGO_UPLOAD = /^upload:[0-9a-f-]{36}\/logo-[0-9]{10,16}\.(png|jpg|webp)$/;
+
+const brandingSchema = z
+  .object({
+    workspaceId: z.string().uuid(),
+    preparedBy: z.string().trim().max(80).nullable(),
+    logoUrl: z
+      .string()
+      .trim()
+      .max(500)
+      .refine((u) => LOGO_UPLOAD.test(u) || (u.startsWith("https://") && z.string().url().safeParse(u).success), "Logo must be an upload or an https link")
+      .nullable(),
+    accent: z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #ff00aa").nullable(),
+  })
+  .refine((d) => !d.logoUrl?.startsWith("upload:") || d.logoUrl.startsWith(`upload:${d.workspaceId}/`), "Logo belongs to another workspace");
 
 /** Report branding shown on published reports and their PDF. Admins/owners only (RLS). */
 export const updateBranding = createServerFn({ method: "POST" })
@@ -88,9 +97,16 @@ export const getBranding = createServerFn({ method: "GET" })
       .eq("id", data.workspaceId)
       .maybeSingle();
     if (error) throw new Error(error.message);
+    const logoUrl = row?.brand_logo_url ?? null;
+    let logoPreview: string | null = logoUrl;
+    if (logoUrl?.startsWith("upload:")) {
+      const { data: s } = await context.supabase.storage.from("brand-logos").createSignedUrl(logoUrl.slice(7), 3600);
+      logoPreview = s?.signedUrl ?? null;
+    }
     return {
       preparedBy: row?.brand_prepared_by ?? null,
-      logoUrl: row?.brand_logo_url ?? null,
+      logoUrl,
+      logoPreview,
       accent: row?.brand_accent ?? null,
     };
   });

@@ -134,7 +134,12 @@ export async function loadPublicReport(
     const { data: b } = await supabaseAdmin.rpc("public_report_branding", { _slug: slug });
     const row = Array.isArray(b) ? b[0] : null;
     if (row && (row.prepared_by || row.logo_url)) {
-      branding = { preparedBy: row.prepared_by, logoUrl: row.logo_url, accent: row.accent };
+      let logoUrl: string | null = row.logo_url;
+      if (logoUrl?.startsWith("upload:")) {
+        const { data: s } = await supabaseAdmin.storage.from("brand-logos").createSignedUrl(logoUrl.slice(7), 60 * 60 * 24);
+        logoUrl = s?.signedUrl ?? null;
+      }
+      branding = { preparedBy: row.prepared_by, logoUrl, accent: row.accent };
     }
   } catch (e) {
     console.error("branding lookup failed", e);
