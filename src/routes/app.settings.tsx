@@ -57,6 +57,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { RouteError } from "@/components/route-error";
 import { AccountPanel } from "@/components/account-panel";
 
@@ -782,14 +783,35 @@ function BrandingCard() {
   const qc = useQueryClient();
   const [preparedBy, setPreparedBy] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [accent, setAccent] = useState("");
   useEffect(() => {
     if (b.data) {
       setPreparedBy(b.data.preparedBy ?? "");
       setLogoUrl(b.data.logoUrl ?? "");
+      setPreview(b.data.logoPreview ?? null);
       setAccent(b.data.accent ?? "");
     }
   }, [b.data]);
+  async function upload(file: File) {
+    const ext = ({ "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" } as Record<string, string>)[file.type];
+    if (!ext) return toast.error("Use a PNG, JPG or WebP image.");
+    if (file.size > 1024 * 1024) return toast.error("Logo must be 1 MB or smaller.");
+    setUploading(true);
+    try {
+      const path = `${id}/logo-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("brand-logos").upload(path, file, { contentType: file.type });
+      if (error) throw new Error(error.message.includes("security") ? "Only workspace owners and admins can upload a logo." : error.message);
+      setLogoUrl(`upload:${path}`);
+      setPreview(URL.createObjectURL(file));
+      toast.success("Logo uploaded — press Save branding.");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
   const save = useMutation({
     mutationFn: () =>
       updateBranding({
@@ -818,8 +840,16 @@ function BrandingCard() {
           <Input id="br-by" maxLength={80} placeholder="Your agency or company name" value={preparedBy} onChange={(e) => setPreparedBy(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="br-logo">Logo link (https)</Label>
-          <Input id="br-logo" type="url" placeholder="https://…/logo.png" value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+          <Label htmlFor="br-logo-file">Logo</Label>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex h-14 w-28 items-center justify-center border-[3px] border-border bg-muted">
+              {preview ? <img src={preview} alt="Logo preview" className="max-h-12 max-w-[104px] object-contain" /> : <span className="font-mono text-[10px]">No logo</span>}
+            </div>
+            <Input id="br-logo-file" type="file" accept="image/png,image/jpeg,image/webp" className="min-w-0 flex-1" disabled={!id || uploading} onChange={(e) => { const f = e.target.files?.[0]; if (f) void upload(f); e.target.value = ""; }} />
+            {logoUrl && <Button variant="ghost" size="sm" onClick={() => { setLogoUrl(""); setPreview(null); }}>Remove</Button>}
+          </div>
+          <p className="text-xs text-muted-foreground">PNG, JPG or WebP, up to 1 MB. Press Save branding after uploading.</p>
+          <Input id="br-logo" type="url" aria-label="Or paste an https logo link" placeholder="…or paste an https logo link" value={logoUrl.startsWith("upload:") ? "" : logoUrl} onChange={(e) => { setLogoUrl(e.target.value); setPreview(e.target.value || null); }} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="br-accent">Accent colour</Label>

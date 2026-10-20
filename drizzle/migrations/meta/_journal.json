@@ -22,6 +22,13 @@
       "when": 1791526890452,
       "tag": "0002_radar_scheduler",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792494938374,
+      "tag": "0003_brand_logo_storage",
+      "breakpoints": true
     }
   ]
 }
