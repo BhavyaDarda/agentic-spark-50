@@ -21,3 +21,7 @@
 ## External capabilities
 - Extend the runtime assistant through the app's MCP connection registry when an appropriate remote MCP service exists; Lovable chat connectors are build-time tools, not runtime integrations, so they cannot substitute for app connections.
 - Use per-user authorization for private external accounts and the supported App User Connector path for existing non-agent provider integrations; never substitute shared workspace credentials for a user's account.
+
+## Account safety
+- Preflight every workspace before account deletion, reject unknown member counts, and require shared workspaces to retain an owner; uncertainty must never authorize destructive writes.
+- Account downloads use caller-scoped reads and explicit saved-output projections; omit prompts, traces, credentials and teammates' records to prevent ancillary data leakage.

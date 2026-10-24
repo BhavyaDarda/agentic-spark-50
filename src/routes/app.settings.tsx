@@ -63,7 +63,15 @@ import { AccountPanel } from "@/components/account-panel";
 
 export const Route = createFileRoute("/app/settings")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Settings · REACHER AI" }] }),
+  head: () => ({ meta: [
+    { title: "Settings · REACHER AI" },
+    { name: "description", content: "Manage REACHER AI workspace branding, team access, account data and sessions." },
+    { property: "og:title", content: "Settings · REACHER AI" },
+    { property: "og:description", content: "Manage workspace branding, team access and your REACHER AI account." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+    { name: "robots", content: "noindex" },
+  ] }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: SettingsPage,
 });
@@ -862,7 +870,7 @@ function BrandingCard() {
             {accent && <Button variant="ghost" size="sm" onClick={() => setAccent("")}>Clear</Button>}
           </div>
         </div>
-        <Button onClick={() => save.mutate()} disabled={!id || save.isPending}>
+        <Button onClick={() => save.mutate()} disabled={!id || uploading || save.isPending}>
           {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           <Save className="mr-2 h-4 w-4" />
           Save branding
