@@ -4,8 +4,8 @@
 - [x] External-capability direction: use runtime MCP and linked apps for missing native features; checked the existing Settings connection registry and available per-user services. No additional account was connected or new service action enabled by this review.
 - [x] Campaign plan: fixed "response did not match schema" failure; real plan built in browser
 - [x] Security scan clean; 8 safety tests pass (run with `bun test`)
-- [ ] Remaining product verification: account actions
-- [ ] Stage 2 follow-up: logo file upload (link only today)
+- [ ] Remaining product verification: account actions — export and global sign-out added; deletion preflight hardened; browser checks in progress. Password changes and destructive deletion require a throwaway account.
+- [ ] Stage 2 follow-up: logo upload implemented; public-report and print verification in progress.
 - [x] Stage 3: topic-targeted sponsors + per-keyword stats
 - [x] Stage 4: Radar monitors, hourly timer on, manual rerun verified
 - [ ] Radar email briefs (deferred by user; needs an email domain)
