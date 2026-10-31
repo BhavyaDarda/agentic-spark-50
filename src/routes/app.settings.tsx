@@ -703,6 +703,10 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => { setName("Notion"); setUrl("https://mcp.notion.com/mcp"); setApiKey(""); }}>Notion</Button>
+                <Button variant="outline" size="sm" onClick={() => { setName("Cloudflare docs"); setUrl("https://docs.mcp.cloudflare.com/mcp"); setApiKey(""); }}>Cloudflare docs</Button>
+              </div>
               <div className="space-y-1.5">
                 <Label>Name</Label>
                 <Input
@@ -771,9 +775,9 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             {connections.data?.items.map((conn) => (
               <div
                 key={conn.id}
-                className="flex items-center justify-between border-[3px] border-border bg-card p-4"
+                className="flex flex-wrap items-center justify-between gap-3 border-[3px] border-border bg-card p-4"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-3">
                   <Button variant="outline" size="sm" disabled={authorizing !== null} onClick={() => authorize(conn.id)}>
                     {authorizing === conn.id ? "Connecting…" : conn.state === "ready" ? "Verify" : "Sign in / retry"}
                   </Button>
@@ -781,7 +785,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                     <Server className="h-4 w-4" />
                   </div>
                   <div>
-                    <div className="font-medium">{conn.name}</div>
+                    <div className="break-words font-medium">{conn.name}</div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span className="font-mono uppercase">{conn.transport}</span>
                       <span>·</span>
@@ -795,6 +799,8 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                       <CheckCircle2 className="h-3 w-3" />
                       Ready
                     </Badge>
+                  ) : conn.state === "authenticating" ? (
+                    <Badge variant="outline">Sign-in pending</Badge>
                   ) : (
                     <Badge variant="destructive" className="gap-1">
                       <XCircle className="h-3 w-3" />
