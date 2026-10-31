@@ -553,6 +553,35 @@ export type Database = {
           },
         ]
       }
+      mcp_credentials: {
+        Row: {
+          ciphertext: string
+          connection_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ciphertext: string
+          connection_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ciphertext?: string
+          connection_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mcp_credentials_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: true
+            referencedRelation: "mcp_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           ai_sdk_message_id: string | null
