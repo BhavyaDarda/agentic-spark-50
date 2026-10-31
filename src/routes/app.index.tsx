@@ -23,10 +23,11 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { RouteError } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "New chat · REACHER AI" }] }),
+  head: () => privatePageHead("New chat", "Start a REACHER AI research or marketing conversation grounded in your brand."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: NewChatWelcome,
 });

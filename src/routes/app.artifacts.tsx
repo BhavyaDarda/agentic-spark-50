@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/select";
 import { FileText, Search, Star } from "lucide-react";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/artifacts")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Artifact Library · REACHER AI" }] }),
+  head: () => privatePageHead("Artifact Library", "Browse your saved REACHER AI reports, posts and campaign deliverables."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ArtifactLibrary,
 });

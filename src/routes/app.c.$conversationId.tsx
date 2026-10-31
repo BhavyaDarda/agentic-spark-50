@@ -30,10 +30,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RouteError } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/c/$conversationId")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Chat · REACHER AI" }] }),
+  head: () => privatePageHead("Chat", "Your private REACHER AI conversation, citations and saved outputs."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ChatPage,
 });

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/api/public/mcp-return")({
+  staticData: { sitemap: false },
   server: { handlers: { GET: ({ request }) => {
     const url = new URL(request.url);
     // This public page only relays a code; the signed-in opener validates

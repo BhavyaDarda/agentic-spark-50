@@ -17,6 +17,10 @@ export const Route = createFileRoute("/reset-password")({
         content: "Choose a new password for your REACHER AI account.",
       },
       { name: "robots", content: "noindex" },
+      { property: "og:title", content: "Set a new password · REACHER AI" },
+      { property: "og:description", content: "Recover access to your REACHER AI account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   ssr: false,
@@ -29,10 +33,12 @@ function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   // The recovery link puts a session in place; wait for it before allowing a change.
   useEffect(() => {
     let done = false;
+    const timeout = window.setTimeout(() => setChecked(true), 1500);
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         done = true;
@@ -49,11 +55,13 @@ function ResetPasswordPage() {
         }, 1200);
       }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => { window.clearTimeout(timeout); sub.subscription.unsubscribe(); };
   }, []);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!ready) return;
+    if (password.length < 8) return toast.error("Password must be at least 8 characters.");
     if (password !== confirm) {
       toast.error("Both passwords must match");
       return;
@@ -129,6 +137,7 @@ function ResetPasswordPage() {
               Update password
             </Button>
           </form>
+          {checked && !ready && <Button variant="link" className="mt-3" onClick={() => navigate({ to: "/auth" })}>Request a new reset link</Button>}
         </div>
       </div>
     </main>

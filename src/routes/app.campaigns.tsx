@@ -51,6 +51,7 @@ export const Route = createFileRoute("/app/campaigns")({
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "robots", content: "noindex" },
     ],
   }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,

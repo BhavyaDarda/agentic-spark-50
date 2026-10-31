@@ -20,10 +20,11 @@ import {
 import { Plus, Building2, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/brands")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Brands · REACHER AI" }] }),
+  head: () => privatePageHead("Brands", "Manage your brand voice, audience and marketing goals in REACHER AI."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: BrandsPage,
 });
