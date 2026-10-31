@@ -624,8 +624,9 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           apiKey: apiKey || undefined,
         },
       }),
-    onSuccess: () => {
-      toast.success("MCP server connected");
+    onSuccess: (connection) => {
+      if (connection.state === "ready") toast.success("MCP server connected");
+      else toast.error("Connection saved, but the server could not be verified.");
       setName("");
       setUrl("");
       setApiKey("");
@@ -654,8 +655,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           MCP integrations
         </CardTitle>
         <CardDescription>
-          Connect external tool servers via the Model Context Protocol. Their tools become available
-          to your agent in chat.
+          Your connected accounts
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -724,6 +724,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           </DialogContent>
         </Dialog>
 
+        {connections.isError && <p role="alert" className="text-sm text-destructive">Connections could not be loaded. <Button variant="link" onClick={() => connections.refetch()}>Retry</Button></p>}
         {connections.isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 2 }).map((_, i) => (
@@ -756,7 +757,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                 </div>
                 <div className="flex items-center gap-3">
                   {conn.state === "ready" ? (
-                    <Badge variant="default" className="gap-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20">
+                    <Badge variant="default" className="gap-1">
                       <CheckCircle2 className="h-3 w-3" />
                       Ready
                     </Badge>
@@ -771,6 +772,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                     size="icon"
                     onClick={() => remove.mutate(conn.id)}
                     disabled={remove.isPending}
+                    aria-label={`Remove ${conn.name}`} title={`Remove ${conn.name}`}
                   >
                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                   </Button>
