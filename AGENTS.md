@@ -22,6 +22,8 @@
 - Extend the runtime assistant through the app's MCP connection registry when an appropriate remote MCP service exists; Lovable chat connectors are build-time tools, not runtime integrations, so they cannot substitute for app connections.
 - Use per-user authorization for private external accounts and the supported App User Connector path for existing non-agent provider integrations; never substitute shared workspace credentials for a user's account.
 - Keep MCP credentials encrypted in server-only storage, load only the caller's connections, refuse redirects and isolate connection failures so one server cannot disable native chat.
+- MCP OAuth exchanges happen in authenticated server functions from a same-origin popup with saved-state validation; callbacks only relay codes and never grant access or expose tokens.
+- Shared private-page metadata uses the page-head helper; every content leaf defines its own descriptive title and social metadata to avoid generic share previews.
 
 ## Account safety
 - Preflight every workspace before account deletion, reject unknown member counts, and require shared workspaces to retain an owner; uncertainty must never authorize destructive writes.

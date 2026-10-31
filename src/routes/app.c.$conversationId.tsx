@@ -508,7 +508,9 @@ function MessageRow({
 function ToolCard({ t }: { t: ToolEvent }) {
   const Icon =
     t.tool === "web_search" ? Globe : t.tool === "fetch_page" ? Globe : t.tool === "save_artifact" ? FileText : Wrench;
-  const label = t.tool.replace("_", "");
+  const label = t.tool.startsWith("mcp_")
+    ? t.tool.replace(/^mcp_[a-f0-9]+_/, "").replace(/_/g, " ")
+    : t.tool.replace(/_/g, " ");
   const isRunning = t.status === "running";
   return (
     <div
