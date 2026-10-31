@@ -47,16 +47,17 @@ export function AccountPanel() {
   }
 
   async function removeAccount() {
+    if (confirm !== "DELETE") return;
     setDeleting(true);
     try {
-      if (confirm !== "DELETE") return;
       await del({ data: { confirm } });
-      await supabase.auth.signOut();
       qc.clear();
       toast.success("Your account has been deleted.");
-      navigate({ to: "/" });
+      await supabase.auth.signOut().catch(() => {});
+      await navigate({ to: "/" });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not delete account.");
+    } finally {
       setDeleting(false);
     }
   }
