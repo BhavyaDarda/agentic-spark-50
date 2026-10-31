@@ -25,4 +25,5 @@
 
 ## Account safety
 - Preflight every workspace before account deletion, reject unknown member counts, and require shared workspaces to retain an owner; uncertainty must never authorize destructive writes.
+- Account workspace cleanup uses a privileged database transaction with membership locks and a caller ID supplied only by validated server auth; auth-account removal remains a separately retryable operation.
 - Account downloads use caller-scoped reads and explicit saved-output projections; omit prompts, traces, credentials and teammates' records to prevent ancillary data leakage.
