@@ -1512,6 +1512,10 @@ export type Database = {
     }
     Functions: {
       accept_workspace_invite: { Args: { _token: string }; Returns: string }
+      cleanup_account_workspaces: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
