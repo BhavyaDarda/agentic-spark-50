@@ -471,10 +471,10 @@ export const Route = createFileRoute("/api/chat")({
                 abortSignal: request.signal,
                 onChunk({ chunk }) {
                   if (chunk.type === "tool-call" && chunk.toolName.startsWith("mcp_")) {
-                    write({ type: "tool", tool: chunk.toolName, status: "running" });
+                    write({ type: "tool_call", tool: chunk.toolName, input: {} });
                   }
                   if (chunk.type === "tool-result" && chunk.toolName.startsWith("mcp_")) {
-                    write({ type: "tool", tool: chunk.toolName, status: "done", ok: true });
+                    write({ type: "tool_result", tool: chunk.toolName, ok: true });
                   }
                 },
                 onError({ error }) {
