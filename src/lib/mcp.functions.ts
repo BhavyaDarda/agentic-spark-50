@@ -124,19 +124,17 @@ export async function loadMcpToolsForWorkspace(workspaceId: string, sb: Supabase
   const allTools: Record<string, unknown> = {};
   const clients: Awaited<ReturnType<typeof createMCPClient>>[] = [];
 
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { decryptMcp } = await import("./mcp-crypto.server");
+  const { connectionProvider } = await import("./mcp-oauth.server");
   const { mcpFetch } = await import("./mcp-transport.server");
   for (const row of rows) {
     let client: Awaited<ReturnType<typeof createMCPClient>> | undefined;
     try {
       const url = mcpUrl(row.url);
-      const { data: secret, error: secretError } = await supabaseAdmin.from("mcp_credentials").select("ciphertext").eq("connection_id", row.id).eq("user_id", userId).maybeSingle();
-      if (secretError) throw new Error("Credential lookup failed");
-      const credentials = secret ? decryptMcp<{ bearer?: string }>(secret.ciphertext) : {};
+      const connection = await connectionProvider(row.id, userId);
+      const credentials = connection.stored;
       const headers: Record<string, string> = {};
       if (credentials.bearer) headers.Authorization = `Bearer ${credentials.bearer}`;
-      client = await createMCPClient({ transport: { type: row.transport as "http" | "sse", url, headers, redirect: "error", fetch: mcpFetch } });
+      client = await createMCPClient({ transport: { type: row.transport as "http" | "sse", url, headers, authProvider: credentials.bearer ? undefined : connection.provider, redirect: "error", fetch: mcpFetch } });
       const tools = await client.tools();
       for (const [toolName, toolDef] of Object.entries(tools)) {
         const namespaced = mcpToolName(row.id, toolName);

@@ -10,6 +10,8 @@ import {
   removeMember,
 } from "@/lib/team.functions";
 import { listMcpConnections, createMcpConnection, deleteMcpConnection } from "@/lib/mcp.functions";
+import { authorizeMcpConnection, completeMcpAuthorization } from "@/lib/mcp-oauth.functions";
+import { waitForMcpAuthorization } from "@/lib/mcp-popup";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -612,6 +614,35 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
   const [transport, setTransport] = useState<"http" | "sse">("http");
   const [apiKey, setApiKey] = useState("");
   const [open, setOpen] = useState(false);
+  const [authorizing, setAuthorizing] = useState<string | null>(null);
+
+  async function authorize(id: string) {
+    const popup = window.open("", "reacher-mcp-connect", "width=600,height=720");
+    if (!popup) return toast.error("Allow popups to connect your account.");
+    setAuthorizing(id);
+    try {
+      const result = await authorizeMcpConnection({ data: { id } });
+      if (result.state === "ready") {
+        popup.close();
+        toast.success("Connection verified.");
+      } else if (result.authUrl) {
+        const completion = waitForMcpAuthorization(popup, id);
+        popup.location.href = result.authUrl;
+        const data = await completion;
+        await completeMcpAuthorization({ data });
+        toast.success("Account connected.");
+      } else {
+        popup.close();
+        toast.error("The server could not be verified. Check its address and authorization.");
+      }
+    } catch (error) {
+      popup.close();
+      toast.error(error instanceof Error ? error.message : "Could not connect your account.");
+    } finally {
+      setAuthorizing(null);
+      qc.invalidateQueries({ queryKey: ["mcp-connections", workspaceId] });
+    }
+  }
 
   const add = useMutation({
     mutationFn: () =>
@@ -743,6 +774,9 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                 className="flex items-center justify-between border-[3px] border-border bg-card p-4"
               >
                 <div className="flex items-center gap-3">
+                  <Button variant="outline" size="sm" disabled={authorizing !== null} onClick={() => authorize(conn.id)}>
+                    {authorizing === conn.id ? "Connecting…" : conn.state === "ready" ? "Verify" : "Sign in / retry"}
+                  </Button>
                   <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary-dark">
                     <Server className="h-4 w-4" />
                   </div>
