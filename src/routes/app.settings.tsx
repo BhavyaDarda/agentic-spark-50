@@ -10,6 +10,8 @@ import {
   removeMember,
 } from "@/lib/team.functions";
 import { listMcpConnections, createMcpConnection, deleteMcpConnection } from "@/lib/mcp.functions";
+import { authorizeMcpConnection, completeMcpAuthorization } from "@/lib/mcp-oauth.functions";
+import { waitForMcpAuthorization } from "@/lib/mcp-popup";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -612,6 +614,35 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
   const [transport, setTransport] = useState<"http" | "sse">("http");
   const [apiKey, setApiKey] = useState("");
   const [open, setOpen] = useState(false);
+  const [authorizing, setAuthorizing] = useState<string | null>(null);
+
+  async function authorize(id: string) {
+    const popup = window.open("", "reacher-mcp-connect", "width=600,height=720");
+    if (!popup) return toast.error("Allow popups to connect your account.");
+    setAuthorizing(id);
+    try {
+      const result = await authorizeMcpConnection({ data: { id } });
+      if (result.state === "ready") {
+        popup.close();
+        toast.success("Connection verified.");
+      } else if (result.authUrl) {
+        const completion = waitForMcpAuthorization(popup, id);
+        popup.location.href = result.authUrl;
+        const data = await completion;
+        await completeMcpAuthorization({ data });
+        toast.success("Account connected.");
+      } else {
+        popup.close();
+        toast.error("The server could not be verified. Check its address and authorization.");
+      }
+    } catch (error) {
+      popup.close();
+      toast.error(error instanceof Error ? error.message : "Could not connect your account.");
+    } finally {
+      setAuthorizing(null);
+      qc.invalidateQueries({ queryKey: ["mcp-connections", workspaceId] });
+    }
+  }
 
   const add = useMutation({
     mutationFn: () =>
@@ -624,8 +655,9 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           apiKey: apiKey || undefined,
         },
       }),
-    onSuccess: () => {
-      toast.success("MCP server connected");
+    onSuccess: (connection) => {
+      if (connection.state === "ready") toast.success("MCP server connected");
+      else toast.error("Connection saved, but the server could not be verified.");
       setName("");
       setUrl("");
       setApiKey("");
@@ -654,8 +686,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           MCP integrations
         </CardTitle>
         <CardDescription>
-          Connect external tool servers via the Model Context Protocol. Their tools become available
-          to your agent in chat.
+          Your connected accounts
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -672,6 +703,10 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => { setName("Notion"); setUrl("https://mcp.notion.com/mcp"); setApiKey(""); }}>Notion</Button>
+                <Button variant="outline" size="sm" onClick={() => { setName("Cloudflare docs"); setUrl("https://docs.mcp.cloudflare.com/mcp"); setApiKey(""); }}>Cloudflare docs</Button>
+              </div>
               <div className="space-y-1.5">
                 <Label>Name</Label>
                 <Input
@@ -724,6 +759,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
           </DialogContent>
         </Dialog>
 
+        {connections.isError && <p role="alert" className="text-sm text-destructive">Connections could not be loaded. <Button variant="link" onClick={() => connections.refetch()}>Retry</Button></p>}
         {connections.isLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 2 }).map((_, i) => (
@@ -739,14 +775,17 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
             {connections.data?.items.map((conn) => (
               <div
                 key={conn.id}
-                className="flex items-center justify-between border-[3px] border-border bg-card p-4"
+                className="flex flex-wrap items-center justify-between gap-3 border-[3px] border-border bg-card p-4"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-3">
+                  <Button variant="outline" size="sm" disabled={authorizing !== null} onClick={() => authorize(conn.id)}>
+                    {authorizing === conn.id ? "Connecting…" : conn.state === "ready" ? "Verify" : "Sign in / retry"}
+                  </Button>
                   <div className="flex h-9 w-9 items-center justify-center bg-primary/10 text-primary-dark">
                     <Server className="h-4 w-4" />
                   </div>
                   <div>
-                    <div className="font-medium">{conn.name}</div>
+                    <div className="break-words font-medium">{conn.name}</div>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span className="font-mono uppercase">{conn.transport}</span>
                       <span>·</span>
@@ -756,10 +795,12 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                 </div>
                 <div className="flex items-center gap-3">
                   {conn.state === "ready" ? (
-                    <Badge variant="default" className="gap-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20">
+                    <Badge variant="default" className="gap-1">
                       <CheckCircle2 className="h-3 w-3" />
                       Ready
                     </Badge>
+                  ) : conn.state === "authenticating" ? (
+                    <Badge variant="outline">Sign-in pending</Badge>
                   ) : (
                     <Badge variant="destructive" className="gap-1">
                       <XCircle className="h-3 w-3" />
@@ -771,6 +812,7 @@ function McpTab({ workspaceId }: { workspaceId?: string }) {
                     size="icon"
                     onClick={() => remove.mutate(conn.id)}
                     disabled={remove.isPending}
+                    aria-label={`Remove ${conn.name}`} title={`Remove ${conn.name}`}
                   >
                     <Trash2 className="h-4 w-4 text-muted-foreground" />
                   </Button>

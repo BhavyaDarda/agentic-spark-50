@@ -30,10 +30,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RouteError } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/c/$conversationId")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Chat · REACHER AI" }] }),
+  head: () => privatePageHead("Chat", "Your private REACHER AI conversation, citations and saved outputs."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ChatPage,
 });
@@ -507,7 +508,9 @@ function MessageRow({
 function ToolCard({ t }: { t: ToolEvent }) {
   const Icon =
     t.tool === "web_search" ? Globe : t.tool === "fetch_page" ? Globe : t.tool === "save_artifact" ? FileText : Wrench;
-  const label = t.tool.replace("_", "");
+  const label = t.tool.startsWith("mcp_")
+    ? t.tool.replace(/^mcp_[a-f0-9]+_/, "").replace(/_/g, " ")
+    : t.tool.replace(/_/g, " ");
   const isRunning = t.status === "running";
   return (
     <div

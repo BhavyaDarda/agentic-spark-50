@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle2, AlertCircle, Mail } from "lucide-react";
 import { toast } from "sonner";
+import { privatePageHead } from "@/lib/page-head";
 
 const searchSchema = z.object({
   next: z.string().optional(),
@@ -15,7 +16,7 @@ const searchSchema = z.object({
 
 export const Route = createFileRoute("/invite/$token")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Accept invitation · REACHER AI" }] }),
+  head: () => privatePageHead("Accept invitation", "Review and accept your REACHER AI workspace invitation."),
   validateSearch: searchSchema,
   component: InvitePage,
   // The invite acceptance requires an authenticated Supabase session.

@@ -29,6 +29,27 @@
       "when": 1792494938374,
       "tag": "0003_brand_logo_storage",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793455956175,
+      "tag": "0004_secure_mcp_credentials",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793456008819,
+      "tag": "0005_atomic_account_workspace_cleanup",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793456255050,
+      "tag": "0006_revoke_browser_mcp_secret_grants",
+      "breakpoints": true
     }
   ]
 }

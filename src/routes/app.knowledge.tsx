@@ -40,6 +40,8 @@ export const Route = createFileRoute("/app/knowledge")({
         content: "Ground every agent output in your own documents, notes and site pages.",
       },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,

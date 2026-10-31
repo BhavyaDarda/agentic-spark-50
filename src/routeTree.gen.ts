@@ -35,6 +35,7 @@ import { Route as AppSponsorsRouteImport } from './routes/app.sponsors'
 import { Route as InviteTokenRouteImport } from './routes/invite.$token'
 import { Route as RSlugRouteImport } from './routes/r.$slug'
 import { Route as ApiPublicCitationSweepRouteImport } from './routes/api/public/citation-sweep'
+import { Route as ApiPublicMcpReturnRouteImport } from './routes/api/public/mcp-return'
 import { Route as ApiPublicRadarTickRouteImport } from './routes/api/public/radar-tick'
 import { Route as AppCConversationIdRouteImport } from './routes/app.c.$conversationId'
 import { Route as AppResearchIndexRouteImport } from './routes/app.research.index'
@@ -170,6 +171,11 @@ const ApiPublicCitationSweepRoute = ApiPublicCitationSweepRouteImport.update({
   path: '/api/public/citation-sweep',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMcpReturnRoute = ApiPublicMcpReturnRouteImport.update({
+  id: '/api/public/mcp-return',
+  path: '/api/public/mcp-return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRadarTickRoute = ApiPublicRadarTickRouteImport.update({
   id: '/api/public/radar-tick',
   path: '/api/public/radar-tick',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/mcp-return': typeof ApiPublicMcpReturnRoute
   '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/r/$slug': typeof RSlugRoute
   '/app': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/mcp-return': typeof ApiPublicMcpReturnRoute
   '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/r/$slug': typeof RSlugRoute
   '/app/': typeof AppIndexRoute
   '/api/public/citation-sweep': typeof ApiPublicCitationSweepRoute
+  '/api/public/mcp-return': typeof ApiPublicMcpReturnRoute
   '/api/public/radar-tick': typeof ApiPublicRadarTickRoute
   '/app/c/$conversationId': typeof AppCConversationIdRoute
   '/app/research/$projectId': typeof AppResearchProjectIdRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app/'
     | '/api/public/citation-sweep'
+    | '/api/public/mcp-return'
     | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app'
     | '/api/public/citation-sweep'
+    | '/api/public/mcp-return'
     | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/r/$slug'
     | '/app/'
     | '/api/public/citation-sweep'
+    | '/api/public/mcp-return'
     | '/api/public/radar-tick'
     | '/app/c/$conversationId'
     | '/app/research/$projectId'
@@ -404,6 +416,7 @@ export interface RootRouteChildren {
   InviteTokenRoute: typeof InviteTokenRoute
   RSlugRoute: typeof RSlugRoute
   ApiPublicCitationSweepRoute: typeof ApiPublicCitationSweepRoute
+  ApiPublicMcpReturnRoute: typeof ApiPublicMcpReturnRoute
   ApiPublicRadarTickRoute: typeof ApiPublicRadarTickRoute
 }
 
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCitationSweepRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mcp-return': {
+      id: '/api/public/mcp-return'
+      path: '/api/public/mcp-return'
+      fullPath: '/api/public/mcp-return'
+      preLoaderRoute: typeof ApiPublicMcpReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/radar-tick': {
       id: '/api/public/radar-tick'
       path: '/api/public/radar-tick'
@@ -671,6 +691,7 @@ const rootRouteChildren: RootRouteChildren = {
   InviteTokenRoute: InviteTokenRoute,
   RSlugRoute: RSlugRoute,
   ApiPublicCitationSweepRoute: ApiPublicCitationSweepRoute,
+  ApiPublicMcpReturnRoute: ApiPublicMcpReturnRoute,
   ApiPublicRadarTickRoute: ApiPublicRadarTickRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { accountWorkspaceAction, savedOutput } from "./account-safety";
+import { savedOutput } from "./account-safety";
 
 /**
  * Permanently delete the signed-in user's account.
@@ -16,55 +16,15 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
     z.object({ confirm: z.literal("DELETE") }).parse(input),
   )
   .handler(async ({ context }) => {
-    const { supabase, userId } = context;
-
-    const { data: memberships, error: memErr } = await supabase
-      .from("workspace_members")
-      .select("workspace_id, role")
-      .eq("user_id", userId);
-    if (memErr) throw new Error(memErr.message);
-
+    const { userId } = context;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    // Preflight every workspace before any destructive write. Unknown counts
-    // must never be interpreted as an empty/sole-member workspace.
-    const actions = [];
-    for (const m of memberships ?? []) {
-      const { count, error: countError } = await supabaseAdmin
-        .from("workspace_members")
-        .select("id", { count: "exact", head: true })
-        .eq("workspace_id", m.workspace_id);
-      if (countError) throw new Error("Could not verify workspace membership. Your account was not deleted.");
-      let owners: number | null = null;
-      if (m.role === "owner" && count !== null && count > 1) {
-        const { count: ownerCount, error: ownerError } = await supabaseAdmin
-          .from("workspace_members").select("id", { count: "exact", head: true })
-          .eq("workspace_id", m.workspace_id).eq("role", "owner");
-        if (ownerError) throw new Error("Could not verify workspace ownership. Your account was not deleted.");
-        owners = ownerCount;
-      }
-      actions.push({ workspaceId: m.workspace_id, action: accountWorkspaceAction(count, m.role, owners) });
-    }
-
-    for (const item of actions) {
-      if (item.action === "delete") {
-        const { error } = await supabaseAdmin
-          .from("workspaces")
-          .delete()
-          .eq("id", item.workspaceId);
-        if (error) throw new Error(error.message);
-      } else {
-        const { error } = await supabaseAdmin
-          .from("workspace_members")
-          .delete()
-          .eq("workspace_id", item.workspaceId)
-          .eq("user_id", userId);
-        if (error) throw new Error(error.message);
-      }
-    }
+    // Locks and preflight run in one database transaction, so concurrent
+    // membership edits and partial cleanup cannot strand shared workspaces.
+    const { error: cleanupError } = await supabaseAdmin.rpc("cleanup_account_workspaces", { p_user_id: userId });
+    if (cleanupError) throw new Error(cleanupError.message);
 
     const { error: delErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
-    if (delErr) throw new Error(delErr.message);
+    if (delErr) throw new Error("Workspace cleanup completed, but account removal did not finish. Retry deleting your account.");
 
     return { ok: true } as const;
   });

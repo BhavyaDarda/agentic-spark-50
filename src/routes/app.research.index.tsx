@@ -27,10 +27,11 @@ import {
 import { Plus, Microscope, ArrowRight, Loader2, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { RouteError, ListSkeleton, EmptyState } from "@/components/route-error";
+import { privatePageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/research/")({
   staticData: { sitemap: false },
-  head: () => ({ meta: [{ title: "Research Ninja · REACHER AI" }] }),
+  head: () => privatePageHead("Research Ninja", "Manage cited research projects and topic monitors in REACHER AI."),
   errorComponent: ({ error }) => <RouteError error={error as Error} />,
   component: ResearchListPage,
 });
