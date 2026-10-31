@@ -469,6 +469,14 @@ export const Route = createFileRoute("/api/chat")({
                 stopWhen: stepCountIs(options.model === "deep" ? 12 : 8),
                 providerOptions: responsesOptions(effortFor(options.model)),
                 abortSignal: request.signal,
+                onChunk({ chunk }) {
+                  if (chunk.type === "tool-call" && chunk.toolName.startsWith("mcp_")) {
+                    write({ type: "tool", tool: chunk.toolName, status: "running" });
+                  }
+                  if (chunk.type === "tool-result" && chunk.toolName.startsWith("mcp_")) {
+                    write({ type: "tool", tool: chunk.toolName, status: "done", ok: true });
+                  }
+                },
                 onError({ error }) {
                   const msg = error instanceof Error ? error.message : String(error);
                   write({ type: "error", message: msg });
